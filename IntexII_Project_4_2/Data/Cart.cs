@@ -28,7 +28,10 @@ namespace IntexII_Project_4_2.Data
 
         public void RemoveLine(Product prod) => Lines.RemoveAll(x => x.Product.ProductId == prod.ProductId);
         public void Clear() => Lines.Clear();
-        public decimal CalculateTotal() => Lines.Sum(x => 25 * x.Quantity);
+        public decimal CalculateTotal()
+        {
+            return Lines.Sum(line => line.Quantity * (line.Product.Price ?? 0));
+        }
         public class CartLine
         {
             public int CartLineId { get; set; }

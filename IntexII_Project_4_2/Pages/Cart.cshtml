@@ -3,7 +3,7 @@
 @{
 }
 <h1>Your Cart</h1>
-<table class="table tabletable-bordered table-striped">
+<table class="table table-bordered table-striped">
     <thead>
         <tr>
             <th>Product Name</th>
@@ -11,25 +11,27 @@
             <th class="text-right">Amount</th>
             <th class="text-right">Subtotal</th>
         </tr>
-
     </thead>
 
-    <tbody>
-        @foreach (var line in Model.Cart?.Lines ?? Enumerable.Empty<Cart.CartLine>())
-        {
-            <tr>
-                <td class="text-left">@line.Product.Name</td>
-                <td class="text-left">@line.Quantity</td>
-                <td class="text-left">@line.Product.Price</td>
-                <td class="text-left">@((line.Quantity * 25).ToString("c"))</td>
-            </tr>
-        }
-    </tbody>
+<tbody>
+    @foreach (var line in Model.Cart?.Lines ?? Enumerable.Empty<Cart.CartLine>())
+    {
+        // Correct calculation of subtotal based on the actual product price and quantity
+        decimal subtotal = line.Quantity * (line.Product.Price ?? 0m);  // Use the actual price of the product
+
+        <tr>
+            <td class="text-left">@line.Product.Name</td>
+            <td class="text-left">@line.Quantity</td>
+            <td class="text-left">@(line.Product.Price?.ToString("C") ?? "N/A")</td>
+            <td class="text-left">@subtotal.ToString("C")</td>
+        </tr>
+    }
+</tbody>
 
     <tfoot>
         <tr>
             <td colspan="3" class="text-right">Total:</td>
-            <td class="text-right">@Model.Cart?.CalculateTotal().ToString("c")</td>
+            <td class="text-right">@Model.Cart?.CalculateTotal().ToString("C")</td>
         </tr>
     </tfoot>
 </table>
