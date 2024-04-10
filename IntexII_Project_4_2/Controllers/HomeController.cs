@@ -1,4 +1,5 @@
 using IntexII_Project_4_2.Data;
+using IntexII_Project_4_2.Infrastructure;
 using IntexII_Project_4_2.Models;
 using IntexII_Project_4_2.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
@@ -25,6 +26,21 @@ namespace IntexII_Project_4_2.Controllers
         {
             return View();
         }
+
+        public IActionResult AddToCart(int productId, int quantity)
+        {
+            Product product = _repo.Products.FirstOrDefault(p => p.ProductId == productId);
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            Cart cart = HttpContext.Session.GetJson<Cart>("cart") ?? new Cart();
+            cart.AddItem(product, quantity);
+            HttpContext.Session.SetJson("cart", cart);
+
+            return RedirectToPage("/Cart");
+        }
         public IActionResult CartSummary()
         {
             return View();
@@ -37,9 +53,14 @@ namespace IntexII_Project_4_2.Controllers
         {
             return View();
         }
-        public IActionResult ProductDetail()
+        public IActionResult ProductDetail(int id)
         {
-            return View();
+            Product product = _repo.Products.FirstOrDefault(p => p.ProductId == id);
+            if (product == null)
+            {
+                return NotFound();  // Or any other error handling
+            }
+            return View(product);
         }
         public IActionResult Register()
         {
@@ -47,7 +68,7 @@ namespace IntexII_Project_4_2.Controllers
         }
         public IActionResult ViewProducts(int pageNum, string[] categories, string[] colors)
         {
-            int pageSize = 50;
+            int pageSize = 5;
             pageNum = Math.Max(1, pageNum);
 
             IQueryable<Product> query = _repo.Products.AsQueryable();
