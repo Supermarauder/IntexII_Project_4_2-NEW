@@ -1,0 +1,147 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+@model ProductListViewModel
+<h1>This will display all the products. and allow for filters </h1>
+
+
+@*Home/ViewProducts*@
+
+<h1>View Products </h1>
+<br />
+<br />
+<div class="row">
+    <div class="col-4">
+        <h1>Filter</h1>
+    </div>
+    <div class="col-8">
+        <h1>Products</h1>
+    </div>
+</div>
+<br />
+<br />
+<div class="row">
+    <div class="col-4">
+        <h3>Showing All Results (37)</h3>
+    </div>
+</div>
+<br />
+<div class="row">
+    <div class="col-4">
+        <h4>Sort</h4>
+        <br />
+        <input type="radio" id="option1" name="selection" value="option1">
+        <label for="option1">Most Popular</label><br>
+
+        <input type="radio" id="option2" name="selection" value="option2">
+        <label for="option2">Newest</label><br>
+
+        <input type="radio" id="option3" name="selection" value="option3">
+        <label for="option3">Price High to Low</label><br>
+
+        <input type="radio" id="option4" name="selection" value="option4">
+        <label for="option4">Price Low to High</label><br>
+        <br />
+        <h4>Filter</h4>
+        <br />
+        <p>Price</p>
+            <input type="checkbox" id="option1" name="selection1" value="option1">
+            <label for="option1">$0 - $25</label><br>
+
+            <input type="checkbox" id="option2" name="selection2" value="option2">
+            <label for="option2">$26 - $50</label><br>
+
+            <input type="checkbox" id="option3" name="selection3" value="option3">
+            <label for="option3">$51+</label>
+            <br>
+        <br />
+        <form method="get" action="/Home/ViewProducts">
+            <h4>Category</h4>
+            <input type="checkbox" name="categories" value="Animal">
+            <label>Animal</label>
+            <input type="checkbox" name="categories" value="Building">
+            <label>Building</label><br>
+            <input type="checkbox" name="categories" value="Car">
+            <label>Car</label>
+            <input type="checkbox" name="categories" value="Character">
+            <label>Character</label><br>
+            <input type="checkbox" name="categories" value="Colorful">
+            <label>Colorful</label>
+            <input type="checkbox" name="categories" value="DC">
+            <label>DC</label><br>
+            <input type="checkbox" name="categories" value="Disney">
+            <label>Disney</label>
+            <input type="checkbox" name="categories" value="Energy">
+            <label>Energy</label><br>
+            <input type="checkbox" name="categories" value="Farm">
+            <label>Farm</label>
+            <input type="checkbox" name="categories" value="Flight">
+            <label>Flight</label><br>
+            <input type="checkbox" name="categories" value="Floral">
+            <label>Floral</label>
+            <input type="checkbox" name="categories" value="Food">
+            <label>Food</label><br>
+
+            <input type="checkbox" name="categories" value="Game">
+            <label>Game</label>
+            <input type="checkbox" name="categories" value="Harry Potter">
+            <label>Harry Potter</label><br>
+            <input type="checkbox" name="categories" value="Minifig">
+            <label>Minifig</label>
+
+            <input type="checkbox" name="categories" value="Motorbike">
+            <label>Motorbike</label><br>
+            <input type="checkbox" name="categories" value="Part">
+            <label>Part</label>
+            <input type="checkbox" name="categories" value="Person">
+            <label>Person</label><br>
+            <input type="checkbox" name="categories" value="Personal">
+            <label>Personal</label>
+            <input type="checkbox" name="categories" value="Promotional">
+            <label>Promotional</label><br>
+            <input type="checkbox" name="categories" value="Star Wars">
+            <label>Star Wars</label>
+            <input type="checkbox" name="categories" value="Train">
+            <label>Train</label><br>
+            <input type="checkbox" name="categories" value="Vehicle">
+            <label>Vehicle</label><br />
+
+            <h4>Color</h4>
+            <input type="checkbox" name="colors" value="Grey">
+            <label>Grey</label><br>
+            <input type="checkbox" name="colors" value="Blue">
+            <label>Blue</label><br>
+            <input type="checkbox" name="colors" value="Tan">
+            <label>Tan</label><br>
+
+            <input type="submit" value="Apply Filters">
+        </form>
+            <br />
+        <br>
+        <p>Color</p>
+            <input type="checkbox" id="option1" name="selection1" value="option1">
+            <label for="option1">Color 1</label>
+            <br>
+
+            <input type="checkbox" id="option2" name="selection2" value="option2">
+            <label for="option2">Color 2</label>
+            <br>
+
+            <input type="checkbox" id="option3" name="selection3" value="option3">
+            <label for="option3">Color 3</label>
+            <br />
+        <br>
+    </div>
+    <div class="col-8">
+        @foreach (Product p in Model.Products)
+        {
+            <partial name="ProductSummary" model="p" />
+        }
+
+        <div page-model="@Model.PaginationInfo" page-action="ViewProducts" page-classes-enable="true" page-class="btn"
+             page-class-normal="btn-outline-dark" page-class-selected="btn-primary" class="btn-group pull-right m-1"></div>
+    </div>
+</div>
+

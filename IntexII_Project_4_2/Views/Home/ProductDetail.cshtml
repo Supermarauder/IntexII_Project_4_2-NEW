@@ -1,0 +1,125 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+<h1>This might be a partial view? When a user clicks on a specific product, it will display the product details here</h1>
+
+<br />
+<br />
+<br />
+<form>
+    <div class="row">
+        <div class="col-5">
+            <h4>HERE IS AN IMAGE</h4>
+        </div>
+        <div class="col-7">
+            <h1>Title</h1>
+            <br />
+            <h4>Price</h4>
+            <br />
+            <p>Description</p>
+            <p>Description</p>
+            <p>Description</p>
+            <p>Description</p>
+            <br />
+            <h4>Year: 1776</h4>
+            <h4>Number of Pieces: 13</h4>
+            <div class="quantity">
+                <button onclick="decrementQuantity()">-</button>
+                <input type="text" id="quantity" value="1">
+                <button onclick="incrementQuantity()">+</button>
+            </div>
+            <button onclick="addToCart()">Add to Cart</button>
+        </div>
+    </div>
+</form>
+<br />
+<br />
+<div class="row">
+    <h3>You may also like...</h3>
+    <br />
+</div>
+<br />
+<div class="row">
+    <div class="col-4">
+        <h2>Image Here</h2>
+        <p>img</p>
+        <p>img</p>
+        <p>img</p>
+        <p>img</p>
+        <h4>Title</h4>
+        <p>description</p>
+        <br />
+        <h4>price + add to card button</h4>
+    </div>
+    <div class="col-4">
+        <h2>Image Here</h2>
+        <p>img</p>
+        <p>img</p>
+        <p>img</p>
+        <p>img</p>
+        <h4>Title</h4>
+        <p>description</p>
+        <br />
+        <h4>price + add to card button</h4>
+    </div>
+    <div class="col-4">
+        <h2>Image Here</h2>
+        <p>img</p>
+        <p>img</p>
+        <p>img</p>
+        <p>img</p>
+        <h4>Title</h4>
+        <p>description</p>
+        <br />
+        <h4>price + add to card button</h4>
+    </div>
+</div>
+<br />
+<div class="row">
+    <div class="col-4">
+        <h2>Image Here</h2>
+        <p>img</p>
+        <p>img</p>
+        <p>img</p>
+        <p>img</p>
+        <h4>Title</h4>
+        <p>description</p>
+        <br />
+        <h4>price + add to card button</h4>
+    </div>
+    <div class="col-4">
+        <h2>Image Here</h2>
+        <p>img</p>
+        <p>img</p>
+        <p>img</p>
+        <p>img</p>
+        <h4>Title</h4>
+        <p>description</p>
+        <br />
+        <h4>price + add to card button</h4>
+</div>
+
+<script>
+    function decrementQuantity() {
+        var quantityInput = document.getElementById('quantity');
+        var currentQuantity = parseInt(quantityInput.value);
+        if (currentQuantity > 1) {
+            quantityInput.value = currentQuantity - 1;
+        }
+    }
+
+    function incrementQuantity() {
+        var quantityInput = document.getElementById('quantity');
+        var currentQuantity = parseInt(quantityInput.value);
+        quantityInput.value = currentQuantity + 1;
+    }
+
+    function addToCart() {
+        var quantityInput = document.getElementById('quantity');
+        var quantity = parseInt(quantityInput.value);
+        // Add your code to add the product to the cart with the specified quantity
+        alert('Added ' + quantity + ' product(s) to cart.');
+    }
+</script>
