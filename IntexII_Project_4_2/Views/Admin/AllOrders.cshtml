@@ -4,4 +4,76 @@
 @{
 }
 
-<h1>This is the All Orders page. Only accessible to admins. Displays all orders</h1>
+@* <h1>This is the All Orders page. Only accessible to admins. Displays all orders</h1> *@
+
+<style>
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th, td {
+        padding: 8px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+
+    th {
+        background-color: #f2f2f2;
+    }
+</style>
+
+    <h2>Admin Order Summaries</h2>
+
+    <table>
+        <tr>
+            <th>Transaction ID</th>
+            <th>Customer ID</th>
+            <th>Date/Hour of Day</th>
+            <th>Amount</th>
+            <th>Country of Transaction</th>
+            <th>Shipping Address</th>
+            <th>Bank</th>
+            <th>Type of Card</th>
+            <th>Potential Fraud</th>
+            <th>Fulfilled/Resolved</th>
+        </tr>
+        @* <tr>
+            Psuedo code:
+            for each entry in transaction table
+            <th>Transaction ID</th>
+            <th>Customer ID</th>
+            <th>Date/Hour of Day</th>
+            <th>Amount</th>
+            <th>Country of Transaction</th>
+            <th>Shipping Address</th>
+            <th>Bank</th>
+            <th>Type of Card</th>
+            <th>Potential Fraud</th>
+            <th>Fulfilled/Resolved</th>
+        </tr> *@
+        <tr>
+            <td>701664</td>
+            <td>2</td>
+            <td>7/11/23 - 22</td>
+            <td>$68.00</td>
+            <td>United Kingdom</td>
+            <td>United Kingdom</td>
+            <td>RBS</td>
+            <td>Visa</td>
+            <td>No</td>
+            <td>Yes</td>
+        </tr>
+        <tr>
+            <td>701697</td>
+            <td>5</td>
+            <td>7/13/23 - 18</td>
+            <td>$190.00</td>
+            <td>United States</td>
+            <td>Guam</td>
+            <td>Bank of Guam</td>
+            <td>Visa</td>
+            <td>No</td>
+            <td>Yes</td>
+        </tr>
+    </table>
