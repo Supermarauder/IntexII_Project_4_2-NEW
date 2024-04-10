@@ -17,5 +17,9 @@ namespace IntexII_Project_4_2.Data
         public virtual DbSet<Order> Orders { get; set; }
 
         public virtual DbSet<Product> Products { get; set; }
+
+        public virtual DbSet<TopRecommendation> TopRecommendations { get; set; }
+        public virtual DbSet<ItemRecommendation> ItemsRecommendations { get; set; }
+        public virtual DbSet<CustomerRecommendation> CustomerRecommendations { get; set; }
     }
 }
