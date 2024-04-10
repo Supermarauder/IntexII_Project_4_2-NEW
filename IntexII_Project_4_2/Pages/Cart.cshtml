@@ -1,4 +1,4 @@
-﻿@* @page
+﻿@page
 @model IntexII_Project_4_2.Pages.CartModel
 @{
 }
@@ -20,7 +20,7 @@
             <tr>
                 <td class="text-left">@line.Product.Name</td>
                 <td class="text-left">@line.Quantity</td>
-                <td class="text-left">@line.Price</td>
+                @* <td class="text-left">@line.Price</td> *@
                 <td class="text-left">@((line.Quantity * 25).ToString("c"))</td>
             </tr>
         }
@@ -36,4 +36,4 @@
 
 <div class="text-center">
     <a class="btn btn-primary" href="@Model.ReturnURL">Browse More Products</a>
-</div> *@
+</div>
