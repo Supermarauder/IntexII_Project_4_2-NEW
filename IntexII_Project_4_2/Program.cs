@@ -15,8 +15,15 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.Requ
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
-builder.Services.AddScoped<IIntexProjectRepository, EFIntexProjectRepository>();
+// Add session services
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30); // Or whatever suits your application
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
 
+builder.Services.AddScoped<IIntexProjectRepository, EFIntexProjectRepository>();
 
 builder.Services.AddControllersWithViews();
 
@@ -30,7 +37,6 @@ if (app.Environment.IsDevelopment())
 else
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
@@ -39,17 +45,17 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseSession(); // Use session middleware
+
+app.UseAuthentication(); // Use authentication middleware (if needed, adjust accordingly)
 app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
-app.MapControllerRoute("productCategory", "{productCategory}", new { Controller = "Home", action="ViewProducts", pageNum = 1 });
-
+app.MapControllerRoute("productCategory", "{productCategory}", new { Controller = "Home", action = "ViewProducts", pageNum = 1 });
 
 app.MapDefaultControllerRoute();
-
-
 app.MapRazorPages();
 
 app.Run();

@@ -3,18 +3,20 @@
 *@
 @{
 }
-
 @model Product
-<div class="card m-1 p-1">
+<div class="row">
+    <div class="col-md-6">
+        <div class="card m-1 p-1">
+            <h3>
+                @Model.Name
+                <span class="badge rounded-pill bg-primary text-white float-end"><small>Price: $@Model.Price</small></span>
+            </h3>
 
-
-    <h3>
-        @Model.Name
-        <span class="badge rounded-pill bg-primary text-white float-end"><small>Price: $@Model.Price</small></span>
-    </h3>
-
-    <ul>
-        <li>Category: @Model.Category</li>
-        <li>Description: @Model.Description</li>
-    </ul>
+            <ul>
+                <img src="@Model.ImgLink" alt="Image of @Model.Name" style="max-width: 100%; max-height: 200px; object-fit: contain;" />
+                <li>Category: @Model.Category</li>
+                <li>Description: @(Model.Description.Length > 50 ? Model.Description.Substring(0, 50) + "..." : Model.Description)</li>
+            </ul>
+        </div>
+    </div>
 </div>
