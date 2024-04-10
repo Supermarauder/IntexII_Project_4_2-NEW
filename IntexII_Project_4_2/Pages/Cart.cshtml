@@ -1,0 +1,39 @@
+﻿@page
+@model IntexII_Project_4_2.Pages.CartModel
+@{
+}
+<h1>Your Cart</h1>
+<table class="table tabletable-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Product Name</th>
+            <th>Quantity</th>
+            <th class="text-right">Amount</th>
+            <th class="text-right">Subtotal</th>
+        </tr>
+
+    </thead>
+
+    <tbody>
+        @foreach (var line in Model.Cart?.Lines ?? Enumerable.Empty<Cart.CartLine>())
+        {
+            <tr>
+                <td class="text-left">@line.Product.Name</td>
+                <td class="text-left">@line.Quantity</td>
+                <td class="text-left">@line.Price</td>
+                <td class="text-left">@((line.Quantity * 25).ToString("c"))</td>
+            </tr>
+        }
+    </tbody>
+
+    <tfoot>
+        <tr>
+            <td colspan="3" class="text-right">Total:</td>
+            <td class="text-right">@Model.Cart?.CalculateTotal().ToString("c")</td>
+        </tr>
+    </tfoot>
+</table>
+
+<div class="text-center">
+    <a class="btn btn-primary" href="@Model.ReturnURL">Browse More Products</a>
+</div>
