@@ -47,7 +47,7 @@ namespace IntexII_Project_4_2.Controllers
         }
         public IActionResult ViewProducts(int pageNum, string[] categories, string[] colors)
         {
-            int pageSize = 50;
+            int pageSize = 5;
             pageNum = Math.Max(1, pageNum);
 
             IQueryable<Product> query = _repo.Products.AsQueryable();
