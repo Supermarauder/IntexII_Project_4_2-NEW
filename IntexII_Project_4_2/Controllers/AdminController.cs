@@ -84,7 +84,35 @@ namespace IntexII_Project_4_2.Controllers
         }
         public IActionResult Index()
         {
-            return View();
+            var endDate = DateTime.Today;
+            var startDate = endDate.AddDays(-7);
+            string[] dateFormats = { "M/d/yyyy", "MM/dd/yyyy", "M/dd/yyyy", "MM/d/yyyy" };
+
+            var orders = _context.Orders.ToList(); // Assuming _context is your database context
+
+            var totalSales2023 = orders
+                .Where(o => DateTime.TryParseExact(o.Date, dateFormats, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime parsedDate) && parsedDate.Year == 2023)
+                .Sum(o => o.Amount);
+
+            var totalSalesPast7Days = orders
+                .Where(o => DateTime.TryParseExact(o.Date, dateFormats, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime parsedDate) && parsedDate >= startDate && parsedDate <= endDate)
+                .Sum(o => o.Amount);
+
+            var unfulfilledOrders = orders
+                .Count(o => !o.Fullfilled && DateTime.TryParseExact(o.Date, dateFormats, CultureInfo.InvariantCulture, DateTimeStyles.None, out _));
+
+            var ordersFulfilledPast7Days = orders
+                .Count(o => o.Fullfilled && DateTime.TryParseExact(o.Date, dateFormats, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime parsedDate) && parsedDate >= startDate && parsedDate <= endDate);
+
+            var viewModel = new AdminKPIViewModel
+            {
+                TotalSales2023 = totalSales2023,
+                TotalSalesPast7Days = totalSalesPast7Days,
+                UnfulfilledOrders = unfulfilledOrders,
+                OrdersFulfilledPast7Days = ordersFulfilledPast7Days
+            };
+
+            return View(viewModel);
         }
         public IActionResult UpdateProduct()
         {
