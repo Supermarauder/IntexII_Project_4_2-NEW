@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.ML.OnnxRuntime.Tensors;
 using Microsoft.ML.OnnxRuntime;
+using Microsoft.EntityFrameworkCore;
 using System.Globalization;
 
 namespace IntexII_Project_4_2.Controllers
@@ -161,6 +162,64 @@ namespace IntexII_Project_4_2.Controllers
         public IActionResult Delete()
         {
             return View();
+        }
+        public IActionResult EditOrder(int id)
+        {
+            var order = _context.Orders.FirstOrDefault(o => o.TransactionId == id);
+            if (order == null)
+            {
+                return NotFound();
+            }
+
+            // Assuming CustomerId is not nullable, adjust if it's nullable
+            var customer = order.CustomerId != null ? _context.Customers.FirstOrDefault(c => c.CustomerId == order.CustomerId) : null;
+
+            var viewModel = new EditOrderViewModel
+            {
+                TransactionId = order.TransactionId,
+                Date = order.Date,
+                Time = order.Time,
+                Amount = order.Amount,
+                CountryOfTransaction = order.CountryOfTransaction,
+                ShippingAddress = order.ShippingAddress,
+                Bank = order.Bank,
+                TypeOfCard = order.TypeOfCard,
+                CustomerId = order.CustomerId ?? 0,
+                FirstName = customer?.FirstName,
+                LastName = customer?.LastName,
+                CountryOfResidence = customer?.CountryOfResidence,
+                IsFraudulent = order.Fraud > 0,
+                IsFullfilled = order.Fullfilled
+            };
+
+            return View(viewModel);
+        }
+
+        [HttpPost]
+        public IActionResult EditOrder(EditOrderViewModel viewModel)
+        {
+            if (ModelState.IsValid)
+            {
+                var order = _context.Orders.Find(viewModel.TransactionId);
+                if (order != null)
+                {
+                    // Update the order properties
+                    order.Fullfilled = viewModel.IsFullfilled;
+                    order.Fraud = viewModel.IsFraudulent ? 1 : 0; // Assuming the Fraud is stored as an integer
+
+                    _context.SaveChanges();
+
+                    // Redirect to the AllOrders view after the update
+                    return RedirectToAction("AllOrders");
+                }
+                else
+                {
+                    return NotFound();
+                }
+            }
+
+            // If validation fails, redisplay the form with the current view model
+            return View(viewModel);
         }
         public IActionResult Index()
         {
