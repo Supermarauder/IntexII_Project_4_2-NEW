@@ -161,24 +161,31 @@
         <div page-model="@Model.PaginationInfo" page-action="ViewProducts" page-classes-enable="true" page-class="btn"
              page-class-normal="btn-outline-dark" page-class-selected="btn-primary" class="btn-group pull-right m-1"></div>
     </div>
-    <form method="get" action="/Home/ViewProducts">
+<form method="get" action="/Home/ViewProducts">
     <label for="pageSize">Show per page:</label>
-    <select id="pageSize" name="pageSize" onchange="this.form.submit()">
-        <option value="5" @(Model.PaginationInfo.ItemsPerPage == 5 ? "selected" : "")>5</option>
-        <option value="10" @(Model.PaginationInfo.ItemsPerPage == 10 ? "selected" : "")>10</option>
-        <option value="20" @(Model.PaginationInfo.ItemsPerPage == 20 ? "selected" : "")>20</option>
+    <select id="pageSize" name="pageSize">
+        <option value="5" selected="@(Model.PaginationInfo.ItemsPerPage == 5 ? "selected" : "")">5</option>
+            <option value="10" selected="@(Model.PaginationInfo.ItemsPerPage == 10 ? "selected" : "")">10</option>
+            <option value="20" selected="@(Model.PaginationInfo.ItemsPerPage == 20 ? "selected" : "")">20</option>
     </select>
 
-    <!-- Preserving state for filters -->
-    @foreach (var category in Model.SelectedCategories ?? Enumerable.Empty<string>())
+    @if (Model.SelectedCategories != null)
     {
-        <input type="hidden" name="categories" value="@category" />
+        foreach (var category in Model.SelectedCategories)
+        {
+            <input type="hidden" name="categories" value="@category" />
+        }
     }
 
-    @foreach (var color in Model.SelectedColors ?? Enumerable.Empty<string>())
+    @if (Model.SelectedColors != null)
     {
-        <input type="hidden" name="colors" value="@color" />
+        foreach (var color in Model.SelectedColors)
+        {
+            <input type="hidden" name="colors" value="@color" />
+        }
     }
+
+    <button type="submit">Apply</button>
 </form>
 </div>
 

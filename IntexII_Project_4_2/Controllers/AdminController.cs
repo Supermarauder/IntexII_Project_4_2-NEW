@@ -11,6 +11,8 @@ namespace IntexII_Project_4_2.Controllers
 {
     public class AdminController : Controller
     {
+        private static int idd = 46;
+        
         private readonly ApplicationDbContext _context;
 
         public AdminController(ApplicationDbContext context)
@@ -18,6 +20,7 @@ namespace IntexII_Project_4_2.Controllers
             _context = context;
         }
 
+        // GET: Display the form to add a new product
         public IActionResult AddProduct()
         {
             return View(new Product()); // Initialize a new product to be filled out
@@ -32,8 +35,18 @@ namespace IntexII_Project_4_2.Controllers
                 // Assuming ProductId is 0 or not set for new entries
                 if (product.ProductId == 0) // This check might be redundant if ProductId is auto-incremented
                 {
+                    // Loop to find a unique ProductId
+                    while (_context.Products.Any(p => p.ProductId == idd))
+                    {
+                        idd++; // Increment idd until it's unique
+                    }
+
+                    product.ProductId = idd; // Manually set the ProductId
                     _context.Products.Add(product);
                     _context.SaveChanges(); // This should automatically generate ProductId for new entries
+
+                    idd++; // Increment the ID for the next product
+
                     return RedirectToAction("AllProducts");
                 }
                 else
@@ -45,7 +58,6 @@ namespace IntexII_Project_4_2.Controllers
             // If model state is invalid, render the form again
             return View(product);
         }
-
         public IActionResult AllProducts()
         {
             var products = _context.Products.ToList();
