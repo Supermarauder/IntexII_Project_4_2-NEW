@@ -3,6 +3,7 @@ using IntexII_Project_4_2.Models;
 using IntexII_Project_4_2.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using System.Globalization;
 
 namespace IntexII_Project_4_2.Controllers
@@ -16,10 +17,38 @@ namespace IntexII_Project_4_2.Controllers
             _context = context;
         }
 
-
         public IActionResult AddProduct()
         {
-            return View();
+            return View(new Product()); // Initialize a new product to be filled out
+        }
+
+        // POST: Process the AddProduct form submission
+        [HttpPost]
+        public IActionResult AddProduct(Product product)
+        {
+            if (ModelState.IsValid)
+            {
+                // Assuming ProductId is 0 or not set for new entries
+                if (product.ProductId == 0) // This check might be redundant if ProductId is auto-incremented
+                {
+                    _context.Products.Add(product);
+                    _context.SaveChanges(); // This should automatically generate ProductId for new entries
+                    return RedirectToAction("AllProducts");
+                }
+                else
+                {
+                    // Handle update logic or error as necessary
+                }
+            }
+
+            // If model state is invalid, render the form again
+            return View(product);
+        }
+
+        public IActionResult AllProducts()
+        {
+            var products = _context.Products.ToList();
+            return View(products);
         }
 
         public IActionResult AllOrders(string filter = "all", int page = 1)
@@ -75,13 +104,38 @@ namespace IntexII_Project_4_2.Controllers
 
             return View(viewModel);
         }
-        public IActionResult AllProducts()
-        {
-            return View();
-        }
         public IActionResult Delete()
         {
             return View();
+        }
+
+        public IActionResult DeleteConfirmation(int id)
+        {
+            var product = _context.Products.FirstOrDefault(p => p.ProductId == id);
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            return View(product);
+        }
+
+        [HttpPost]
+        public IActionResult DeleteProduct(int productId)
+        {
+            var product = _context.Products.Find(productId);
+            if (product != null)
+            {
+                _context.Products.Remove(product);
+                _context.SaveChanges();
+            }
+
+            return RedirectToAction("AllProducts");
+        }
+
+        public IActionResult EditConfirmation(Product product)
+        {
+            return View(product);  // Display the confirmation view
         }
         public IActionResult EditOrder(int id)
         {
@@ -141,6 +195,40 @@ namespace IntexII_Project_4_2.Controllers
             // If validation fails, redisplay the form with the current view model
             return View(viewModel);
         }
+        public IActionResult EditProduct(int id)
+        {
+            Product product;
+            if (id == 0)  // Assuming 0 or a negative number indicates a new product
+            {
+                product = new Product();
+            }
+            else
+            {
+                product = _context.Products.FirstOrDefault(p => p.ProductId == id);
+                if (product == null)
+                {
+                    return NotFound();
+                }
+            }
+            return View(product);
+        }
+
+        // POST: Update the product in the database
+        [HttpPost]
+        public IActionResult EditProduct(Product product)
+        {
+            if (ModelState.IsValid)
+            {
+                // Update logic here
+                _context.Update(product);
+                _context.SaveChanges();
+
+                return RedirectToAction("AllProducts"); // Redirect to the AllProducts view
+            }
+
+            // Return back to the edit form if there are any validation errors
+            return View(product);
+        }
         public IActionResult Index()
         {
             var endDate = DateTime.Today;
@@ -173,9 +261,29 @@ namespace IntexII_Project_4_2.Controllers
 
             return View(viewModel);
         }
-        public IActionResult UpdateProduct()
+        [HttpPost]
+        public IActionResult UpdateProduct(Product product)
         {
-            return View();
+            if (ModelState.IsValid)
+            {
+                if (product.ProductId > 0)
+                {
+                    var existingProduct = _context.Products.Find(product.ProductId);
+                    if (existingProduct != null)
+                    {
+                        _context.Entry(existingProduct).CurrentValues.SetValues(product);
+                    }
+                }
+                else
+                {
+                    _context.Products.Add(product);
+                }
+
+                _context.SaveChanges();
+                return RedirectToAction("AllProducts");
+            }
+
+            return View("EditProduct", product);  // Only if something goes wrong
         }
     }
 }

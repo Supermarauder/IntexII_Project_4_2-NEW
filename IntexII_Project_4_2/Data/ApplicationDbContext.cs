@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using IntexII_Project_4_2.Data;
 using Microsoft.EntityFrameworkCore;
 
 namespace IntexII_Project_4_2.Data
 {
-    public class ApplicationDbContext : IdentityDbContext
+    public class ApplicationDbContext : DbContext
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
@@ -29,6 +29,9 @@ namespace IntexII_Project_4_2.Data
             modelBuilder.Entity<TopRecommendation>().ToTable("TopRecommendations"); // Use your actual table name as in your database
 
             // Add configuration for other entities if needed
+            //modelBuilder.Entity<Product>()
+            //    .Property(p => p.ProductId)
+            //    .ValueGeneratedOnAdd();
         }
     }
 }
