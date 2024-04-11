@@ -13,20 +13,24 @@
         </tr>
     </thead>
 
-<tbody>
-    @foreach (var line in Model.Cart?.Lines ?? Enumerable.Empty<Cart.CartLine>())
-    {
-        // Correct calculation of subtotal based on the actual product price and quantity
-        decimal subtotal = line.Quantity * (line.Product.Price ?? 0m);  // Use the actual price of the product
+    <tbody>
+        @foreach (var line in Model.Cart?.Lines ?? Enumerable.Empty<Cart.CartLine>())
+        {
+            decimal subtotal = line.Quantity * (line.Product.Price ?? 0m);
 
-        <tr>
-            <td class="text-left">@line.Product.Name</td>
-            <td class="text-left">@line.Quantity</td>
-            <td class="text-left">@(line.Product.Price?.ToString("C") ?? "N/A")</td>
-            <td class="text-left">@subtotal.ToString("C")</td>
-        </tr>
-    }
-</tbody>
+            <tr>
+                <td class="text-left">@line.Product.Name</td>
+                <td class="text-left">@line.Quantity</td>
+                <td class="text-left">@line.Product.Price</td>
+                <td class="text-left">@subtotal.ToString("C")</td>
+                <td class="text-left">
+                    <form method="post" asp-page-handler="Remove" asp-route-productId="@line.Product.ProductId" asp-route-returnUrl="@Model.ReturnURL">
+                        <button type="submit" class="btn btn-danger">Remove</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
 
     <tfoot>
         <tr>
