@@ -1,7 +1,10 @@
 ﻿using IntexII_Project_4_2.Data;
 using IntexII_Project_4_2.Models;
 using IntexII_Project_4_2.Models.ViewModels;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.ML.OnnxRuntime.Tensors;
+using Microsoft.ML.OnnxRuntime;
 using System.Globalization;
 
 namespace IntexII_Project_4_2.Controllers
@@ -9,10 +12,15 @@ namespace IntexII_Project_4_2.Controllers
     public class AdminController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly InferenceSession _session;
+        public readonly string _onnxModelPath;
 
-        public AdminController(ApplicationDbContext context)
+        public AdminController(ApplicationDbContext context, IHostEnvironment hostEnvironment)
         {
             _context = context;
+            _onnxModelPath = System.IO.Path.Combine(hostEnvironment.ContentRootPath, "model.onnx");
+            _session = new InferenceSession(_onnxModelPath);
+
         }
 
 
@@ -74,6 +82,78 @@ namespace IntexII_Project_4_2.Controllers
 
             return View(viewModel);
         }
+
+        public IActionResult AllOrdersCopy()
+        {
+            var records = _context.Orders.ToList();  // Fetch all records
+            var predictions = new List<OrderPrediction>();  // Your ViewModel for the view
+
+            // Dictionary mapping the numeric prediction to an animal type
+            var class_type_dict = new Dictionary<int, string>
+            {
+                { 0, "not fraud" },
+                { 1, "fraud" }
+            };
+
+            foreach (var record in records)
+            {
+                var input = new List<float>
+                {
+                    (float)record.CustomerId,
+                    (float)record.Time,
+                    (float)(record.Amount ?? 0),
+
+                    record.DayOfWeek == "Mon" ? 1 : 0,
+                    record.DayOfWeek == "Sat" ? 1 : 0,
+                    record.DayOfWeek == "Sun" ? 1 : 0,
+                    record.DayOfWeek == "Thu" ? 1 : 0,
+                    record.DayOfWeek == "Tue" ? 1 : 0,
+                    
+                    record.EntryMode == "PIN" ? 1 : 0,
+                    record.EntryMode == "Tap" ? 1 : 0,
+
+                    record.TypeOfTransaction == "Online" ? 1 : 0,
+                    record.TypeOfTransaction == "POS" ? 1 : 0,
+
+                    record.CountryOfTransaction == "India" ? 1 : 0,
+                    record.CountryOfTransaction == "Russia" ? 1 : 0,
+                    record.CountryOfTransaction == "USA" ? 1 : 0,
+                    record.CountryOfTransaction == "UnitedKingdom" ? 1 : 0,
+
+                    (record.ShippingAddress ?? record.CountryOfTransaction) == "India" ? 1 : 0,
+                    (record.ShippingAddress ?? record.CountryOfTransaction) == "Russia" ? 1 : 0,
+                    (record.ShippingAddress ?? record.CountryOfTransaction) == "USA" ? 1 : 0,
+                    (record.ShippingAddress ?? record.CountryOfTransaction) == "UnitedKingdom" ? 1 : 0,
+
+                    record.Bank == "HSBC" ? 1 : 0,
+                    record.Bank == "Halifax" ? 1 : 0,
+                    record.Bank == "Lloyds" ? 1 : 0,
+                    record.Bank == "Metro" ? 1 : 0,
+                    record.Bank == "RBS" ? 1 : 0,
+
+                    record.Bank == "Visa" ? 1 : 0,
+
+                };
+                var inputTensor = new DenseTensor<float>(input.ToArray(), new[] { 1, input.Count });
+
+                var inputs = new List<NamedOnnxValue>
+                {
+                    NamedOnnxValue.CreateFromTensor("float_input", inputTensor)
+                };
+
+                string predictionResult;
+                using (var results = _session.Run(inputs))
+                {
+                    var prediction = results.FirstOrDefault(item => item.Name == "output_label")?.AsTensor<long>().ToArray();
+                    predictionResult = prediction != null && prediction.Length > 0 ? class_type_dict.GetValueOrDefault((int)prediction[0], "Unknown") : "Error in prediction";
+                }
+
+                predictions.Add(new OrderPrediction { Order = record, Prediction = predictionResult }); // Adds the animal information and prediction for that animal to AnimalPrediction viewmodel
+            }
+
+            return View(predictions);
+        }
+
         public IActionResult AllProducts()
         {
             return View();

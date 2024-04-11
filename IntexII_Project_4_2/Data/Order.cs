@@ -21,7 +21,7 @@ public partial class Order
     [Required(ErrorMessage = "Please indicate an entry mode")]
     public string EntryMode { get; set; }
     [Required(ErrorMessage = "Please enter an amount")]
-    public int Amount { get; set; }
+    public int? Amount { get; set; }
     [Required(ErrorMessage = "Please indicate transaction type.")]
     public string TypeOfTransaction { get; set; }
     [Required(ErrorMessage = "Please select a country of Transaction")]
