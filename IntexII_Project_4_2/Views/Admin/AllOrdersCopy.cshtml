@@ -48,3 +48,19 @@
     }
 </table>
 
+@if (Model.PaginationInfo != null)
+{
+    <div>
+        Page @(Model.PaginationInfo.CurrentPage) of @(Model.PaginationInfo.TotalNumPages)
+
+        @if (Model.PaginationInfo.CurrentPage > 1)
+        {
+            <a href="@Url.Action("AllOrders", new { filter = Model.CurrentFilter, page = Model.PaginationInfo.CurrentPage - 1 })">Previous</a>
+        }
+
+        @if (Model.PaginationInfo.CurrentPage < Model.PaginationInfo.TotalNumPages)
+        {
+            <a href="@Url.Action("AllOrders", new { filter = Model.CurrentFilter, page = Model.PaginationInfo.CurrentPage + 1 })">Next</a>
+        }
+    </div>
+}

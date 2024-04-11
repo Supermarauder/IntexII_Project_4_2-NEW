@@ -1,14 +1,6 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-}
-@* <h1>This view is the landing page for the admin. It should be accessible directly after logging in as admin.</h1> *@
-@model AdminKPIViewModel
+﻿@model AdminKPIViewModel
+
 <h1>Welcome, [dynamic admin user name]!</h1>
-<br />
-<br />
-<br />
 <br />
 <h3>KPI - Total Sales in 2023</h3>
 <h3>@Model.TotalSales2023</h3>
@@ -22,12 +14,11 @@
 <h3>KPI - Orders Fulfilled in the past 7 days</h3>
 <h3>@Model.OrdersFulfilledPast7Days</h3>
 <br />
-<br />
-<br />
-<br />
 <div class="row" style="display: flex; justify-content: center; align-items: center;">
     <div class="col-4">
-        <button>See All Orders</button>
-        <button>Update Products</button>
+        <!-- Link to AllOrders view -->
+        <a class="btn btn-primary" href="@Url.Action("AllOrders", "Admin")">See All Orders</a>
+        <!-- Link to AllProducts view -->
+        <a class="btn btn-primary" href="@Url.Action("AllProducts", "Admin")">All Products</a>
     </div>
 </div>
