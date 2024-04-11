@@ -1,0 +1,83 @@
+﻿@model IntexII_Project_4_2.Models.ViewModels.EditOrderViewModel
+
+@{
+    ViewData["Title"] = "Edit Order";
+}
+
+<h1>Edit Order</h1>
+
+<form asp-action="EditOrder" asp-controller="Admin" method="post">
+    <input type="hidden" asp-for="TransactionId" />
+
+    <div>
+        <label asp-for="Date">Date</label>
+        <input type="text" asp-for="Date" readonly />
+    </div>
+
+    <div>
+        <label asp-for="Time">Time</label>
+        <input type="number" asp-for="Time" readonly />
+    </div>
+
+    <div>
+        <label asp-for="Amount">Amount</label>
+        <input type="number" asp-for="Amount" readonly />
+    </div>
+
+    <div>
+        <label asp-for="CountryOfTransaction">Country of Transaction</label>
+        <input type="text" asp-for="CountryOfTransaction" readonly />
+    </div>
+
+    <div>
+        <label asp-for="ShippingAddress">Shipping Address</label>
+        <textarea asp-for="ShippingAddress" readonly></textarea>
+    </div>
+
+    <div>
+        <label asp-for="Bank">Bank</label>
+        <input type="text" asp-for="Bank" readonly />
+    </div>
+
+    <div>
+        <label asp-for="TypeOfCard">Type of Card</label>
+        <input type="text" asp-for="TypeOfCard" readonly />
+    </div>
+
+    <div>
+        <label asp-for="CustomerId">Customer ID</label>
+        <input type="number" asp-for="CustomerId" readonly />
+    </div>
+
+    <div>
+        <label asp-for="FirstName">First Name</label>
+        <input type="text" asp-for="FirstName" readonly />
+    </div>
+
+    <div>
+        <label asp-for="LastName">Last Name</label>
+        <input type="text" asp-for="LastName" readonly />
+    </div>
+
+    <div>
+        <label asp-for="CountryOfResidence">Country of Residence</label>
+        <input type="text" asp-for="CountryOfResidence" readonly />
+    </div>
+
+    <div>
+        <label asp-for="IsFullfilled">Has this Order Been Resolved?</label>
+        <select asp-for="IsFullfilled" class="form-control">
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+        </select>
+    </div>
+
+    <div>
+        <label asp-for="IsFraudulent">Is this Order Fraudulent?</label>
+        <select asp-for="IsFraudulent" class="form-control">
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Update Order</button>
+</form>
