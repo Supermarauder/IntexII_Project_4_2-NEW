@@ -35,16 +35,11 @@ namespace IntexII_Project_4_2.Controllers
         //    }
 
         //    return Redirect(returnUrl);  // Assuming returnUrl is a valid path
-        //}
+        //
+
         public HomeController(IIntexProjectRepository temp) 
-        private InferenceSession _session;
-        public string _onnxModelPath;
-        public HomeController(IIntexProjectRepository temp, IHostEnvironment hostEnvironment) 
         {
             _repo = temp;
-
-            _onnxModelPath = System.IO.Path.Combine(hostEnvironment.ContentRootPath, "model.onnx");
-            _session = new InferenceSession(_onnxModelPath);
         }
 
         public IActionResult Index()

@@ -2,6 +2,7 @@ using IntexII_Project_4_2.Data;
 using IntexII_Project_4_2.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.ML.OnnxRuntime;
 
 namespace IntexII_Project_4_2
 {
@@ -9,6 +10,16 @@ namespace IntexII_Project_4_2
     {
         public static async Task Main(string[] args)
         {
+            var modelPath = "model_final.onnx";
+            using var session = new InferenceSession(modelPath);
+
+            foreach (var input in session.InputMetadata)
+            {
+                Console.WriteLine($"Input Name: {input.Key}");
+                Console.WriteLine($"Input Type: {input.Value.ElementType}");
+                Console.WriteLine($"Input Dimensions: {string.Join(",", input.Value.Dimensions)}");
+            }
+
             var builder = WebApplication.CreateBuilder(args);
             var services = builder.Services;
             var configuration = builder.Configuration;
@@ -105,10 +116,10 @@ namespace IntexII_Project_4_2
 
                 var roles = new[] { "Admin", "Manager", "Member" };
 
-             foreach (var role in roles)
+                foreach (var role in roles)
                 {
-                if (!await roleManager.RoleExistsAsync(role))
-                    await roleManager.CreateAsync(new IdentityRole(role));
+                    if (!await roleManager.RoleExistsAsync(role))
+                        await roleManager.CreateAsync(new IdentityRole(role));
                 }
             }
 
@@ -121,7 +132,7 @@ namespace IntexII_Project_4_2
                 string email = "admin@admin.com";
                 string password = "RootbeerWillNeverDie@2024";
 
-                if(await userManager.FindByEmailAsync(email) == null)
+                if (await userManager.FindByEmailAsync(email) == null)
                 {
                     var user = new IdentityUser();
                     user.UserName = email;
