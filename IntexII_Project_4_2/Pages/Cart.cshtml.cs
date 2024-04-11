@@ -36,5 +36,18 @@ namespace IntexII_Project_4_2.Pages
 
             return RedirectToPage(new { returnUrl = returnUrl });
         }
+        public IActionResult OnPostRemove(int productId, string returnUrl)
+        {
+            Cart = HttpContext.Session.GetJson<Cart>("cart") ?? new Cart();
+            Product prod = _repo.Products.FirstOrDefault(x => x.ProductId == productId);
+
+            if (prod != null)
+            {
+                Cart.RemoveLine(prod);
+                HttpContext.Session.SetJson("cart", Cart);
+            }
+
+            return RedirectToPage(new { returnUrl = returnUrl });
+        }
     }
 }
