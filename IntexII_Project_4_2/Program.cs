@@ -37,6 +37,17 @@ builder.Services.AddScoped<IIntexProjectRepository, EFIntexProjectRepository>();
 
 builder.Services.AddControllersWithViews();
 
+builder.Services.Configure<IdentityOptions>(options =>
+{
+    // Default Password settings.
+    options.Password.RequireDigit = true;
+    options.Password.RequireLowercase = true;
+    options.Password.RequireNonAlphanumeric = true;
+    options.Password.RequireUppercase = true;
+    options.Password.RequiredLength = 12;
+    options.Password.RequiredUniqueChars = 1;
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -65,7 +76,7 @@ app.Use(async (context, next) => {
     context.Response.Headers.Add("X-Context-Type-Options", "nosniff");
     context.Response.Headers.Add("X-XSS-Protection", "1; mode=block");
     context.Response.Headers.Add("Referrer-Policy", "no-referrer");
-    context.Response.Headers.Add("Content-Security-Policy", "default-src 'self'; img-src 'self' data:; script-src 'self' www.google.com app.termly.io; style-src 'self' 'unsafe-inline'; object-src 'none'");
+    context.Response.Headers.Add("Content-Security-Policy", "default-src 'self'; img-src 'self' data: m.media-amazon.com images.brickset.com www.brickeconomy.com *.amazonaws.com *.lego.com; script-src 'self' www.google.com app.termly.io; style-src 'self' 'unsafe-inline'; object-src 'none'");
 
     context.Response.Headers.Remove("X-Powered-By");
     context.Response.Headers.Remove("Server");
