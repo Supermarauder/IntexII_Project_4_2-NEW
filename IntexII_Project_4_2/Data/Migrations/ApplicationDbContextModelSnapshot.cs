@@ -230,7 +230,6 @@ namespace IntexII_Project_4_2.Data.Migrations
 
                     b.Property<int?>("Year")
                         .IsRequired()
-                        .HasMaxLength(4)
                         .HasColumnType("int");
 
                     b.HasKey("ProductId");
@@ -251,7 +250,7 @@ namespace IntexII_Project_4_2.Data.Migrations
 
                     b.HasKey("ProductID");
 
-                    b.ToTable("TopRecommendations");
+                    b.ToTable("TopRecommendations", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
