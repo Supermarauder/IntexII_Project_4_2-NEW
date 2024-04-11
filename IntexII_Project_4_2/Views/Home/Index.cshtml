@@ -2,7 +2,74 @@
     ViewData["Title"] = "Home Page";
 }
 
-﻿
-<h1>Landing page</h1>
+<style>
+    .card {
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+        max-width: 300px;
+        margin: auto;
+        text-align: center;
+        font-family: Arial, sans-serif;
+    }
 
-    <h1>INTEX II NEW ONE HEREEEEEEE: ELECTRIC BOOGALOO</h1>
+    .card button {
+        border: none;
+        outline: 0;
+        padding: 12px;
+        color: white;
+        background-color: #000;
+        text-align: center;
+        cursor: pointer;
+        width: 100%;
+        font-size: 18px;
+    }
+
+        .card button:hover {
+            opacity: 0.7;
+        }
+</style>
+
+<div class="row" style="background-image: url('img/LegoBackUse.png'); height: 40%; width:100%; text-align: center; display: flex; justify-content: center;">
+    <img src="~/img/aurorabricks.png" style="align-self: center;" />
+</div>
+<br />
+<br />
+<h3>What others are buying</h3>
+<br />
+<div class="row">
+    <div class="col-3">
+        <div class="card">
+            <img src="" alt="Legos" style="width: 100%;">
+            <h1>Great Legos</h1>
+            <p>$19.99</p>
+            <p>These legos are great!</p>
+            <p><button>Add to Cart</button></p>
+        </div>
+    </div>
+    <div class="col-3">
+        <div class="card">
+            <img src="" alt="Legos" style="width: 100%;">
+            <h1>Good Legos</h1>
+            <p>$19.99</p>
+            <p>These legos are good!</p>
+            <p><button>Add to Cart</button></p>
+        </div>
+    </div>
+    <div class="col-3">
+        <div class="card">
+            <img src="" alt="Legos" style="width: 100%;">
+            <h1>Okay Legos</h1>
+            <p>$19.99</p>
+            <p>These legos are okay!</p>
+            <p><button>Add to Cart</button></p>
+        </div>
+    </div>
+    <div class="col-3">
+        <div class="card">
+            <img src="" alt="Legos" style="width: 100%;">
+            <h1>Bad Legos</h1>
+            <p>$19.99</p>
+            <p>These legos are bad!</p>
+            <p><button>Add to Cart</button></p>
+        </div>
+    </div>
+</div>
