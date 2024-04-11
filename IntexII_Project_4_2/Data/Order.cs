@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.ML.OnnxRuntime.Tensors;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -35,4 +36,5 @@ public partial class Order
     public int Fraud { get; set; }
     [Required(ErrorMessage = "Please indicate if the order is fulfilled or not.")]
     public bool Fullfilled { get; set; } = true;
+
 }

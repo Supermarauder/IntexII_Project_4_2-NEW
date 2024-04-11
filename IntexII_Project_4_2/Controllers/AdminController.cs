@@ -6,6 +6,7 @@ namespace IntexII_Project_4_2.Controllers
 {
     public class AdminController : Controller
     {
+
         public IActionResult AddProduct()
         {
             return View();

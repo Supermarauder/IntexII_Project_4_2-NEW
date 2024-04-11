@@ -4,15 +4,22 @@ using IntexII_Project_4_2.Models;
 using IntexII_Project_4_2.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using Microsoft.ML.OnnxRuntime;
+using Microsoft.ML.OnnxRuntime.Tensors;
 
 namespace IntexII_Project_4_2.Controllers
 {
     public class HomeController : Controller
     {
         private IIntexProjectRepository _repo;
-        public HomeController(IIntexProjectRepository temp) 
+        private InferenceSession _session;
+        public string _onnxModelPath;
+        public HomeController(IIntexProjectRepository temp, IHostEnvironment hostEnvironment) 
         {
             _repo = temp;
+
+            _onnxModelPath = System.IO.Path.Combine(hostEnvironment.ContentRootPath, "model.onnx");
+            _session = new InferenceSession(_onnxModelPath);
         }
 
         public IActionResult Index()
@@ -20,7 +27,6 @@ namespace IntexII_Project_4_2.Controllers
 
             return View();
         }
-
 
         public IActionResult About()
         {
