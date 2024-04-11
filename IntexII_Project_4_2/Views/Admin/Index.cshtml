@@ -4,39 +4,23 @@
 @{
 }
 @* <h1>This view is the landing page for the admin. It should be accessible directly after logging in as admin.</h1> *@
-
+@model AdminKPIViewModel
 <h1>Welcome, [dynamic admin user name]!</h1>
 <br />
 <br />
 <br />
 <br />
-<div class="row" style="display: flex; justify-content: center; align-items: center;">
-    <div class="col-2">
-        <h3>KPI - Total Sales this Year</h3>
-        <br />
-        <h3>number here</h3>
-    </div>
-    <div class="col-2">
-        <h3>KPI - Total Sales past 7 days</h3>
-        <br />
-        <h3>number here</h3>
-    </div>
-    <div class="col-2">
-        <h3>KPI - Unfulfilled Orders</h3>
-        <br />
-        <h3>number here</h3>
-    </div>
-    <div class="col-2">
-        <h3>KPI - Orders Fulfilled in the past 7 days</h3>
-        <br />
-        <h3>number here</h3>
-    </div>
-    <div class="col-2">
-        <h3>Number of Open Return Requests</h3>
-        <br />
-        <h3>number here</h3>
-    </div>
-</div>
+<h3>KPI - Total Sales in 2023</h3>
+<h3>@Model.TotalSales2023</h3>
+
+<h3>KPI - Total Sales past 7 days</h3>
+<h3>@Model.TotalSalesPast7Days</h3>
+
+<h3>KPI - Unfulfilled Orders</h3>
+<h3>@Model.UnfulfilledOrders</h3>
+
+<h3>KPI - Orders Fulfilled in the past 7 days</h3>
+<h3>@Model.OrdersFulfilledPast7Days</h3>
 <br />
 <br />
 <br />
