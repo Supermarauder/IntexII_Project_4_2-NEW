@@ -36,7 +36,10 @@ namespace IntexII_Project_4_2.Controllers
 
         //    return Redirect(returnUrl);  // Assuming returnUrl is a valid path
         //}
+
         //public HomeController(IIntexProjectRepository temp);
+
+
         private InferenceSession _session;
         public string _onnxModelPath;
         public HomeController(IIntexProjectRepository temp, IHostEnvironment hostEnvironment) 

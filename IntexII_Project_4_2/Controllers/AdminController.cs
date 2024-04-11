@@ -1,6 +1,7 @@
 ﻿using IntexII_Project_4_2.Data;
 using IntexII_Project_4_2.Models;
 using IntexII_Project_4_2.Models.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
@@ -22,6 +23,7 @@ namespace IntexII_Project_4_2.Controllers
             return View();
         }
 
+        // [Authorize(Roles = "Admin")] --for authorizing the role
         public IActionResult AllOrders(string filter = "all", int page = 1)
         {
             int pageSize = 50; // Set the number of items per page
