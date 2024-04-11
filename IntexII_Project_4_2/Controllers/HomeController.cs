@@ -126,10 +126,9 @@ namespace IntexII_Project_4_2.Controllers
             return View();
         }
 
-        public IActionResult ViewProducts(int pageNum, string[] categories, string[] colors)
+        public IActionResult ViewProducts(int pageNum, string[] categories, string[] colors, int pageSize = 5)
         {
-            int pageSize = 5;
-            pageNum = Math.Max(1, pageNum);
+            pageNum = Math.Max(1, pageNum); // Ensure pageNum is at least 1
 
             IQueryable<Product> query = _repo.Products.AsQueryable();
 
@@ -159,7 +158,7 @@ namespace IntexII_Project_4_2.Controllers
                 PaginationInfo = new PaginationInfo
                 {
                     CurrentPage = pageNum,
-                    ItemsPerPage = pageSize,
+                    ItemsPerPage = pageSize, // Use the pageSize parameter
                     TotalItems = totalItems
                 }
             };

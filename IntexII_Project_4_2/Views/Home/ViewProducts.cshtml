@@ -161,5 +161,24 @@
         <div page-model="@Model.PaginationInfo" page-action="ViewProducts" page-classes-enable="true" page-class="btn"
              page-class-normal="btn-outline-dark" page-class-selected="btn-primary" class="btn-group pull-right m-1"></div>
     </div>
+    <form method="get" action="/Home/ViewProducts">
+    <label for="pageSize">Show per page:</label>
+    <select id="pageSize" name="pageSize" onchange="this.form.submit()">
+        <option value="5" @(Model.PaginationInfo.ItemsPerPage == 5 ? "selected" : "")>5</option>
+        <option value="10" @(Model.PaginationInfo.ItemsPerPage == 10 ? "selected" : "")>10</option>
+        <option value="20" @(Model.PaginationInfo.ItemsPerPage == 20 ? "selected" : "")>20</option>
+    </select>
+
+    <!-- Preserving state for filters -->
+    @foreach (var category in Model.SelectedCategories ?? Enumerable.Empty<string>())
+    {
+        <input type="hidden" name="categories" value="@category" />
+    }
+
+    @foreach (var color in Model.SelectedColors ?? Enumerable.Empty<string>())
+    {
+        <input type="hidden" name="colors" value="@color" />
+    }
+</form>
 </div>
 
