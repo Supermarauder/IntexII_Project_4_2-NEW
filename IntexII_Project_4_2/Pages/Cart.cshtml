@@ -21,7 +21,7 @@
             <tr>
                 <td class="text-left">@line.Product.Name</td>
                 <td class="text-left">@line.Quantity</td>
-                <td class="text-left">@line.Product.Price</td>
+                <td class="text-left">$@line.Product.Price</td>
                 <td class="text-left">@subtotal.ToString("C")</td>
                 <td class="text-left">
                     <form method="post" asp-page-handler="Remove" asp-route-productId="@line.Product.ProductId" asp-route-returnUrl="@Model.ReturnURL">
@@ -42,4 +42,6 @@
 
 <div class="text-center">
     <a class="btn btn-primary" href="@Model.ReturnURL">Browse More Products</a>
+    <a class="btn btn-primary" href="/authuser/Checkout">Checkout</a>
+
 </div>
