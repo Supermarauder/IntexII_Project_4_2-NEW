@@ -1,0 +1,50 @@
+﻿@model IEnumerable<IntexII_Project_4_2.Models.ViewModels.OrderPrediction>
+
+<style>
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th, td {
+        padding: 8px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+
+    th {
+        background-color: #f2f2f2;
+    }
+</style>
+
+<h2>Admin Order Fraud Prediction</h2>
+<table>
+    <tr>
+        <th>Transaction ID</th>
+        <th>Customer ID</th>
+        <!--Add Time?-->
+        <th>Amount</th>
+        <th>Country of Transaction</th>
+        <th>Shipping Address</th>
+        <th>Bank</th>
+        <th>Type of Card</th>
+        <th>Potential Fraud</th>
+        <th>Fulfilled/Resolved</th>
+    </tr>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.Order.TransactionId</td>
+            <td>@item.Order.CustomerId</td>
+            <!-- Add Time?-->
+            <td>@item.Order.Amount</td>
+            <td>@item.Order.CountryOfTransaction</td>
+            <td>@item.Order.ShippingAddress</td>
+            <td>@item.Order.Bank</td>
+            <td>@item.Order.TypeOfCard</td>
+            <td>@item.Order.Fraud</td>
+            <td class="prediction-cell">@item.Prediction</td>
+        </tr>
+    }
+</table>
+
