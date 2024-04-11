@@ -27,9 +27,12 @@ namespace IntexII_Project_4_2
                 options.UseSqlServer(connectionString));
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-            builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+            builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = false)
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
+
+            // Add SignInManager service
+            builder.Services.AddScoped<SignInManager<ApplicationUser>>();
 
             // Add session services
             builder.Services.AddSession(options =>
@@ -116,14 +119,14 @@ namespace IntexII_Project_4_2
             ////Creates Admin account
             //using (var scope = app.Services.CreateScope())
             //{
-            //    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
+            //    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
 
             //    string email = "admin@admin.com";
             //    string password = "RootbeerWillNeverDie@2024";
 
             //    if(await userManager.FindByEmailAsync(email) == null)
             //    {
-            //        var user = new IdentityUser();
+            //        var user = new ApplicationUser();
             //        user.UserName = email;
             //        user.Email = email;
             //        user.EmailConfirmed = true;
