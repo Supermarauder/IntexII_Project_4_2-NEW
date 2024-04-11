@@ -12,7 +12,8 @@
     .card {
         padding-top: 15px;
         box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-        max-width: 300px;
+        max-width: 350px;
+        height: 500px;
         margin: auto;
         text-align: center;
         background-color: #DFDFDF;
@@ -38,17 +39,23 @@
             }
     /* Style the dropdown button */
     .dropbtn {
-        background-color: #4CAF50;
-        color: white;
-        padding: 16px;
+        background-color: #dedede;
+        border-radius: 2px;
+        color: black;
+        padding: 4px;
         font-size: 16px;
         border: none;
+        outline: none;
         cursor: pointer;
+        text-align: center;
+        cursor: pointer;
+        width: 130%;
+        min-width:135px;
     }
 
         /* Dropdown button on hover & focus */
         .dropbtn:hover, .dropbtn:focus {
-            background-color: #3e8e41;
+            opacity: .6;
         }
 
     /* Container for the dropdown content */
@@ -63,6 +70,8 @@
         position: absolute;
         background-color: #f9f9f9;
         min-width: 160px;
+        max-height: 200px;
+        overflow-y: auto;
         box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
         z-index: 1;
     }
@@ -85,22 +94,17 @@
 </style>
 
 <br />
-<h1 style="padding-left: 25px;">Showing All Products</h1>
-<br />
+<h1 style="padding-left: 25px;">Showing All Results</h1>
 <br />
 <div class="row" style="padding-bottom:15px;">
-    <div class="col-4">
-        <h2 style="padding-left: 45px;">Filter</h2>
-    </div>
-    <div class="col-8">
-        <h2>Products</h2>
-    </div>
 </div>
 <div class="row">
-    <div class="col-4" style="padding-left: 60px;">
+    <div class="col-3" style="padding-left: 60px; border-right: 2px solid #000000">
+        <h2 style="padding-left: 45px;">Filter</h2>
+        <br />
         <form method="get" action="/Home/ViewProducts">
-            <div class="dropdown">
-                <button class="dropbtn">Category</button>
+            <div class="dropdown" style="padding-left: 45px;">
+                <button class="dropbtn" style="width: 50%; display: inline-block;">Category</button>
                 <div class="dropdown-content">
                     <div>
                         <input type="checkbox" name="categories" value="Animal">
@@ -198,8 +202,8 @@
             </div>
             <br />
             <br />
-            <div class="dropdown">
-                <button class="dropbtn">Color</button>
+            <div class="dropdown" style="padding-left: 45px;">
+                <button class="dropbtn" style="width: 50%; display: inline-block;">Color</button>
                 <div class="dropdown-content">
                     <div>
                         <input type="checkbox" name="colors" value="Black">
@@ -241,9 +245,20 @@
                     </div>
                 </div>
             </div>    
-<br />
-<br />
-            <input type="submit" value="Apply Filters">
+                <br />
+                <br />
+                <br />
+                <br />
+                <br />
+                <br />
+                <br />
+                <br />
+                <br />
+                <br />
+                <br />
+                <div style="padding-left: 45px;">
+                    <input type="submit" value="Apply Filters" style="padding-left: 45px; border: none; outline: 0; padding: 4px; border-radius: 2px; color: black; font-size:bold; background-color: #FFD700; text-align: center; cursor: pointer; width: 135px; font-size: 18px;">
+                </div>
         </form>
             <br />
         <br>
@@ -255,7 +270,7 @@
         <div class="row">
             @foreach (var product in Model.Products)
             {
-                <div class="col-md-4" style="margin-bottom: 30px;">
+                <div class="col-md-4" style="margin-bottom: 44px;">
                     <div class="card">
                         <div style="text-align: left; padding-left: 25px; padding-right: 25px;">
                             <a style="text-decoration: none; color: black;" href="@Url.Action("ProductDetail", "Home", new { id = product.ProductId })">
@@ -264,7 +279,7 @@
                             </a>
                             <p style="font-size:15px;">@(product.Description.Length > 100 ? product.Description.Substring(0, 100) + "..." : product.Description)</p>
                         </div>
-                        <div class="row" style="display: flex; align-items: center;">
+                        <div class="row" style="display: flex; align-items: center; position: absolute; bottom: 0; width: 100%;">
                             <div class="col-5">
                                 <p style="font-size:17px; text-align: left; padding-left: 25px;">Price: $@product.Price</p>
                             </div>
@@ -272,7 +287,7 @@
                                 <form method="post" asp-controller="Home" asp-action="AddToCart">
                                     <input type="hidden" name="productId" value="@product.ProductId" />
                                     <input type="hidden" name="quantity" value="1" />
-                                    <p style="padding-right: 25px;"><button style="align-items:center;" type="submit" class="card button">Add to Cart</button></p>
+                                    <p style="padding-right: 25px;"><button style="align-items:center; max-height:30px;" type="submit" class="card button">Add to Cart</button></p>
                                 </form>
                             </div>
                         </div>
@@ -282,13 +297,22 @@
         </div>
 
             <div page-model="@Model.PaginationInfo" page-action="ViewProducts" page-classes-enable="true" page-class="btn"
-                 page-class-normal="btn-outline-dark" page-class-selected="btn-primary" class="btn-group pull-right m-1"></div>
+             page-class-normal="btn-outline-dark" page-class-selected="btn-primary" class="btn-group pull-right m-1" style="display: block; margin-left: auto; margin-right: auto; align-content: center;"></div>
         </div>
     
 </div>
 
 
 <script>
+    document.querySelector('.dropbtn').addEventListener('click', function () {
+        var dropdownContent = this.nextElementSibling;
+        if (dropdownContent.style.display === 'block') {
+            dropdownContent.style.display = 'none';
+        } else {
+            dropdownContent.style.display = 'block';
+        }
+    });
+
     document.querySelector('.dropbtn').addEventListener('click', function (event) {
         document.querySelector('.dropdown-content').style.display = 'block';
         event.stopPropagation();
