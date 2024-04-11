@@ -1,7 +1,9 @@
 using IntexII_Project_4_2.Data;
+using IntexII_Project_4_2.Infrastructure;
 using IntexII_Project_4_2.Models;
 using IntexII_Project_4_2.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 
 namespace IntexII_Project_4_2.Controllers
@@ -9,6 +11,29 @@ namespace IntexII_Project_4_2.Controllers
     public class HomeController : Controller
     {
         private IIntexProjectRepository _repo;
+        private Cart GetCart()
+        {
+            return HttpContext.Session.GetJson<Cart>("cart") ?? new Cart();
+        }
+
+        private void SaveCart(Cart cart)
+        {
+            HttpContext.Session.SetJson("cart", cart);
+        }
+
+        //public IActionResult RemoveFromCart(int productId, string returnUrl)
+        //{
+        //    Cart cart = GetCart();
+        //    Product product = _repo.Products.FirstOrDefault(p => p.ProductId == productId);
+
+        //    if (product != null)
+        //    {
+        //        cart.RemoveItem(productId);
+        //        SaveCart(cart);
+        //    }
+
+        //    return Redirect(returnUrl);  // Assuming returnUrl is a valid path
+        //}
         public HomeController(IIntexProjectRepository temp) 
         {
             _repo = temp;
@@ -25,6 +50,21 @@ namespace IntexII_Project_4_2.Controllers
         {
             return View();
         }
+
+        public IActionResult AddToCart(int productId, int quantity)
+        {
+            Product product = _repo.Products.FirstOrDefault(p => p.ProductId == productId);
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            Cart cart = HttpContext.Session.GetJson<Cart>("cart") ?? new Cart();
+            cart.AddItem(product, quantity);
+            HttpContext.Session.SetJson("cart", cart);
+
+            return RedirectToPage("/Cart");
+        }
         public IActionResult CartSummary()
         {
             return View();
@@ -37,14 +77,39 @@ namespace IntexII_Project_4_2.Controllers
         {
             return View();
         }
-        public IActionResult ProductDetail()
+        public IActionResult ProductDetail(int id)
         {
-            return View();
+            Product product = _repo.Products.FirstOrDefault(p => p.ProductId == id);
+            if (product == null)
+            {
+                return NotFound(); // Or any other error handling
+            }
+
+            ItemRecommendation recommendation = _repo.ItemRecommendations.FirstOrDefault(r => r.ProductID == id);
+
+            List<Product> recommendedProducts = new List<Product>();
+            if (recommendation != null)
+            {
+                recommendedProducts.Add(_repo.Products.FirstOrDefault(p => p.ProductId == recommendation.Recommendation1));
+                recommendedProducts.Add(_repo.Products.FirstOrDefault(p => p.ProductId == recommendation.Recommendation2));
+                recommendedProducts.Add(_repo.Products.FirstOrDefault(p => p.ProductId == recommendation.Recommendation3));
+                recommendedProducts.Add(_repo.Products.FirstOrDefault(p => p.ProductId == recommendation.Recommendation4));
+                recommendedProducts.Add(_repo.Products.FirstOrDefault(p => p.ProductId == recommendation.Recommendation5));
+            }
+
+            var viewModel = new ProductDetailViewModel
+            {
+                Product = product,
+                Recommendations = recommendedProducts
+            };
+
+            return View(viewModel);
         }
         public IActionResult Register()
         {
             return View();
         }
+
         public IActionResult ViewProducts(int pageNum, string[] categories, string[] colors)
         {
             int pageSize = 5;
