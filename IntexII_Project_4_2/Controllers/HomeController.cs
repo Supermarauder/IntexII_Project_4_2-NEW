@@ -41,8 +41,17 @@ namespace IntexII_Project_4_2.Controllers
 
         public IActionResult Index()
         {
+            var topRecommendationIds = _repo.TopRecommendations.Select(tr => tr.ProductID).ToList();
+            var topRecommendations = _repo.Products
+                .Where(p => topRecommendationIds.Contains(p.ProductId))
+                .ToList();
 
-            return View();
+            var viewModel = new IndexViewModel
+            {
+                Recommendations = topRecommendations
+            };
+
+            return View(viewModel);
         }
 
 
