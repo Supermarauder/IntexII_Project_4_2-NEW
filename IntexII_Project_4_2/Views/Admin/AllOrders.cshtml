@@ -48,6 +48,13 @@
             <td>@order.TypeOfCard</td>
             <td>@(order.Fraud > 0 ? "Yes" : "No")</td>
             <td>@(order.Fullfilled ? "Yes" : "No")</td>
+            @if (order.Fraud > 0)
+            {
+                <td>
+                    <a class="btn btn-warning" href="@Url.Action("EditOrder", "Admin", new { id = order.TransactionId })">Review</a>
+
+                </td>
+            }
         </tr>
     }
 </table>
