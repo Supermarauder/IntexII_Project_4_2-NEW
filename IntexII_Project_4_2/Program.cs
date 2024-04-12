@@ -1,7 +1,9 @@
 using IntexII_Project_4_2.Data;
 using IntexII_Project_4_2.Models;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.ML.OnnxRuntime;
 
 namespace IntexII_Project_4_2
 {
@@ -9,9 +11,17 @@ namespace IntexII_Project_4_2
     {
         public static async Task Main(string[] args)
         {
+
             var builder = WebApplication.CreateBuilder(args);
             var services = builder.Services;
             var configuration = builder.Configuration;
+
+            //Initialize Key Vault Client
+            //var keyVaultUrl = builder.Configuration["KeyVault:VaultUri"]; // Ensure you have this in your appsettings or as an environment variable
+            //var secretClient = new SecretClient(new Uri(keyVaultUrl), new DefaultAzureCredential());
+            //Fetch secrets from Azure Key Vault
+            //var googleClientId = secretClient.GetSecret("Google-Client-ID").Value.Value;
+            //var googleClientSecret = secretClient.GetSecret("Google-Client-Secret").Value.Value;
 
             services.AddAuthentication().AddGoogle(googleOptions =>
             {
@@ -46,6 +56,14 @@ namespace IntexII_Project_4_2
 
             builder.Services.AddControllersWithViews();
 
+            ////Configure Google Authentication with Key Vault secrets
+            //builder.Services.AddAuthentication().AddGoogle(googleOptions =>
+            //{
+            //  googleOptions.ClientId = googleClientId;
+            //  googleOptions.ClientSecret = googleClientSecret;
+            //});
+
+
             builder.Services.Configure<IdentityOptions>(options =>
             {
                 // Default Password settings.
@@ -57,7 +75,23 @@ namespace IntexII_Project_4_2
                 options.Password.RequiredUniqueChars = 1;
             });
 
+            builder.Services.AddHsts(options =>
+            {
+                options.Preload = true;
+                options.IncludeSubDomains = true;
+                options.MaxAge = TimeSpan.FromDays(365); // Adjust the MaxAge as needed
+            });
+
+            builder.Services.AddSingleton<InferenceSession>(serviceProvider =>
+            {
+                var env = serviceProvider.GetService<IHostEnvironment>();
+                var modelPath = Path.Combine(env.ContentRootPath, "Final_Model.onnx");
+                return new InferenceSession(modelPath);
+            });
+
             var app = builder.Build();
+
+            
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
@@ -70,6 +104,7 @@ namespace IntexII_Project_4_2
                 app.UseHsts();
             }
 
+            app.UseHsts();
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
@@ -80,15 +115,22 @@ namespace IntexII_Project_4_2
             app.UseAuthentication(); // Use authentication middleware (if needed, adjust accordingly)
             app.UseAuthorization();
 
-            app.Use(async (context, next) => {
-
-                context.Response.Headers.Add("X-Context-Type-Options", "nosniff");
-                context.Response.Headers.Add("X-XSS-Protection", "1; mode=block");
-                context.Response.Headers.Add("Referrer-Policy", "no-referrer");
-                context.Response.Headers.Add("Content-Security-Policy", "default-src 'self'; img-src 'self' data: m.media-amazon.com images.brickset.com www.brickeconomy.com *.amazonaws.com *.lego.com; script-src 'self' www.google.com app.termly.io; style-src 'self' 'unsafe-inline'; object-src 'none'");
-                context.Response.Headers.Remove("X-Powered-By");
-                context.Response.Headers.Remove("Server");
-
+            app.Use(async (ctx, next) =>
+            {
+                ctx.Response.Headers.Add("X-Content-Type-Options", "nosniff");
+                ctx.Response.Headers.Add("X-XSS-Protection", "1; mode=block");
+                ctx.Response.Headers.Add("Referrer-Policy", "no-referrer");
+                ctx.Response.Headers.Add("Content-Security-Policy",
+                    "default-src 'self'; " +
+                    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://app.termly.io; " + // Add https://app.termly.io here
+                    "style-src 'self' 'unsafe-inline'; " +
+                    "img-src 'self' https://images.brickset.com https://www.lego.com https://*.amazonaws.com https://*.googleusercontent.com https://m.media-amazon.com https://www.brickeconomy.com data:; " +
+                    "font-src 'self'; " +
+                    "frame-src 'self'; " +
+                    "object-src 'none'; " +
+                    "base-uri 'self'; " +
+                    "form-action 'self'; " +
+                    "connect-src 'self';");
                 await next();
             });
 
@@ -101,18 +143,18 @@ namespace IntexII_Project_4_2
             app.MapRazorPages();
 
             //Creates roles
-            //using (var scope = app.Services.CreateScope())
-            //{
-            //    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+            using (var scope = app.Services.CreateScope())
+            {
+                var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
-            //    var roles = new[] { "Admin", "Manager", "Member" };
+                var roles = new[] { "Admin", "Manager", "Member" };
 
-            // //foreach (var role in roles)
-            // //   {
-            // //   if (!await roleManager.RoleExistsAsync(role))
-            // //       await roleManager.CreateAsync(new IdentityRole(role));
-            // //   }
-            //}
+             foreach (var role in roles)
+                {
+                if (!await roleManager.RoleExistsAsync(role))
+                    await roleManager.CreateAsync(new IdentityRole(role));
+                }
+            }
 
 
             ////Creates Admin account
@@ -123,12 +165,12 @@ namespace IntexII_Project_4_2
             //    string email = "admin@admin.com";
             //    string password = "RootbeerWillNeverDie@2024";
 
-            //    if(await userManager.FindByEmailAsync(email) == null)
-            //    {
-            //        var user = new ApplicationUser();
-            //        user.UserName = email;
-            //        user.Email = email;
-            //        user.EmailConfirmed = true;
+            ////    if(await userManager.FindByEmailAsync(email) == null)
+            ////    {
+            ////        var user = new ApplicationUser();
+            ////        user.UserName = email;
+            ////        user.Email = email;
+            ////        user.EmailConfirmed = true;
 
             //        await userManager.CreateAsync(user, password);
 
