@@ -11,6 +11,8 @@ namespace IntexII_Project_4_2.Models.ViewModels
 
         public Cart Cart { get; set; } // Add this
 
+        public int CustomerId { get; set; }
+
         // Constructor ensures Cart is never null
         public OrderPrediction()
         {

@@ -10,16 +10,6 @@ namespace IntexII_Project_4_2
     {
         public static async Task Main(string[] args)
         {
-            var modelPath = "Final_Model.onnx";
-            using var session = new InferenceSession(modelPath);
-
-            foreach (var input in session.InputMetadata)
-            {
-                Console.WriteLine($"Input Name: {input.Key}");
-                Console.WriteLine($"Input Type: {input.Value.ElementType}");
-                Console.WriteLine($"Input Dimensions: {string.Join(",", input.Value.Dimensions)}");
-
-            }
 
             var builder = WebApplication.CreateBuilder(args);
             var services = builder.Services;
@@ -67,6 +57,13 @@ namespace IntexII_Project_4_2
                 options.Password.RequireUppercase = true;
                 options.Password.RequiredLength = 12;
                 options.Password.RequiredUniqueChars = 1;
+            });
+
+            builder.Services.AddSingleton<InferenceSession>(serviceProvider =>
+            {
+                var env = serviceProvider.GetService<IHostEnvironment>();
+                var modelPath = Path.Combine(env.ContentRootPath, "Final_Model.onnx");
+                return new InferenceSession(modelPath);
             });
 
             var app = builder.Build();
@@ -132,21 +129,21 @@ namespace IntexII_Project_4_2
             //{
             //    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
 
-                string email = "admin@admin.com";
-                string password = "RootbeerWillNeverDie@2024";
+            //    string email = "admin@admin.com";
+            //    string password = "RootbeerWillNeverDie@2024";
 
-            //    if(await userManager.FindByEmailAsync(email) == null)
-            //    {
-            //        var user = new ApplicationUser();
-            //        user.UserName = email;
-            //        user.Email = email;
-            //        user.EmailConfirmed = true;
+            ////    if(await userManager.FindByEmailAsync(email) == null)
+            ////    {
+            ////        var user = new ApplicationUser();
+            ////        user.UserName = email;
+            ////        user.Email = email;
+            ////        user.EmailConfirmed = true;
 
-                    await userManager.CreateAsync(user, password);
+            //        await userManager.CreateAsync(user, password);
 
-                    await userManager.AddToRoleAsync(user, "Admin");
-                }
-            }
+            //        await userManager.AddToRoleAsync(user, "Admin");
+            //    }
+            //}
 
 
             app.Run();

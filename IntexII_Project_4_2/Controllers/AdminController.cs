@@ -228,10 +228,10 @@ namespace IntexII_Project_4_2.Controllers
         }
 
 
-        public IActionResult AllProducts()
-        {
-            return View();
-        }
+        //public IActionResult AllProducts()
+        //{
+        //    return View();
+        //}
         public IActionResult Delete()
         {
             return View();
@@ -390,9 +390,9 @@ namespace IntexII_Project_4_2.Controllers
 
                 // Manually update each property
                 existingCustomer.Email = updatedCustomer.Email;
-                existingCustomer.FirstName = updatedCustomer.FirstName;
-                existingCustomer.LastName = updatedCustomer.LastName;
-                existingCustomer.Country = updatedCustomer.Country;
+                //existingCustomer.FirstName = updatedCustomer.FirstName;
+                //existingCustomer.LastName = updatedCustomer.LastName;
+                //existingCustomer.Country = updatedCustomer.Country;
                 existingCustomer.TwoFactorEnabled = updatedCustomer.TwoFactorEnabled;
 
                 // Continue updating other fields as necessary

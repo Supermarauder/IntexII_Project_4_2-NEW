@@ -20,11 +20,14 @@ namespace IntexII_Project_4_2.Areas.Identity.Pages.Account
 {
     public class LoginModel : PageModel
     {
+        private readonly ApplicationDbContext _context;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ILogger<LoginModel> _logger;
 
-        public LoginModel(SignInManager<ApplicationUser> signInManager, ILogger<LoginModel> logger)
+        // Inject ApplicationDbContext into your Razor Page Model
+        public LoginModel(ApplicationDbContext context, SignInManager<ApplicationUser> signInManager, ILogger<LoginModel> logger)
         {
+            _context = context;
             _signInManager = signInManager;
             _logger = logger;
         }
@@ -102,6 +105,42 @@ namespace IntexII_Project_4_2.Areas.Identity.Pages.Account
             ReturnUrl = returnUrl;
         }
 
+        //public async Task<IActionResult> OnPostAsync(string returnUrl = null)
+        //{
+        //    returnUrl ??= Url.Content("~/");
+
+        //    ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+
+        //    if (ModelState.IsValid)
+        //    {
+        //        // This doesn't count login failures towards account lockout
+        //        // To enable password failures to trigger account lockout, set lockoutOnFailure: true
+        //        var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
+        //        if (result.Succeeded)
+        //        {
+        //            _logger.LogInformation("User logged in.");
+        //            return LocalRedirect(returnUrl);
+        //        }
+        //        if (result.RequiresTwoFactor)
+        //        {
+        //            return RedirectToPage("./LoginWith2fa", new { ReturnUrl = returnUrl, RememberMe = Input.RememberMe });
+        //        }
+        //        if (result.IsLockedOut)
+        //        {
+        //            _logger.LogWarning("User account locked out.");
+        //            return RedirectToPage("./Lockout");
+        //        }
+        //        else
+        //        {
+        //            ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+        //            return Page();
+        //        }
+        //    }
+
+        //    // If we got this far, something failed, redisplay form
+        //    return Page();
+        //}
+
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
             returnUrl ??= Url.Content("~/");
@@ -110,32 +149,35 @@ namespace IntexII_Project_4_2.Areas.Identity.Pages.Account
 
             if (ModelState.IsValid)
             {
-                // This doesn't count login failures towards account lockout
-                // To enable password failures to trigger account lockout, set lockoutOnFailure: true
                 var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User logged in.");
+
+                    // Retrieve CustomerId based on the user's email or another unique identifier
+                    // This is a placeholder function. You need to implement the logic based on your database and application design.
+                    int customerId = GetCustomerIdByEmail(Input.Email);
+
+                    // Store the CustomerId in the session
+                    HttpContext.Session.SetInt32("CustomerId", customerId);
+
                     return LocalRedirect(returnUrl);
                 }
-                if (result.RequiresTwoFactor)
-                {
-                    return RedirectToPage("./LoginWith2fa", new { ReturnUrl = returnUrl, RememberMe = Input.RememberMe });
-                }
-                if (result.IsLockedOut)
-                {
-                    _logger.LogWarning("User account locked out.");
-                    return RedirectToPage("./Lockout");
-                }
-                else
-                {
-                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
-                    return Page();
-                }
+                // Additional handling for different sign-in outcomes
             }
 
             // If we got this far, something failed, redisplay form
             return Page();
         }
+
+        // Placeholder for the method to get CustomerId by user email
+        // Implement this method based on your application's requirements
+        private int GetCustomerIdByEmail(string email)
+        {
+            // Your logic here to retrieve CustomerId using the email
+            // For example, querying your database
+            return 1; // Example return, replace with actual logic
+        }
+
     }
 }

@@ -9,64 +9,70 @@
 
 <form asp-action="Checkout" method="post">
     <div>
+        <label asp-for="Order.CustomerId">Customer Id</label>
+        <input asp-for="Order.CustomerId" />
+    </div>
+    <div>
         <label asp-for="Order.EntryMode">Entry Mode</label>
-        <input asp-for="Order.EntryMode" />
+        <select asp-for="Order.EntryMode" class="form-control">
+            <option value="PIN">PIN</option>
+            <option value="Tap">Tap</option>
+            <option value="CVC">CVC</option>
+        </select>
     </div>
 
     <div>
         <label asp-for="Order.TypeOfTransaction">Type of Transaction</label>
-        <input asp-for="Order.TypeOfTransaction" />
+        <select asp-for="Order.TypeOfTransaction" class="form-control">
+            <option value="POS">POS</option>
+            <option value="ATM">ATM</option>
+            <option value="Online">Online</option>
+        </select>
     </div>
 
     <div>
         <label asp-for="Order.CountryOfTransaction">Country of Transaction</label>
-        <input asp-for="Order.CountryOfTransaction" />
+        <select asp-for="Order.CountryOfTransaction" class="form-control">
+            <option value="United Kingdom">United Kingdom</option>
+            <option value="Russia">Russia</option>
+            <option value="USA">USA</option>
+            <option value="India">India</option>
+            <option value="China">China</option>
+        </select>
     </div>
+
 
     <div>
         <label asp-for="Order.ShippingAddress">Shipping Address</label>
-        <input asp-for="Order.ShippingAddress" />
+        <select asp-for="Order.ShippingAddress" class="form-control">
+            <option value="United Kingdom">United Kingdom</option>
+            <option value="Russia">Russia</option>
+            <option value="USA">USA</option>
+            <option value="India">India</option>
+            <option value="China">China</option>
+        </select>
     </div>
+
 
     <div>
         <label asp-for="Order.Bank">Bank</label>
-        <input asp-for="Order.Bank" />
+        <select asp-for="Order.Bank" class="form-control">
+            <option value="Barclays">Barclays</option>
+            <option value="Halifax">Halifax</option>
+            <option value="HSBC">HSBC</option>
+            <option value="Lloyds">Lloyds</option>
+            <option value="Metro">Metro</option>
+            <option value="Monzo">Monzo</option>
+            <option value="RBS">RBS</option>
+        </select>
     </div>
+
 
     <div>
         <label asp-for="Order.TypeOfCard">Type of Card</label>
-        <input asp-for="Order.TypeOfCard" />
-    </div>
-
-    <!-- Customer Information -->
-
-    <div>
-        <label asp-for="Customer.FirstName">First Name</label>
-        <input asp-for="Customer.FirstName" />
-    </div>
-
-    <div>
-        <label asp-for="Customer.LastName">Last Name</label>
-        <input asp-for="Customer.LastName" />
-    </div>
-
-    <div>
-        <label asp-for="Customer.BirthDate">Birth Date</label>
-        <input asp-for="Customer.BirthDate" type="date" />
-    </div>
-
-    <div>
-        <label asp-for="Customer.CountryOfResidence">Country of Residence</label>
-        <input asp-for="Customer.CountryOfResidence" />
-    </div>
-
-    <div>
-        <label asp-for="Customer.Gender">Gender</label>
-        <select asp-for="Customer.Gender">
-            <option value="">Select Gender</option>
-            <option value="Male">Male</option>
-            <option value="Female">Female</option>
-            <!-- Add more options as needed -->
+        <select asp-for="Order.TypeOfCard" class="form-control">
+            <option value="Visa">Visa</option>
+            <option value="MasterCard">MasterCard</option>
         </select>
     </div>
 
