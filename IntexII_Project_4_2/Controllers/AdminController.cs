@@ -3,19 +3,19 @@ using IntexII_Project_4_2.Models;
 using IntexII_Project_4_2.Models.ViewModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.ML.OnnxRuntime.Tensors;
 using Microsoft.ML.OnnxRuntime;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
-using Microsoft.AspNetCore.Hosting;
-
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace IntexII_Project_4_2.Controllers
 {
     public class AdminController : Controller
     {
-        private static int idd = 46;
-
         private readonly ApplicationDbContext _context;
         private readonly InferenceSession _session;
         public readonly string _onnxModelPath;
@@ -23,40 +23,26 @@ namespace IntexII_Project_4_2.Controllers
         public AdminController(ApplicationDbContext context, IWebHostEnvironment hostEnvironment)
         {
             _context = context;
-            // Now correctly using IWebHostEnvironment to access WebRootPath
             _onnxModelPath = System.IO.Path.Combine(hostEnvironment.WebRootPath, "Final_Model.onnx");
             _session = new InferenceSession(_onnxModelPath);
         }
 
-        // GET: Display the form to add a new product
         [Authorize(Roles = "Admin")]
         public IActionResult AddProduct()
         {
             return View();
         }
 
-        // POST: Process the AddProduct form submission
         [Authorize(Roles = "Admin")]
         [HttpPost]
         public IActionResult AddProduct(Product product)
         {
             if (ModelState.IsValid)
             {
-                // Assuming ProductId is 0 or not set for new entries
-                if (product.ProductId == 0) // This check might be redundant if ProductId is auto-incremented
+                if (product.ProductId == 0)
                 {
-                    // Loop to find a unique ProductId
-                    while (_context.Products.Any(p => p.ProductId == idd))
-                    {
-                        idd++; // Increment idd until it's unique
-                    }
-
-                    product.ProductId = idd; // Manually set the ProductId
                     _context.Products.Add(product);
-                    _context.SaveChanges(); // This should automatically generate ProductId for new entries
-
-                    idd++; // Increment the ID for the next product
-
+                    _context.SaveChanges();
                     return RedirectToAction("AllProducts");
                 }
                 else
@@ -64,15 +50,13 @@ namespace IntexII_Project_4_2.Controllers
                     // Handle update logic or error as necessary
                 }
             }
-
-            // If model state is invalid, render the form again
             return View(product);
         }
 
         [Authorize(Roles = "Admin")]
         public IActionResult AddUser()
         {
-            return View(new ApplicationUser()); // Initialize a new user to be filled out
+            return View(new ApplicationUser());
         }
 
         [Authorize(Roles = "Admin")]
@@ -85,8 +69,6 @@ namespace IntexII_Project_4_2.Controllers
                 _context.SaveChanges();
                 return RedirectToAction("AllCustomerInfo");
             }
-
-            // If the model state is invalid, return the form with validation messages
             return View("AddUser", newUser);
         }
 
@@ -100,10 +82,9 @@ namespace IntexII_Project_4_2.Controllers
         [Authorize(Roles = "Admin")]
         public IActionResult AllOrders(string filter = "all", int page = 1)
         {
-            int pageSize = 50; // Set the number of items per page
+            int pageSize = 50;
             IQueryable<Order> query = _context.Orders;
 
-            // Apply filters based on the 'filter' parameter
             switch (filter.ToLower())
             {
                 case "unfulfilled":
@@ -112,27 +93,11 @@ namespace IntexII_Project_4_2.Controllers
                 case "fraud":
                     query = query.Where(order => order.Fraud > 0);
                     break;
-                case "all":
                 default:
-                    // No additional filter for 'all'
                     break;
             }
 
-            var filteredOrders = query.ToList();
-
-            // Sort by date and process pagination in memory
-            var sortedOrders = filteredOrders
-                .Select(order =>
-                {
-                    DateTime.TryParseExact(order.Date, new[] { "M/d/yyyy", "MM/dd/yyyy" }, CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsedDate);
-                    return new { Order = order, ParsedDate = parsedDate };
-                })
-                .OrderByDescending(temp => temp.ParsedDate)
-                .Select(temp => temp.Order)
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize)
-                .ToList();
-
+            var filteredOrders = query.OrderBy(order => order.Date).Skip((page - 1) * pageSize).Take(pageSize).ToList();
             var totalOrders = query.Count();
 
             var pageInfo = new PaginationInfo
@@ -144,7 +109,7 @@ namespace IntexII_Project_4_2.Controllers
 
             var viewModel = new OrderListViewModel
             {
-                Orders = sortedOrders,
+                Orders = filteredOrders,
                 PaginationInfo = pageInfo,
                 CurrentFilter = filter
             };
@@ -152,111 +117,7 @@ namespace IntexII_Project_4_2.Controllers
             return View(viewModel);
         }
 
-        public IActionResult AllOrdersCopy()
-        {
-
-            var records = (from order in _context.Orders
-                           join customer in _context.Customers
-                           on order.CustomerId equals customer.CustomerId
-                           select new
-                           {
-                               Order = order,
-                               Customer = customer
-                           }).Take(5000);
-            var predictions = new List<OrderPrediction>();  // Your ViewModel for the view
-
-            // Dictionary mapping the numeric prediction to an animal type
-            var class_type_dict = new Dictionary<int, string>
-    {
-        { 0, "not fraud" },
-        { 1, "fraud" }
-    };
-
-            foreach (var record in records)
-            {
-                DateTime orderDate;
-                bool isDateValid = DateTime.TryParseExact(record.Order.Date, "MM/dd/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out orderDate);
-
-                if (!isDateValid)
-                {
-                    continue; // Skip this record or handle it as needed
-                }
-
-                int dayOfMonth = orderDate.Day;
-                int monthOfYear = orderDate.Month;
-
-                // Prepare input values according to the expected model features
-                var input = new List<float>
-                {
-                    (float)record.Customer.Age,
-                    (float)record.Customer.CustomerId,
-                    (float)record.Order.TransactionId,
-                    (float)record.Order.Time, // Assuming Time is a single float value representing the transaction time
-                    (float)(record.Order.Amount ?? 0), // Assuming Amount can be nullable and setting default to 0 if null
-                    (float)dayOfMonth,
-                    (float)monthOfYear,
-                    record.Order.CountryOfTransaction == "United Kingdom" ? 1f : 0f, // Assuming binary encoding for country
-                    (record.Order.ShippingAddress ?? record.Order.CountryOfTransaction) == "United Kingdom" ? 1f : 0f // Similarly for shipping address
-                };
-
-                var inputTensor = new DenseTensor<float>(input.ToArray(), new[] { 1, 9 }); // Adjust dimensions to match model expectation
-
-                // Log the input tensor shape and data for verification
-                Console.WriteLine($"Input Tensor Shape: [{inputTensor.Dimensions[0]}, {inputTensor.Dimensions[1]}]");
-                Console.WriteLine($"Input Data: {string.Join(", ", input)}");
-
-
-                var inputs = new List<NamedOnnxValue>
-                {
-                    NamedOnnxValue.CreateFromTensor("float_type", inputTensor) // Correcting the input name to match your model
-                };
-
-
-                string predictionResult;
-
-
-                using (var results = _session.Run(inputs))
-                {
-                    var prediction = results.FirstOrDefault(item => item.Name == "output_label")?.AsTensor<long>().ToArray();
-                    predictionResult = prediction != null && prediction.Length > 0 ? class_type_dict.GetValueOrDefault((int)prediction[0], "Unknown") : "Error in prediction";
-                }
-
-                predictions.Add(new OrderPrediction
-                {
-                    Order = record.Order,
-                    Customer = record.Customer,
-                    Prediction = predictionResult
-                });
-            }
-
-            return View(predictions);
-
-        }
         [Authorize(Roles = "Admin")]
-        public IActionResult Delete()
-        {
-            return View();
-        }
-        [Authorize(Roles = "Admin")]
-        public IActionResult DeleteConfirmation(int id)
-        {
-            var product = _context.Products.FirstOrDefault(p => p.ProductId == id);
-            if (product == null)
-            {
-                return NotFound();
-            }
-
-
-        //public IActionResult AllProducts()
-        //{
-        //    return View();
-        //}
-        public IActionResult Delete()
-        {
-            return View();
-        }
-        [Authorize(Roles = "Admin")]
-        [HttpPost]
         public IActionResult DeleteProduct(int productId)
         {
             var product = _context.Products.Find(productId);
@@ -264,22 +125,12 @@ namespace IntexII_Project_4_2.Controllers
             {
                 _context.Products.Remove(product);
                 _context.SaveChanges();
+                return RedirectToAction("AllProducts");
             }
+            return NotFound();
+        }
 
-            return RedirectToAction("AllProducts");
-        }
         [Authorize(Roles = "Admin")]
-        public IActionResult DeleteUserConfirmation(string id)
-        {
-            var user = _context.Users.FirstOrDefault(u => u.Id == id);
-            if (user == null)
-            {
-                return NotFound();
-            }
-            return View(user);
-        }
-        [Authorize(Roles = "Admin")]
-        [HttpPost]
         public IActionResult DeleteUser(string id)
         {
             var user = _context.Users.Find(id);
