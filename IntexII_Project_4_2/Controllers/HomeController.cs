@@ -10,7 +10,7 @@ using Microsoft.ML.OnnxRuntime.Tensors;
 
 namespace IntexII_Project_4_2.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController : BaseController
     {
         private IIntexProjectRepository _repo;
         private Cart GetCart()
@@ -36,14 +36,13 @@ namespace IntexII_Project_4_2.Controllers
 
         //    return Redirect(returnUrl);  // Assuming returnUrl is a valid path
         //}
-        public HomeController(IIntexProjectRepository temp) 
         private InferenceSession _session;
         public string _onnxModelPath;
         public HomeController(IIntexProjectRepository temp, IHostEnvironment hostEnvironment) 
         {
             _repo = temp;
 
-            _onnxModelPath = System.IO.Path.Combine(hostEnvironment.ContentRootPath, "model.onnx");
+            _onnxModelPath = System.IO.Path.Combine(hostEnvironment.ContentRootPath, "Final_Model.onnx");
             _session = new InferenceSession(_onnxModelPath);
         }
 

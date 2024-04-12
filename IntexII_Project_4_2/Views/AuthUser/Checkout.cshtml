@@ -1,34 +1,79 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-}        
-@* <h1>
-    Only Accessible by an authorized, logged in user.
-    checkout page
-</h1>
-<br />
-<br />
-<div class="row">
-    <div class="col-12 text-center">
+﻿@model OrderPrediction
 
-        <h3>Thank you for shopping with Aurora Bricks!</h3>
-        <h3>or We are still procssing your order.</h3>
-        <br />
-        <h3>Order Summary</h3>
-        <br />
-        <br />
-        <p>Order Number: 1234567890</p>
-        <br />
-        <br />
-        <p>Order Details</p>
-        <br />
-        <br />
-        <h3>Grand Total</h3>
-        <br />
-        <br />
-        <h3>Return to Homepage button</h3>
+@{
+    // Calculate the total using the Cart in your ViewModel
+    var cartTotal = Model.Cart.CalculateTotal();
+}
+
+<h2>Cart Total: @cartTotal</h2>
+
+<form asp-action="Checkout" method="post">
+    <div>
+        <label asp-for="Order.EntryMode">Entry Mode</label>
+        <input asp-for="Order.EntryMode" />
     </div>
-</div>
-<br />
-<br /> *@
+
+    <div>
+        <label asp-for="Order.TypeOfTransaction">Type of Transaction</label>
+        <input asp-for="Order.TypeOfTransaction" />
+    </div>
+
+    <div>
+        <label asp-for="Order.CountryOfTransaction">Country of Transaction</label>
+        <input asp-for="Order.CountryOfTransaction" />
+    </div>
+
+    <div>
+        <label asp-for="Order.ShippingAddress">Shipping Address</label>
+        <input asp-for="Order.ShippingAddress" />
+    </div>
+
+    <div>
+        <label asp-for="Order.Bank">Bank</label>
+        <input asp-for="Order.Bank" />
+    </div>
+
+    <div>
+        <label asp-for="Order.TypeOfCard">Type of Card</label>
+        <input asp-for="Order.TypeOfCard" />
+    </div>
+
+    <!-- Customer Information -->
+
+    <div>
+        <label asp-for="Customer.FirstName">First Name</label>
+        <input asp-for="Customer.FirstName" />
+    </div>
+
+    <div>
+        <label asp-for="Customer.LastName">Last Name</label>
+        <input asp-for="Customer.LastName" />
+    </div>
+
+    <div>
+        <label asp-for="Customer.BirthDate">Birth Date</label>
+        <input asp-for="Customer.BirthDate" type="date" />
+    </div>
+
+    <div>
+        <label asp-for="Customer.CountryOfResidence">Country of Residence</label>
+        <input asp-for="Customer.CountryOfResidence" />
+    </div>
+
+    <div>
+        <label asp-for="Customer.Gender">Gender</label>
+        <select asp-for="Customer.Gender">
+            <option value="">Select Gender</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+            <!-- Add more options as needed -->
+        </select>
+    </div>
+
+    <div>
+        <label asp-for="Customer.Age">Age</label>
+        <input asp-for="Customer.Age" type="number" />
+    </div>
+
+    <button type="submit">Submit</button>
+</form>
