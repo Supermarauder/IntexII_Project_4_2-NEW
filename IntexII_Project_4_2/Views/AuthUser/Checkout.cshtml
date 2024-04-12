@@ -9,10 +9,6 @@
 
 <form asp-action="Checkout" method="post">
     <div>
-        <label asp-for="Order.CustomerId">Customer Id</label>
-        <input asp-for="Order.CustomerId" />
-    </div>
-    <div>
         <label asp-for="Order.EntryMode">Entry Mode</label>
         <select asp-for="Order.EntryMode" class="form-control">
             <option value="PIN">PIN</option>

@@ -24,11 +24,12 @@ namespace IntexII_Project_4_2.Controllers
         private readonly InferenceSession _session;
         public readonly string _onnxModelPath;
 
-        public AuthUserController(IIntexProjectRepository repo, IWebHostEnvironment hostEnvironment)
+        public AuthUserController(IIntexProjectRepository repo, IWebHostEnvironment hostEnvironment, UserManager<ApplicationUser> userManager)
         {
             _repo = repo;
             _onnxModelPath = System.IO.Path.Combine(hostEnvironment.WebRootPath, "Final_Model.onnx");
             _session = new InferenceSession(_onnxModelPath);
+            _userManager = userManager;
         }
 
         [Authorize(Roles = "Member")]
@@ -50,8 +51,11 @@ namespace IntexII_Project_4_2.Controllers
         [Authorize(Roles = "Member")]
 
         [HttpPost]
-        public IActionResult Checkout(OrderPrediction viewModel)
+        public async Task<IActionResult> Checkout(OrderPrediction viewModel)
         {
+
+            ApplicationUser currentUser = await _userManager.GetUserAsync(User);
+
             var cart = HttpContext.Session.GetJson<Cart>("cart");
             var total = cart.CalculateTotal();
 
@@ -76,7 +80,8 @@ namespace IntexII_Project_4_2.Controllers
 
             // Prepare variables for model pipeline inputs
             float age = (float)viewModel.Customer.Age;
-            float customerId = (float)viewModel.Order.CustomerId;
+            //float customerId = (float)viewModel.Order.CustomerId;
+            float customerId = (float)currentUser.CustomerId;
             float transactionId = (float)viewModel.Order.TransactionId;
             float time = (float)viewModel.Order.Time;
             float amount = (float)viewModel.Order.Amount;
@@ -100,7 +105,11 @@ namespace IntexII_Project_4_2.Controllers
                 if (prediction != null && prediction.Length > 0)
                 {
                     var fraudStatus = class_type_dict.GetValueOrDefault((int)prediction[0], "Unknown");
-                    ViewBag.Prediction = fraudStatus;
+                    //ViewBag.Prediction = fraudStatus;
+
+                    // Assuming viewModel.Order.Fraud is an integer field that stores 0 for "not fraud" and 1 for "fraud"
+                    viewModel.Order.Fraud = fraudStatus == "fraud" ? 1 : 0;
+
 
                     // Clear the cart after a successful checkout and before redirecting
                     cart.Clear();
