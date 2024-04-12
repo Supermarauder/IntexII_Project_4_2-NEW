@@ -1,6 +1,7 @@
 ﻿using IntexII_Project_4_2.Data;
 using IntexII_Project_4_2.Models;
 using IntexII_Project_4_2.Models.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.ML.OnnxRuntime;
@@ -29,10 +30,12 @@ namespace IntexII_Project_4_2.Controllers
         {
             return View();
         }
+        [Authorize(Roles = "Member")]
         public IActionResult Confirmation0()
         {
             return View();
         }
+        [Authorize(Roles = "Member")]
         public IActionResult Confirmation1()
         {
             return View();

@@ -1,55 +1,51 @@
 ﻿using IntexII_Project_4_2.Data;
 using IntexII_Project_4_2.Models;
 using IntexII_Project_4_2.Models.ViewModels;
-using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.ML.OnnxRuntime.Tensors;
+using Microsoft.ML.OnnxRuntime;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
 using System.Globalization;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace IntexII_Project_4_2.Controllers
 {
     public class AdminController : Controller
     {
-        private static int idd = 46;
-        
         private readonly ApplicationDbContext _context;
+        private readonly InferenceSession _session;
+        public readonly string _onnxModelPath;
 
-        public AdminController(ApplicationDbContext context)
+        public AdminController(ApplicationDbContext context, IWebHostEnvironment hostEnvironment)
         {
             _context = context;
+            _onnxModelPath = System.IO.Path.Combine(hostEnvironment.WebRootPath, "Final_Model.onnx");
+            _session = new InferenceSession(_onnxModelPath);
             _onnxModelPath = System.IO.Path.Combine(hostEnvironment.ContentRootPath, "model_final.onnx");
             _session = new InferenceSession(_onnxModelPath);
 
         }
 
-        // GET: Display the form to add a new product
+        [Authorize(Roles = "Admin")]
         public IActionResult AddProduct()
         {
-            return View(new Product()); // Initialize a new product to be filled out
+            return View();
         }
 
-        // POST: Process the AddProduct form submission
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public IActionResult AddProduct(Product product)
         {
             if (ModelState.IsValid)
             {
-                // Assuming ProductId is 0 or not set for new entries
-                if (product.ProductId == 0) // This check might be redundant if ProductId is auto-incremented
+                if (product.ProductId == 0)
                 {
-                    // Loop to find a unique ProductId
-                    while (_context.Products.Any(p => p.ProductId == idd))
-                    {
-                        idd++; // Increment idd until it's unique
-                    }
-
-                    product.ProductId = idd; // Manually set the ProductId
                     _context.Products.Add(product);
-                    _context.SaveChanges(); // This should automatically generate ProductId for new entries
-
-                    idd++; // Increment the ID for the next product
-
+                    _context.SaveChanges();
                     return RedirectToAction("AllProducts");
                 }
                 else
@@ -57,17 +53,16 @@ namespace IntexII_Project_4_2.Controllers
                     // Handle update logic or error as necessary
                 }
             }
-
-            // If model state is invalid, render the form again
             return View(product);
         }
 
-
+        [Authorize(Roles = "Admin")]
         public IActionResult AddUser()
         {
-            return View(new ApplicationUser()); // Initialize a new user to be filled out
+            return View(new ApplicationUser());
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public IActionResult CreateUser(ApplicationUser newUser)
         {
@@ -77,24 +72,22 @@ namespace IntexII_Project_4_2.Controllers
                 _context.SaveChanges();
                 return RedirectToAction("AllCustomerInfo");
             }
-
-            // If the model state is invalid, return the form with validation messages
             return View("AddUser", newUser);
         }
 
+        [Authorize(Roles = "Admin")]
         public IActionResult AllProducts()
         {
             var products = _context.Products.ToList();
             return View(products);
         }
 
-        // [Authorize(Roles = "Admin")] --for authorizing the role
+        [Authorize(Roles = "Admin")]
         public IActionResult AllOrders(string filter = "all", int page = 1)
         {
-            int pageSize = 50; // Set the number of items per page
+            int pageSize = 50;
             IQueryable<Order> query = _context.Orders;
 
-            // Apply filters based on the 'filter' parameter
             switch (filter.ToLower())
             {
                 case "unfulfilled":
@@ -103,27 +96,11 @@ namespace IntexII_Project_4_2.Controllers
                 case "fraud":
                     query = query.Where(order => order.Fraud > 0);
                     break;
-                case "all":
                 default:
-                    // No additional filter for 'all'
                     break;
             }
 
-            var filteredOrders = query.ToList();
-
-            // Sort by date and process pagination in memory
-            var sortedOrders = filteredOrders
-                .Select(order =>
-                {
-                    DateTime.TryParseExact(order.Date, new[] { "M/d/yyyy", "MM/dd/yyyy" }, CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsedDate);
-                    return new { Order = order, ParsedDate = parsedDate };
-                })
-                .OrderByDescending(temp => temp.ParsedDate)
-                .Select(temp => temp.Order)
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize)
-                .ToList();
-
+            var filteredOrders = query.OrderBy(order => order.Date).Skip((page - 1) * pageSize).Take(pageSize).ToList();
             var totalOrders = query.Count();
 
             var pageInfo = new PaginationInfo
@@ -135,7 +112,7 @@ namespace IntexII_Project_4_2.Controllers
 
             var viewModel = new OrderListViewModel
             {
-                Orders = sortedOrders,
+                Orders = filteredOrders,
                 PaginationInfo = pageInfo,
                 CurrentFilter = filter
             };
@@ -230,7 +207,7 @@ namespace IntexII_Project_4_2.Controllers
             return View(product);
         }
 
-        [HttpPost]
+        [Authorize(Roles = "Admin")]
         public IActionResult DeleteProduct(int productId)
         {
             var product = _context.Products.Find(productId);
@@ -238,21 +215,12 @@ namespace IntexII_Project_4_2.Controllers
             {
                 _context.Products.Remove(product);
                 _context.SaveChanges();
+                return RedirectToAction("AllProducts");
             }
-
-            return RedirectToAction("AllProducts");
+            return NotFound();
         }
 
-        public IActionResult DeleteUserConfirmation(string id)
-        {
-            var user = _context.Users.FirstOrDefault(u => u.Id == id);
-            if (user == null)
-            {
-                return NotFound();
-            }
-            return View(user);
-        }
-        [HttpPost]
+        [Authorize(Roles = "Admin")]
         public IActionResult DeleteUser(string id)
         {
             var user = _context.Users.Find(id);
@@ -264,12 +232,12 @@ namespace IntexII_Project_4_2.Controllers
             }
             return NotFound();
         }
-
+        [Authorize(Roles = "Admin")]
         public IActionResult EditConfirmation(Product product)
         {
             return View(product);  // Display the confirmation view
         }
-
+        [Authorize(Roles = "Admin")]
         public IActionResult EditCustomerInfo(string id)
         {
             var customer = _context.Users.FirstOrDefault(u => u.Id == id);
@@ -279,6 +247,7 @@ namespace IntexII_Project_4_2.Controllers
             }
             return View(customer);
         }
+        [Authorize(Roles = "Admin")]
         public IActionResult EditOrder(int id)
         {
             var order = _context.Orders.FirstOrDefault(o => o.TransactionId == id);
@@ -310,7 +279,7 @@ namespace IntexII_Project_4_2.Controllers
 
             return View(viewModel);
         }
-
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public IActionResult EditOrder(EditOrderViewModel viewModel)
         {
@@ -337,6 +306,7 @@ namespace IntexII_Project_4_2.Controllers
             // If validation fails, redisplay the form with the current view model
             return View(viewModel);
         }
+        [Authorize(Roles = "Admin")]
         public IActionResult EditProduct(int id)
         {
             Product product;
@@ -356,6 +326,7 @@ namespace IntexII_Project_4_2.Controllers
         }
 
         // POST: Update the product in the database
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public IActionResult EditProduct(Product product)
         {
@@ -371,6 +342,7 @@ namespace IntexII_Project_4_2.Controllers
             // Return back to the edit form if there are any validation errors
             return View(product);
         }
+        [Authorize(Roles = "Admin")]
         public IActionResult Index()
         {
             var endDate = DateTime.Today;
@@ -403,7 +375,7 @@ namespace IntexII_Project_4_2.Controllers
 
             return View(viewModel);
         }
-
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public IActionResult UpdateCustomerInfo(ApplicationUser updatedCustomer)
         {
@@ -417,9 +389,9 @@ namespace IntexII_Project_4_2.Controllers
 
                 // Manually update each property
                 existingCustomer.Email = updatedCustomer.Email;
-                existingCustomer.FirstName = updatedCustomer.FirstName;
-                existingCustomer.LastName = updatedCustomer.LastName;
-                existingCustomer.Country = updatedCustomer.Country;
+                //existingCustomer.FirstName = updatedCustomer.FirstName;
+                //existingCustomer.LastName = updatedCustomer.LastName;
+                //existingCustomer.Country = updatedCustomer.Country;
                 existingCustomer.TwoFactorEnabled = updatedCustomer.TwoFactorEnabled;
 
                 // Continue updating other fields as necessary
@@ -432,7 +404,7 @@ namespace IntexII_Project_4_2.Controllers
             // If we got this far, something failed, redisplay form
             return View(updatedCustomer);
         }
-
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public IActionResult UpdateProduct(Product product)
         {
@@ -457,6 +429,7 @@ namespace IntexII_Project_4_2.Controllers
 
             return View("EditProduct", product);  // Only if something goes wrong
         }
+        [Authorize(Roles = "Admin")]
         public IActionResult AllCustomerInfo()
         {
             var customers = _context.Users.ToList(); // Retrieve all users from the database
@@ -464,3 +437,5 @@ namespace IntexII_Project_4_2.Controllers
         }
     }
 }
+
+
