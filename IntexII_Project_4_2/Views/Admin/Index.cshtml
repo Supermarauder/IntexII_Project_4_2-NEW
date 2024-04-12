@@ -35,6 +35,10 @@
         margin-left: 24px;
     }
 
+    #btn3 {
+        margin: 24px;
+    }
+
 </style>
 
     <br />
@@ -74,11 +78,13 @@
     <br />
     <br />
     <div class="row" style="display: flex; justify-content: center; ">
-        <div class="col-4">
+        <div class="col-7">
             <!-- Link to AllOrders view -->
-        <a class="btn btn-primary" id="btn1" href="@Url.Action("AllOrders", "Admin")" style="border: none; outline: 0; padding: 12px; border-radius: 2px; color: black; font-size:28px; font-weight:bold; background-color: #FFD700; text-align: center; cursor: pointer; width: 174px; font-size: 18px;">See All Orders</a>
+            <a class="btn btn-primary" id="btn1" href="@Url.Action("AllOrders", "Admin")" style="border: none; outline: 0; padding: 12px; border-radius: 2px; color: black; font-size:28px; font-weight:bold; background-color: #FFD700; text-align: center; cursor: pointer; width: 174px; font-size: 18px;">See All Orders</a>
+            <!-- Link to AllCustmers view -->
+            <a class="btn btn-primary" id="btn3" href="@Url.Action("AllCustomersInfo", "Admin")" style="border: none; outline: 0; padding: 12px; border-radius: 2px; color: black; font-size:28px; font-weight:bold; background-color: #FFD700; text-align: center; cursor: pointer; width: 190x; font-size: 18px;">See All Customers</a>
             <!-- Link to AllProducts view -->
-        <a class="btn btn-primary" id="btn2" href="@Url.Action("AllProducts", "Admin")" style="border: none; outline: 0; padding: 12px; border-radius: 2px; color: black; font-size:28px; font-weight:bold; background-color: #FFD700; text-align: center; cursor: pointer; width: 174px; font-size: 18px;">See All Products</a>
+            <a class="btn btn-primary" id="btn2" href="@Url.Action("AllProducts", "Admin")" style="border: none; outline: 0; padding: 12px; border-radius: 2px; color: black; font-size:28px; font-weight:bold; background-color: #FFD700; text-align: center; cursor: pointer; width: 174px; font-size: 18px;">See All Products</a>
         </div>
     </div>
     <br />
