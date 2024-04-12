@@ -5,29 +5,87 @@
 }
 @* <h1>This view is the landing page for the admin. It should be accessible directly after logging in as admin.</h1> *@
 @model AdminKPIViewModel
-<h1>Welcome, [dynamic admin user name]!</h1>
-<br />
-<br />
-<br />
-<br />
-<h3>KPI - Total Sales in 2023</h3>
-<h3>@Model.TotalSales2023</h3>
 
-<h3>KPI - Total Sales past 7 days</h3>
-<h3>@Model.TotalSalesPast7Days</h3>
+<style>
+    header {
+        background-color: #4d96d1;
+    }
 
-<h3>KPI - Unfulfilled Orders</h3>
-<h3>@Model.UnfulfilledOrders</h3>
+    .header-container {
+        background: #4d96d1;
+        height: 7.2rem;
+        transition: all 0.2s ease-in-out;
+        z-index: 100;
+    }
 
-<h3>KPI - Orders Fulfilled in the past 7 days</h3>
-<h3>@Model.OrdersFulfilledPast7Days</h3>
-<br />
-<br />
-<br />
-<br />
-<div class="row" style="display: flex; justify-content: center; align-items: center;">
-    <div class="col-4">
-        <button>See All Orders</button>
-        <button>Update Products</button>
+    footer {
+        background-color: #4d96d1;
+    }
+
+    body {
+        background-image: url('../img/LegoBackUse.png'); 
+        padding: 0; 
+        background-attachment: fixed; 
+        width:100%; 
+
+        text-align: center; 
+        justify-content: center;
+        align-items: center;
+    }
+
+    #btn1 {
+        margin-right: 24px;
+    }
+
+    #btn2 {
+        margin-left: 24px;
+    }
+
+</style>
+
+    <br />
+    <br />
+    <h1 style="font-size:58px; text-align:left; margin-left:40px;">Welcome, [dynamic admin user name]!</h1>
+    <br />
+    <br />
+    <br />
+    <br />
+    <div class="row">
+        <div class="col-2"><h1></h1></div>
+            <div class="col-8" style="align-content:center;">
+                <table class="table table-bordered table-striped" style="border-color: black;margin-left: auto; margin-right: auto; width: 100%;">
+                    <thead>
+                        <tr>
+                            <th><h2>KPI - Total Sales -  This Year</h2></th>
+                            <th><h2>KPI - Total Sales -  Past 7 Days</h2></th>
+                            <th><h2>KPI - Orders Fulfilled -  Past 7 Days</h2></th>
+                            <th><h2>KPI - Unfulfilled Orders</h2></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><h3>@Model.TotalSales2023</h3></td>
+                            <td><h3>@Model.TotalSalesPast7Days</h3></td>
+                            <td><h3>@Model.OrdersFulfilledPast7Days</h3></td>
+                            <td><h3>@Model.UnfulfilledOrders</h3></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        <div class="col-2"><h1></h1></div>
     </div>
-</div>
+  
+    <br />
+    <br />
+    <br />
+    <br />
+    <div class="row" style="display: flex; justify-content: center; ">
+        <div class="col-4">
+            <!-- Link to AllOrders view -->
+        <a class="btn btn-primary" id="btn1" href="@Url.Action("AllOrders", "Admin")" style="border: none; outline: 0; padding: 12px; border-radius: 2px; color: black; font-size:28px; font-weight:bold; background-color: #FFD700; text-align: center; cursor: pointer; width: 174px; font-size: 18px;">See All Orders</a>
+            <!-- Link to AllProducts view -->
+        <a class="btn btn-primary" id="btn2" href="@Url.Action("AllProducts", "Admin")" style="border: none; outline: 0; padding: 12px; border-radius: 2px; color: black; font-size:28px; font-weight:bold; background-color: #FFD700; text-align: center; cursor: pointer; width: 174px; font-size: 18px;">See All Products</a>
+        </div>
+    </div>
+
+

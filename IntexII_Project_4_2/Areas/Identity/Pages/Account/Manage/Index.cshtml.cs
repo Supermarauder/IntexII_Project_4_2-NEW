@@ -6,6 +6,7 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using IntexII_Project_4_2.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -14,12 +15,12 @@ namespace IntexII_Project_4_2.Areas.Identity.Pages.Account.Manage
 {
     public class IndexModel : PageModel
     {
-        private readonly UserManager<IdentityUser> _userManager;
-        private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
 
         public IndexModel(
-            UserManager<IdentityUser> userManager,
-            SignInManager<IdentityUser> signInManager)
+            UserManager<ApplicationUser> userManager,
+            SignInManager<ApplicationUser> signInManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -58,9 +59,30 @@ namespace IntexII_Project_4_2.Areas.Identity.Pages.Account.Manage
             [Phone]
             [Display(Name = "Phone number")]
             public string PhoneNumber { get; set; }
+
+            [Required(ErrorMessage = "Please enter your First name.")]
+            [Display(Name = "First Name")]
+            public string FirstName { get; set; }
+
+            [Required(ErrorMessage = "Please enter your last name.")]
+            [Display(Name = "Last Name")]
+            public string LastName { get; set; }
+
+            [Required(ErrorMessage = "Please specify a gender.")]
+            [Display(Name = "Gender")]
+            public char? Gender { get; set; }
+
+            [Required(ErrorMessage = "Please enter your date of birth.")]
+            [Display(Name = "Date of Birth")]
+            [DataType(DataType.Date)]
+            public string DateOfBirth { get; set; }
+
+            [Required(ErrorMessage = "Please enter your country.")]
+            [Display(Name = "Country")]
+            public string Country { get; set; }
         }
 
-        private async Task LoadAsync(IdentityUser user)
+        private async Task LoadAsync(ApplicationUser user)
         {
             var userName = await _userManager.GetUserNameAsync(user);
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
@@ -69,7 +91,12 @@ namespace IntexII_Project_4_2.Areas.Identity.Pages.Account.Manage
 
             Input = new InputModel
             {
-                PhoneNumber = phoneNumber
+                PhoneNumber = phoneNumber,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Gender = user.Gender,
+                DateOfBirth = user.DateOfBirth,
+                Country = user.Country
             };
         }
 
@@ -99,6 +126,13 @@ namespace IntexII_Project_4_2.Areas.Identity.Pages.Account.Manage
                 return Page();
             }
 
+            // Update user properties
+            user.FirstName = Input.FirstName;
+            user.LastName = Input.LastName;
+            user.Gender = Input.Gender;
+            user.DateOfBirth = Input.DateOfBirth; // Set DateOfBirth as a string
+            user.Country = Input.Country;
+
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
             if (Input.PhoneNumber != phoneNumber)
             {
@@ -110,6 +144,15 @@ namespace IntexII_Project_4_2.Areas.Identity.Pages.Account.Manage
                 }
             }
 
+            // Update user in the database
+            var updateResult = await _userManager.UpdateAsync(user);
+            if (!updateResult.Succeeded)
+            {
+                StatusMessage = "Unexpected error when trying to update profile.";
+                return RedirectToPage();
+            }
+
+            // Refresh sign-in cookie
             await _signInManager.RefreshSignInAsync(user);
             StatusMessage = "Your profile has been updated";
             return RedirectToPage();

@@ -39,9 +39,12 @@ namespace IntexII_Project_4_2
                 options.UseSqlServer(connectionString));
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-            builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+            builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = false)
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
+
+            // Add SignInManager service
+            builder.Services.AddScoped<SignInManager<ApplicationUser>>();
 
             // Add session services
             builder.Services.AddSession(options =>
@@ -95,7 +98,6 @@ namespace IntexII_Project_4_2
                 context.Response.Headers.Add("X-XSS-Protection", "1; mode=block");
                 context.Response.Headers.Add("Referrer-Policy", "no-referrer");
                 context.Response.Headers.Add("Content-Security-Policy", "default-src 'self'; img-src 'self' data: m.media-amazon.com images.brickset.com www.brickeconomy.com *.amazonaws.com *.lego.com; script-src 'self' www.google.com app.termly.io; style-src 'self' 'unsafe-inline'; object-src 'none'");
-
                 context.Response.Headers.Remove("X-Powered-By");
                 context.Response.Headers.Remove("Server");
 
@@ -125,20 +127,20 @@ namespace IntexII_Project_4_2
             }
 
 
-            //Creates Admin account
-            using (var scope = app.Services.CreateScope())
-            {
-                var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
+            ////Creates Admin account
+            //using (var scope = app.Services.CreateScope())
+            //{
+            //    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
 
                 string email = "admin@admin.com";
                 string password = "RootbeerWillNeverDie@2024";
 
-                if(await userManager.FindByEmailAsync(email) == null)
-                {
-                    var user = new IdentityUser();
-                    user.UserName = email;
-                    user.Email = email;
-                    user.EmailConfirmed = true;
+            //    if(await userManager.FindByEmailAsync(email) == null)
+            //    {
+            //        var user = new ApplicationUser();
+            //        user.UserName = email;
+            //        user.Email = email;
+            //        user.EmailConfirmed = true;
 
                     await userManager.CreateAsync(user, password);
 
