@@ -4,47 +4,98 @@
     ViewData["Title"] = "Add New Product";
 }
 
-<h1>Add New Product</h1>
+<style>
+    header {
+        background-color: #4d96d1;
+    }
 
+    .header-container {
+        background: #4d96d1;
+        height: 7.2rem;
+        transition: all 0.2s ease-in-out;
+        z-index: 100;
+    }
+
+    footer {
+        background-color: #4d96d1;
+    }
+
+    body {
+        background-image: url('../img/LegoBackUse.png');
+        padding: 0;
+        background-attachment: fixed;
+        width: 100%;
+        text-align: center;
+        justify-content: center;
+        align-items: center;
+    }
+
+    form {
+        background-color: #f2f2f2; /* Set background color */
+        padding: 20px; /* Add some padding for spacing */
+/*         border-radius: 0px; */ /* Add rounded corners */ 
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add a subtle shadow */
+        width: 34%; /* Set the width of the form */
+        margin: 0 auto; /* Center the form horizontally */
+        align-items: left;
+        padding-left: 15px;
+    }
+</style>
+<br />
+<br />
+<h1>Add New Product</h1>
+<br />
 <form method="post" action="@Url.Action("AddProduct", "Admin")">
     <div>
         <label>Name:</label>
         <input type="text" name="Name" required>
     </div>
+    <br />
     <div>
         <label>Year:</label>
         <input type="number" name="Year" required>
     </div>
+    <br />
     <div>
         <label>Number of Parts:</label>
         <input type="number" name="NumParts" required>
     </div>
+    <br />
     <div>
         <label>Price:</label>
         <input type="number" name="Price" required>
     </div>
+    <br />
     <div>
         <label>Image Link:</label>
         <input type="text" name="ImgLink">
     </div>
+    <br />
     <div>
         <label>Primary Color:</label>
         <input type="text" name="PrimaryColor">
     </div>
+    <br />
     <div>
         <label>Secondary Color:</label>
         <input type="text" name="SecondaryColor">
     </div>
+    <br />
     <div>
         <label>Description:</label>
         <textarea name="Description" required></textarea>
     </div>
+    <br />
     <div>
         <label>Category:</label>
         <input type="text" name="Category" required>
     </div>
+    <br />
 
-    <button type="submit">Add Product</button>
+    <button style="border: none; outline: 0; padding: 12px; border-radius: 2px; color: black; font-size:28px; background-color: #FFD700; text-align: center; cursor: pointer; width: 144px; font-size: 18px;" type="submit">Add Product</button>
 </form>
-
-<a href="@Url.Action("AllProducts", "Admin")">Back to All Products</a>
+<br />
+<a style="text-decoration: underline; color: black;" href="@Url.Action("AllProducts", "Admin")">Back to All Products</a>
+<br />
+<br />
+<br />

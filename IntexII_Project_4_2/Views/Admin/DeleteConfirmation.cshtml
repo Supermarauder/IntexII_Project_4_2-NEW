@@ -1,11 +1,45 @@
 ﻿@model IntexII_Project_4_2.Data.Product
 
-<h1>Confirm Product Deletion</h1>
-<p>Are you sure you want to delete this product: @Model.Name?</p>
+<style>
+    header {
+        background-color: #DA291C;
+    }
 
-<form asp-action="DeleteProduct" asp-controller="Admin" method="post">
-    <input type="hidden" asp-for="ProductId" />
-    <button type="submit" class="btn btn-danger">Confirm Product Deletion</button>
-</form>
+    .header-container {
+        background: #DA291C;
+        height: 7.2rem;
+        transition: all 0.2s ease-in-out;
+        z-index: 100;
+    }
 
-<a href="@Url.Action("AllProducts", "Admin")" class="btn btn-warning">Abort</a>
+    footer {
+        background-color: #DA291C;
+    }
+
+    h1 {
+        font-weight:bold;
+    }
+
+    h3{
+        font-weight:bold;
+    }
+
+</style>
+
+<div style="padding-left:25px;">
+    <br />
+    <br />
+    <br />
+    <h1>CONFIRM PRODUCT DELETION</h1>
+    <br />
+    <br />
+    <h3>Are you sure you want to delete this product: @Model.Name?</h3>
+    <br />
+    <br />
+    <form asp-action="DeleteProduct" asp-controller="Admin" method="post">
+        <input type="hidden" asp-for="ProductId" />
+        <button type="submit" class="btn btn-danger">Confirm Product Deletion</button>
+    </form>
+
+    <a href="@Url.Action("AllProducts", "Admin")" class="btn btn-warning">Abort</a>
+</div>

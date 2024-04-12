@@ -35,10 +35,22 @@
     th {
         background-color: #FFD700;
     }
+
+    form {
+        background-color: #f2f2f2; /* Set background color */
+        padding: 20px; /* Add some padding for spacing */
+        /*         border-radius: 0px; */ /* Add rounded corners */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add a subtle shadow */
+        width: 34%; /* Set the width of the form */
+        margin: 0 auto; /* Center the form horizontally */
+        align-items: left;
+        padding-left: 15px;
+    }
 </style>
-
+<br />
+<br />
 <h1>@formTitle</h1>
-
+<br />
 <form asp-action="EditConfirmation" asp-controller="Admin" method="post">
     @if (Model.ProductId > 0)
     {
@@ -93,6 +105,6 @@
         <label asp-for="Category">Category</label>
         <input asp-for="Category" class="form-control" required />
     </div>
-
-    <button type="submit" class="btn btn-primary">@Model.ProductId == 0 ? "Add Product" : "Edit Product"</button>
+    <br />
+    <button style="border: none; outline: 0; padding: 12px; border-radius: 2px; color: black; font-size:28px; background-color: #FFD700; text-align: center; cursor: pointer; width: 144px; font-size: 18px;" type="submit" class="btn btn-primary">@(Model.ProductId == 0 ? "Add Product" : "Edit Product")</button>
 </form>
