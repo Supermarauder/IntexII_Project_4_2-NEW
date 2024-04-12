@@ -115,6 +115,9 @@ namespace IntexII_Project_4_2.Controllers
                     cart.Clear();
                     SaveCart(cart);
 
+                    TempData["TransactionID"] = viewModel.Order.TransactionId.ToString();
+                    TempData["Amount"] = viewModel.Order.Amount.ToString();
+
                     // Determine the redirect action based on the prediction
                     var redirectAction = prediction[0] == 0 ? "Confirmation0" : "Confirmation1";
                     return RedirectToAction(redirectAction);
@@ -137,10 +140,14 @@ namespace IntexII_Project_4_2.Controllers
 
         public IActionResult Confirmation0()
             {
-                return View();
+                ViewBag.TransactionID = TempData["TransactionID"];
+                ViewBag.Amount = TempData["Amount"];
+            return View();
             }
             public IActionResult Confirmation1()
             {
+                ViewBag.TransactionID = TempData["TransactionID"];
+                ViewBag.Amount = TempData["Amount"];
                 return View();
             }
             public IActionResult RegistrationSuccessful()
