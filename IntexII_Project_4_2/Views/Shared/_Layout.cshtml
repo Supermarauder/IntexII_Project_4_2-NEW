@@ -1,7 +1,6 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
 <head>
-    <script type="text/javascript" src="https://app.termly.io/resource-blocker/f72db7df-90ff-4635-b561-e82bffe6b1a6?autoBlock=off"></script>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Aurora Bricks</title>
@@ -22,7 +21,20 @@
         padding-left: 20px; /* Or any spacing you prefer */
     }
 </style>
+@if (!Context.Request.Cookies.ContainsKey("CookieConsent"))
+{
+    <div id="cookieConsentBanner" class="alert alert-info text-center" role="alert">
+        We use essential cookies to make our site work. With your consent, we may also use non-essential cookies to improve user experience and analyze website traffic. By clicking "I Understand," you agree to our website's cookie use as described in our Cookie Policy.
+        <button onclick="hideCookieBanner()" class="btn btn-primary btn-sm">I understand</button>
+    </div>
 
+    <script>
+        function hideCookieBanner() {
+            document.getElementById('cookieConsentBanner').style.display = 'none';
+            document.cookie = "CookieConsent=true; path=/";
+        }
+    </script>
+}
 <body>
     <div class="header-container">
         <header style="padding-top: 10px;">
