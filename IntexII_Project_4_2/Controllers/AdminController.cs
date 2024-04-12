@@ -131,16 +131,31 @@ namespace IntexII_Project_4_2.Controllers
         }
 
         [Authorize(Roles = "Admin")]
+        [HttpGet]
+        public IActionResult ConfirmDeleteUser(string id)
+        {
+            var user = _context.Users.Find(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            return View("DeleteUserConfirmation", user); // Assuming the view name is ConfirmDeleteUser
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
         public IActionResult DeleteUser(string id)
         {
             var user = _context.Users.Find(id);
-            if (user != null)
+            if (user == null)
             {
-                _context.Users.Remove(user);
-                _context.SaveChanges();
-                return RedirectToAction("AllCustomerInfo");
+                return NotFound();
             }
-            return NotFound();
+
+            _context.Users.Remove(user);
+            _context.SaveChanges();
+            return RedirectToAction("AllCustomerInfo");
         }
         [Authorize(Roles = "Admin")]
         public IActionResult EditConfirmation(Product product)
@@ -148,6 +163,7 @@ namespace IntexII_Project_4_2.Controllers
             return View(product);  // Display the confirmation view
         }
         [Authorize(Roles = "Admin")]
+        [HttpGet]
         public IActionResult EditCustomerInfo(string id)
         {
             var customer = _context.Users.FirstOrDefault(u => u.Id == id);
@@ -157,6 +173,7 @@ namespace IntexII_Project_4_2.Controllers
             }
             return View(customer);
         }
+
         [Authorize(Roles = "Admin")]
         public IActionResult EditOrder(int id)
         {
@@ -287,32 +304,28 @@ namespace IntexII_Project_4_2.Controllers
         }
         [Authorize(Roles = "Admin")]
         [HttpPost]
-        public IActionResult UpdateCustomerInfo(ApplicationUser updatedCustomer)
+        public async Task<IActionResult> UpdateCustomerInfo(ApplicationUser model)
         {
-            if (ModelState.IsValid)
+            var user = await _context.Users.FindAsync(model.Id);
+            if (user == null)
             {
-                var existingCustomer = _context.Users.FirstOrDefault(u => u.Id == updatedCustomer.Id);
-                if (existingCustomer == null)
-                {
-                    return NotFound();
-                }
-
-                // Manually update each property
-                existingCustomer.Email = updatedCustomer.Email;
-                //existingCustomer.FirstName = updatedCustomer.FirstName;
-                //existingCustomer.LastName = updatedCustomer.LastName;
-                //existingCustomer.Country = updatedCustomer.Country;
-                existingCustomer.TwoFactorEnabled = updatedCustomer.TwoFactorEnabled;
-
-                // Continue updating other fields as necessary
-
-                _context.SaveChanges();
-
-                return RedirectToAction("AllCustomerInfo");
+                return NotFound();
             }
 
-            // If we got this far, something failed, redisplay form
-            return View(updatedCustomer);
+            // Update the properties
+            user.Email = model.Email;
+            user.FirstName = model.FirstName;
+            user.LastName = model.LastName;
+            user.Country = model.Country;
+            user.Gender = model.Gender;
+            user.DateOfBirth = model.DateOfBirth;
+            user.TwoFactorEnabled = model.TwoFactorEnabled;
+
+            // Save the changes
+            _context.Update(user);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Index"); // Redirect to a suitable page
         }
         [Authorize(Roles = "Admin")]
         [HttpPost]
