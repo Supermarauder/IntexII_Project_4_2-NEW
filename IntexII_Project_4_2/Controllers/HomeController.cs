@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 using Microsoft.ML.OnnxRuntime;
 using Microsoft.ML.OnnxRuntime.Tensors;
+using Microsoft.AspNetCore.Hosting;
 
 namespace IntexII_Project_4_2.Controllers
 {
@@ -39,11 +40,13 @@ namespace IntexII_Project_4_2.Controllers
         //public HomeController(IIntexProjectRepository temp);
         private InferenceSession _session;
         public string _onnxModelPath;
-        public HomeController(IIntexProjectRepository temp, IHostEnvironment hostEnvironment) 
+
+        public HomeController(IIntexProjectRepository temp, IWebHostEnvironment hostEnvironment)
         {
             _repo = temp;
 
-            _onnxModelPath = System.IO.Path.Combine(hostEnvironment.ContentRootPath, "model.onnx");
+            // Now using IWebHostEnvironment to access WebRootPath
+            _onnxModelPath = System.IO.Path.Combine(hostEnvironment.WebRootPath, "model.onnx");
             _session = new InferenceSession(_onnxModelPath);
         }
 
