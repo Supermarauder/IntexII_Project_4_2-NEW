@@ -1,29 +1,37 @@
 ﻿using IntexII_Project_4_2.Data;
 using IntexII_Project_4_2.Models;
 using IntexII_Project_4_2.Models.ViewModels;
-using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.ML.OnnxRuntime.Tensors;
+using Microsoft.ML.OnnxRuntime;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
 using System.Globalization;
+using Microsoft.AspNetCore.Hosting;
+
 
 namespace IntexII_Project_4_2.Controllers
 {
     public class AdminController : Controller
     {
         private static int idd = 46;
-        
-        private readonly ApplicationDbContext _context;
 
-        public AdminController(ApplicationDbContext context)
+        private readonly ApplicationDbContext _context;
+        private readonly InferenceSession _session;
+        public readonly string _onnxModelPath;
+
+        public AdminController(ApplicationDbContext context, IWebHostEnvironment hostEnvironment)
         {
             _context = context;
+            // Now correctly using IWebHostEnvironment to access WebRootPath
+            _onnxModelPath = System.IO.Path.Combine(hostEnvironment.WebRootPath, "Final_Model.onnx");
+            _session = new InferenceSession(_onnxModelPath);
         }
 
         // GET: Display the form to add a new product
         public IActionResult AddProduct()
         {
-            return View(new Product()); // Initialize a new product to be filled out
+            return View();
         }
 
         // POST: Process the AddProduct form submission
@@ -139,20 +147,96 @@ namespace IntexII_Project_4_2.Controllers
 
             return View(viewModel);
         }
+
+        public IActionResult AllOrdersCopy()
+        {
+
+            var records = (from order in _context.Orders
+                           join customer in _context.Customers
+                           on order.CustomerId equals customer.CustomerId
+                           select new
+                           {
+                               Order = order,
+                               Customer = customer
+                           }).Take(5000);
+            var predictions = new List<OrderPrediction>();  // Your ViewModel for the view
+
+            // Dictionary mapping the numeric prediction to an animal type
+            var class_type_dict = new Dictionary<int, string>
+    {
+        { 0, "not fraud" },
+        { 1, "fraud" }
+    };
+
+            foreach (var record in records)
+            {
+                DateTime orderDate;
+                bool isDateValid = DateTime.TryParseExact(record.Order.Date, "MM/dd/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out orderDate);
+
+                if (!isDateValid)
+                {
+                    continue; // Skip this record or handle it as needed
+                }
+
+                int dayOfMonth = orderDate.Day;
+                int monthOfYear = orderDate.Month;
+
+                // Prepare input values according to the expected model features
+                var input = new List<float>
+                {
+                    (float)record.Customer.Age,
+                    (float)record.Customer.CustomerId,
+                    (float)record.Order.TransactionId,
+                    (float)record.Order.Time, // Assuming Time is a single float value representing the transaction time
+                    (float)(record.Order.Amount ?? 0), // Assuming Amount can be nullable and setting default to 0 if null
+                    (float)dayOfMonth,
+                    (float)monthOfYear,
+                    record.Order.CountryOfTransaction == "United Kingdom" ? 1f : 0f, // Assuming binary encoding for country
+                    (record.Order.ShippingAddress ?? record.Order.CountryOfTransaction) == "United Kingdom" ? 1f : 0f // Similarly for shipping address
+                };
+
+                var inputTensor = new DenseTensor<float>(input.ToArray(), new[] { 1, 9 }); // Adjust dimensions to match model expectation
+
+                // Log the input tensor shape and data for verification
+                Console.WriteLine($"Input Tensor Shape: [{inputTensor.Dimensions[0]}, {inputTensor.Dimensions[1]}]");
+                Console.WriteLine($"Input Data: {string.Join(", ", input)}");
+
+
+                var inputs = new List<NamedOnnxValue>
+                {
+                    NamedOnnxValue.CreateFromTensor("float_type", inputTensor) // Correcting the input name to match your model
+                };
+
+
+                string predictionResult;
+
+
+                using (var results = _session.Run(inputs))
+                {
+                    var prediction = results.FirstOrDefault(item => item.Name == "output_label")?.AsTensor<long>().ToArray();
+                    predictionResult = prediction != null && prediction.Length > 0 ? class_type_dict.GetValueOrDefault((int)prediction[0], "Unknown") : "Error in prediction";
+                }
+
+                predictions.Add(new OrderPrediction
+                {
+                    Order = record.Order,
+                    Customer = record.Customer,
+                    Prediction = predictionResult
+                });
+            }
+
+            return View(predictions);
+
+        }
+
+
+        //public IActionResult AllProducts()
+        //{
+        //    return View();
+        //}
         public IActionResult Delete()
         {
             return View();
-        }
-
-        public IActionResult DeleteConfirmation(int id)
-        {
-            var product = _context.Products.FirstOrDefault(p => p.ProductId == id);
-            if (product == null)
-            {
-                return NotFound();
-            }
-
-            return View(product);
         }
 
         [HttpPost]
@@ -220,7 +304,7 @@ namespace IntexII_Project_4_2.Controllers
                 TransactionId = order.TransactionId,
                 Date = order.Date,
                 Time = order.Time,
-                Amount = order.Amount,
+                // Amount = order?.Amount,
                 CountryOfTransaction = order.CountryOfTransaction,
                 ShippingAddress = order.ShippingAddress,
                 Bank = order.Bank,
@@ -262,40 +346,6 @@ namespace IntexII_Project_4_2.Controllers
             // If validation fails, redisplay the form with the current view model
             return View(viewModel);
         }
-        public IActionResult EditProduct(int id)
-        {
-            Product product;
-            if (id == 0)  // Assuming 0 or a negative number indicates a new product
-            {
-                product = new Product();
-            }
-            else
-            {
-                product = _context.Products.FirstOrDefault(p => p.ProductId == id);
-                if (product == null)
-                {
-                    return NotFound();
-                }
-            }
-            return View(product);
-        }
-
-        // POST: Update the product in the database
-        [HttpPost]
-        public IActionResult EditProduct(Product product)
-        {
-            if (ModelState.IsValid)
-            {
-                // Update logic here
-                _context.Update(product);
-                _context.SaveChanges();
-
-                return RedirectToAction("AllProducts"); // Redirect to the AllProducts view
-            }
-
-            // Return back to the edit form if there are any validation errors
-            return View(product);
-        }
         public IActionResult Index()
         {
             var endDate = DateTime.Today;
@@ -320,8 +370,8 @@ namespace IntexII_Project_4_2.Controllers
 
             var viewModel = new AdminKPIViewModel
             {
-                TotalSales2023 = totalSales2023,
-                TotalSalesPast7Days = totalSalesPast7Days,
+                // TotalSales2023 = totalSales2023,
+                // TotalSalesPast7Days = totalSalesPast7Days,
                 UnfulfilledOrders = unfulfilledOrders,
                 OrdersFulfilledPast7Days = ordersFulfilledPast7Days
             };
@@ -342,9 +392,9 @@ namespace IntexII_Project_4_2.Controllers
 
                 // Manually update each property
                 existingCustomer.Email = updatedCustomer.Email;
-                existingCustomer.FirstName = updatedCustomer.FirstName;
-                existingCustomer.LastName = updatedCustomer.LastName;
-                existingCustomer.Country = updatedCustomer.Country;
+                //existingCustomer.FirstName = updatedCustomer.FirstName;
+                //existingCustomer.LastName = updatedCustomer.LastName;
+                //existingCustomer.Country = updatedCustomer.Country;
                 existingCustomer.TwoFactorEnabled = updatedCustomer.TwoFactorEnabled;
 
                 // Continue updating other fields as necessary
@@ -389,3 +439,5 @@ namespace IntexII_Project_4_2.Controllers
         }
     }
 }
+
+
