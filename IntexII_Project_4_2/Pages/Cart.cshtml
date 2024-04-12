@@ -1,4 +1,7 @@
 ﻿@page
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
 @model IntexII_Project_4_2.Pages.CartModel
 @{
 }
@@ -43,9 +46,18 @@
         </tfoot>
     </table>
 
+    @if (SignInManager.IsSignedIn(User))
+       {
     <div class="text-center">
         <a class="btn btn-primary" href="@Model.ReturnURL">Browse More Products</a>
         <a class="btn btn-primary" href="/authuser/Checkout">Checkout</a>
-
-    </div>
+        </div>
+       }
+    else
+    {
+        <div class="text-center">
+            <a class="btn btn-primary" href="@Model.ReturnURL">Browse More Products</a>
+            <p>Please log in in order to check out</p>
+        </div>
+    }
 </div>
