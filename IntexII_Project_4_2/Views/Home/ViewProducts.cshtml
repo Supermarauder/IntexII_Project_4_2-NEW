@@ -99,134 +99,170 @@
 <div class="row" style="padding-bottom:15px;">
 </div>
 <div class="row">
-    <div class="col-3" style="padding-left: 60px; border-right: 2px solid #000000">
+    <div class="col-3" style="padding-left: 60px; border-right: 2px solid #000000;">
         <h2 style="padding-left: 45px;">Filter</h2>
         <br />
-        <form method="get" action="/Home/ViewProducts">
-            <h4>Category</h4>
-            <div>
-                <input type="checkbox" name="categories" value="Animal">
-                <label>Animal</label>
-            </div>
-            <div>
-                <input type="checkbox" name="categories" value="Building">
-                <label>Building</label>
-            </div>
-            <div>
-                <input type="checkbox" name="categories" value="Car">
-                <label>Car</label>
-            </div>
-            <div>
-                <input type="checkbox" name="categories" value="Character">
-                <label>Character</label>
-            </div>
-            <div>
-                <input type="checkbox" name="categories" value="Colorful">
-                <label>Colorful</label>
-            </div>
-            <div>
-                <input type="checkbox" name="categories" value="DC">
-                <label>DC</label>
-            </div>
-            <div>
-                <input type="checkbox" name="categories" value="Disney">
-                <label>Disney</label>
-            </div>
-            <div>
-                <input type="checkbox" name="categories" value="Energy">
-                <label>Energy</label>
-            </div>
-            <div>
-                <input type="checkbox" name="categories" value="Farm">
-                <label>Farm</label>
-            </div>
-            <div>
-                <input type="checkbox" name="categories" value="Flight">
-                <label>Flight</label>
-            </div>
-            <div>
-                <input type="checkbox" name="categories" value="Floral">
-                <label>Floral</label>
-            </div>
-            <div>
-                <input type="checkbox" name="categories" value="Food">
-                <label>Food</label>
-            </div>
-            <div>
-                <input type="checkbox" name="categories" value="Game">
-                <label>Game</label>
-            </div>
-            <div>
-                <input type="checkbox" name="categories" value="Harry Potter">
-                <label>Harry Potter</label>
-            </div>
-            <div>
-                <input type="checkbox" name="categories" value="Minifig">
-                <label>Minifig</label>
-            </div>
-            <div>
-                <input type="checkbox" name="categories" value="Motorbike">
-                <label>Motorbike</label>
-            </div>
-            <div>
-                <input type="checkbox" name="categories" value="Part">
-                <label>Part</label>
-            </div>
-            <div>
-                <input type="checkbox" name="categories" value="Person">
-                <label>Person</label>
-            </div>
-            <div>
-                <input type="checkbox" name="categories" value="Personal">
-                <label>Personal</label>
-            </div>
-            <div>
-                <input type="checkbox" name="categories" value="Promotional">
-                <label>Promotional</label>
-            </div>
-            <div>
-                <input type="checkbox" name="categories" value="Star Wars">
-                <label>Star Wars</label>
-            </div>
-            <div>
-                <input type="checkbox" name="categories" value="Train">
-                <label>Train</label>
-            </div>
-            <div>
-                <input type="checkbox" name="categories" value="Vehicle">
-                <label>Vehicle</label>
-            </div>
-
-
-
-            <h4>Color</h4>
-            <input type="checkbox" name="colors" value="Black">
-            <label>Black</label><br>
-            
-            <input type="checkbox" name="colors" value="Blue">
-            <label>Blue</label><br>
-            
-            <input type="checkbox" name="colors" value="Brown">
-            <label>Brown</label><br>
-            <input type="checkbox" name="colors" value="Green">
-            <label>Green</label><br>            
-            <input type="checkbox" name="colors" value="Grey">
-            <label>Grey</label><br>
-            <input type="checkbox" name="colors" value="Pink">
-            <label>Pink</label><br>
-            <input type="checkbox" name="colors" value="Red">
-            <label>Red</label><br>            
-            <input type="checkbox" name="colors" value="Tan">
-            <label>Tan</label><br>
-            <input type="checkbox" name="colors" value="White">
-            <label>White</label><br>
-
-            <input type="checkbox" name="colors" value="Yellow">
-            <label>Yellow</label><br>
-
-
-            <input type="submit" value="Apply Filters">
-        </form>
+        <div class="row" style="">
+            <form method="get" action="/Home/ViewProducts">
+                <div class="dropdown" style="padding-left: 45px;">
+                    <button class="dropbtn" style="width: 50%; display: inline-block;">Category</button>
+                    <div class="dropdown-content">
+                        <div>
+                            <input type="checkbox" name="categories" value="Animal">
+                            <label>Animal</label>
+                        </div>
+                        <div>
+                            <input type="checkbox" name="categories" value="Building">
+                            <label>Building</label>
+                        </div>
+                        <div>
+                            <input type="checkbox" name="categories" value="Car">
+                            <label>Car</label>
+                        </div>
+                        <div>
+                            <input type="checkbox" name="categories" value="Character">
+                            <label>Character</label>
+                        </div>
+                        <div>
+                            <input type="checkbox" name="categories" value="Colorful">
+                            <label>Colorful</label>
+                        </div>
+                        <div>
+                            <input type="checkbox" name="categories" value="DC">
+                            <label>DC</label>
+                        </div>
+                        <div>
+                            <input type="checkbox" name="categories" value="Disney">
+                            <label>Disney</label>
+                        </div>
+                        <div>
+                            <input type="checkbox" name="categories" value="Energy">
+                            <label>Energy</label>
+                        </div>
+                        <div>
+                            <input type="checkbox" name="categories" value="Farm">
+                            <label>Farm</label>
+                        </div>
+                        <div>
+                            <input type="checkbox" name="categories" value="Flight">
+                            <label>Flight</label>
+                        </div>
+                        <div>
+                            <input type="checkbox" name="categories" value="Floral">
+                            <label>Floral</label>
+                        </div>
+                        <div>
+                            <input type="checkbox" name="categories" value="Food">
+                            <label>Food</label>
+                        </div>
+                        <div>
+                            <input type="checkbox" name="categories" value="Game">
+                            <label>Game</label>
+                        </div>
+                        <div>
+                            <input type="checkbox" name="categories" value="Harry Potter">
+                            <label>Harry Potter</label>
+                        </div>
+                        <div>
+                            <input type="checkbox" name="categories" value="Minifig">
+                            <label>Minifig</label>
+                        </div>
+                        <div>
+                            <input type="checkbox" name="categories" value="Motorbike">
+                            <label>Motorbike</label>
+                        </div>
+                        <div>
+                            <input type="checkbox" name="categories" value="Part">
+                            <label>Part</label>
+                        </div>
+                        <div>
+                            <input type="checkbox" name="categories" value="Person">
+                            <label>Person</label>
+                        </div>
+                        <div>
+                            <input type="checkbox" name="categories" value="Personal">
+                            <label>Personal</label>
+                        </div>
+                        <div>
+                            <input type="checkbox" name="categories" value="Promotional">
+                            <label>Promotional</label>
+                        </div>
+                        <div>
+                            <input type="checkbox" name="categories" value="Star Wars">
+                            <label>Star Wars</label>
+                        </div>
+                        <div>
+                            <input type="checkbox" name="categories" value="Train">
+                            <label>Train</label>
+                        </div>
+                        <div>
+                            <input type="checkbox" name="categories" value="Vehicle">
+                            <label>Vehicle</label>
+                        </div>
+                    </div>
+                </div>
+                <br />
+                <br />
+                <div class="dropdown" style="padding-left: 45px;">
+                    <button class="dropbtn" style="width: 50%; display: inline-block;">Color</button>
+                    <div class="dropdown-content">
+                        <div>
+                            <input type="checkbox" name="colors" value="Black">
+                            <label>Black</label>
+                        </div>
+                        <input type="checkbox" name="colors" value="Blue">
+                        <label>Blue</label>
+                        <div>
+                            <input type="checkbox" name="colors" value="Brown">
+                            <label>Brown</label>
+                        </div>
+                        <div>
+                            <input type="checkbox" name="colors" value="Green">
+                            <label>Green</label>
+                        </div>
+                        <div>
+                            <input type="checkbox" name="colors" value="Grey">
+                            <label>Grey</label>
+                        </div>
+                        <div>
+                            <input type="checkbox" name="colors" value="Pink">
+                            <label>Pink</label>
+                        </div>
+                        <div>
+                            <input type="checkbox" name="colors" value="Red">
+                            <label>Red</label>
+                        </div>
+                        <div>
+                            <input type="checkbox" name="colors" value="Tan">
+                            <label>Tan</label>
+                        </div>
+                        <div>
+                            <input type="checkbox" name="colors" value="White">
+                            <label>White</label>
+                        </div>
+                        <div>
+                            <input type="checkbox" name="colors" value="Yellow">
+                            <label>Yellow</label>
+                        </div>
+                    </div>
+                </div>
+                <br />
+                <br />
+                <br />
+                <br />
+                <br />
+                <br />
+                <br />
+                <br />
+                <br />
+                <br />
+                <br />
+                <div style="padding-left: 45px;">
+                    <input type="submit" value="Apply Filters" style="padding-left: 45px; border: none; outline: 0; padding: 4px; border-radius: 2px; color: black; font-size:bold; background-color: #FFD700; text-align: center; cursor: pointer; width: 135px; font-size: 18px;">
+                </div>
+            </form>
+        </div>
+        
             <br />
         <br>
         

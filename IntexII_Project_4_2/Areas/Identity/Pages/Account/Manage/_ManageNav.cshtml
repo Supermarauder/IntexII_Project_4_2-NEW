@@ -1,5 +1,4 @@
-﻿@using IntexII_Project_4_2.Data;
-
+﻿@using IntexII_Project_4_2.Data
 @inject SignInManager<ApplicationUser> SignInManager
 @{
     var hasExternalLogins = (await SignInManager.GetExternalAuthenticationSchemesAsync()).Any();
