@@ -17,5 +17,7 @@ namespace IntexII_Project_4_2.Models
 
         // Implement the TopRecommendations property to satisfy the interface contract
         public IQueryable<TopRecommendation> TopRecommendations => _context.TopRecommendations;
+        public IQueryable<CustomerRecommendation> CustomerRecommendations => _context.CustomerRecommendations;  // Implement this property
+
     }
 }
