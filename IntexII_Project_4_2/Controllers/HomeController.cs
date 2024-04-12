@@ -23,7 +23,7 @@ namespace IntexII_Project_4_2.Controllers
         public HomeController(IIntexProjectRepository temp, IWebHostEnvironment hostEnvironment, UserManager<ApplicationUser> userManager)
         {
             _repo = temp;
-            _onnxModelPath = System.IO.Path.Combine(hostEnvironment.WebRootPath, "model.onnx");
+            _onnxModelPath = System.IO.Path.Combine(hostEnvironment.WebRootPath, "Final_model.onnx");
             _session = new InferenceSession(_onnxModelPath);
             _userManager = userManager;
         }

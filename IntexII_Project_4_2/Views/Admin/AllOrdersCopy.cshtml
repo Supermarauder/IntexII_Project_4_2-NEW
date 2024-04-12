@@ -1,77 +1,57 @@
-﻿@model OrderListViewModel
-
+﻿@model IEnumerable<IntexII_Project_4_2.Models.ViewModels.OrderPrediction>
 <style>
     table {
         width: 100%;
         border-collapse: collapse;
     }
-
     th, td {
         padding: 8px;
         text-align: left;
         border-bottom: 1px solid #ddd;
     }
-
     th {
         background-color: #f2f2f2;
     }
 </style>
-
-<h2>Admin Order Summaries</h2>
-<a href="@Url.Action("AllOrders", new { filter = "all" })">Show All Orders</a>
-<a href="@Url.Action("AllOrders", new { filter = "unfulfilled" })">Show Unfulfilled Orders</a>
-<a href="@Url.Action("AllOrders", new { filter = "fraud" })">Show Fraudulent Orders</a>
-
+<h2>Admin Order Fraud Prediction</h2>
 <table>
     <tr>
         <th>Transaction ID</th>
         <th>Customer ID</th>
-        <th>Date/Hour of Day</th>
+        <!--Add Time?-->
         <th>Amount</th>
         <th>Country of Transaction</th>
         <th>Shipping Address</th>
         <th>Bank</th>
         <th>Type of Card</th>
-        <th>Potential Fraud</th>
-        <th>Fulfilled/Resolved</th>
+        <th>Order Fulfilled?</th>
+        <th>Fraudulent Order</th>
+        <th>Predicted Fraud</th>
     </tr>
-    @foreach (var order in Model.Orders)
+    @foreach (var item in Model)
     {
         <tr>
-            <td>@order.TransactionId</td>
-            <td>@order.CustomerId</td>
-            <td>@order.Date - @order.Time</td>
-            <td>$@order.Amount</td>
-            <td>@order.CountryOfTransaction</td>
-            <td>@order.ShippingAddress</td>
-            <td>@order.Bank</td>
-            <td>@order.TypeOfCard</td>
-            <td>@(order.Fraud > 0 ? "Yes" : "No")</td>
-            <td>@(order.Fullfilled ? "Yes" : "No")</td>
-            @if (order.Fraud > 0)
-            {
-                <td>
-                    <a class="btn btn-warning" href="@Url.Action("EditOrder", "Admin", new { id = order.TransactionId })">Review</a>
-
-                </td>
-            }
+            <td>@item.Order.TransactionId</td>
+            <td>@item.Order.CustomerId</td>
+            <!-- Add Time?-->
+            <td>@item.Order.Amount</td>
+            <td>@item.Order.CountryOfTransaction</td>
+            <td>@item.Order.ShippingAddress</td>
+            <td>@item.Order.Bank</td>
+            <td>@item.Order.TypeOfCard</td>
+            <td>@(item.Order.Fullfilled ? "Yes" : "No")</td>
+@*             <td>
+                @(item.Order.Fraud > 0 ? "Yes" : "No") @if (item.Order.Fraud > 0)
+               
+ *@
+@* <td>
+    @(item.Prediction == "fraud" ? 
+       "" : 
+       (item.Prediction == "not fraud" ? 
+           "<a class=\"btn btn-warning\" href=\"" + Url.Action("EditOrder", "Admin", new { id = item.Order.TransactionId }) + "\">Review</a>" : 
+           ""))
+</td> *@
         </tr>
     }
 </table>
-
-@if (Model.PaginationInfo != null)
-{
-    <div>
-        Page @(Model.PaginationInfo.CurrentPage) of @(Model.PaginationInfo.TotalNumPages)
-
-        @if (Model.PaginationInfo.CurrentPage > 1)
-        {
-            <a href="@Url.Action("AllOrders", new { filter = Model.CurrentFilter, page = Model.PaginationInfo.CurrentPage - 1 })">Previous</a>
-        }
-
-        @if (Model.PaginationInfo.CurrentPage < Model.PaginationInfo.TotalNumPages)
-        {
-            <a href="@Url.Action("AllOrders", new { filter = Model.CurrentFilter, page = Model.PaginationInfo.CurrentPage + 1 })">Next</a>
-        }
-    </div>
 }

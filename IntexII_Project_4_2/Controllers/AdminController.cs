@@ -1,54 +1,48 @@
 ﻿using IntexII_Project_4_2.Data;
 using IntexII_Project_4_2.Models;
 using IntexII_Project_4_2.Models.ViewModels;
-using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.ML.OnnxRuntime.Tensors;
+using Microsoft.ML.OnnxRuntime;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
 using System.Globalization;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace IntexII_Project_4_2.Controllers
 {
     public class AdminController : Controller
     {
-        private static int idd = 46;
-        
         private readonly ApplicationDbContext _context;
+        private readonly InferenceSession _session;
+        public readonly string _onnxModelPath;
 
-        public AdminController(ApplicationDbContext context)
+        public AdminController(ApplicationDbContext context, IWebHostEnvironment hostEnvironment)
         {
             _context = context;
+            _onnxModelPath = System.IO.Path.Combine(hostEnvironment.WebRootPath, "Final_Model.onnx");
+            _session = new InferenceSession(_onnxModelPath);
         }
 
-        // GET: Display the form to add a new product
         [Authorize(Roles = "Admin")]
         public IActionResult AddProduct()
         {
-            return View(new Product()); // Initialize a new product to be filled out
+            return View();
         }
 
-        // POST: Process the AddProduct form submission
         [Authorize(Roles = "Admin")]
         [HttpPost]
         public IActionResult AddProduct(Product product)
         {
             if (ModelState.IsValid)
             {
-                // Assuming ProductId is 0 or not set for new entries
-                if (product.ProductId == 0) // This check might be redundant if ProductId is auto-incremented
+                if (product.ProductId == 0)
                 {
-                    // Loop to find a unique ProductId
-                    while (_context.Products.Any(p => p.ProductId == idd))
-                    {
-                        idd++; // Increment idd until it's unique
-                    }
-
-                    product.ProductId = idd; // Manually set the ProductId
                     _context.Products.Add(product);
-                    _context.SaveChanges(); // This should automatically generate ProductId for new entries
-
-                    idd++; // Increment the ID for the next product
-
+                    _context.SaveChanges();
                     return RedirectToAction("AllProducts");
                 }
                 else
@@ -56,15 +50,13 @@ namespace IntexII_Project_4_2.Controllers
                     // Handle update logic or error as necessary
                 }
             }
-
-            // If model state is invalid, render the form again
             return View(product);
         }
 
         [Authorize(Roles = "Admin")]
         public IActionResult AddUser()
         {
-            return View(new ApplicationUser()); // Initialize a new user to be filled out
+            return View(new ApplicationUser());
         }
 
         [Authorize(Roles = "Admin")]
@@ -77,8 +69,6 @@ namespace IntexII_Project_4_2.Controllers
                 _context.SaveChanges();
                 return RedirectToAction("AllCustomerInfo");
             }
-
-            // If the model state is invalid, return the form with validation messages
             return View("AddUser", newUser);
         }
 
@@ -92,10 +82,9 @@ namespace IntexII_Project_4_2.Controllers
         [Authorize(Roles = "Admin")]
         public IActionResult AllOrders(string filter = "all", int page = 1)
         {
-            int pageSize = 50; // Set the number of items per page
+            int pageSize = 50;
             IQueryable<Order> query = _context.Orders;
 
-            // Apply filters based on the 'filter' parameter
             switch (filter.ToLower())
             {
                 case "unfulfilled":
@@ -104,27 +93,11 @@ namespace IntexII_Project_4_2.Controllers
                 case "fraud":
                     query = query.Where(order => order.Fraud > 0);
                     break;
-                case "all":
                 default:
-                    // No additional filter for 'all'
                     break;
             }
 
-            var filteredOrders = query.ToList();
-
-            // Sort by date and process pagination in memory
-            var sortedOrders = filteredOrders
-                .Select(order =>
-                {
-                    DateTime.TryParseExact(order.Date, new[] { "M/d/yyyy", "MM/dd/yyyy" }, CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsedDate);
-                    return new { Order = order, ParsedDate = parsedDate };
-                })
-                .OrderByDescending(temp => temp.ParsedDate)
-                .Select(temp => temp.Order)
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize)
-                .ToList();
-
+            var filteredOrders = query.OrderBy(order => order.Date).Skip((page - 1) * pageSize).Take(pageSize).ToList();
             var totalOrders = query.Count();
 
             var pageInfo = new PaginationInfo
@@ -136,31 +109,15 @@ namespace IntexII_Project_4_2.Controllers
 
             var viewModel = new OrderListViewModel
             {
-                Orders = sortedOrders,
+                Orders = filteredOrders,
                 PaginationInfo = pageInfo,
                 CurrentFilter = filter
             };
 
             return View(viewModel);
         }
-        [Authorize(Roles = "Admin")]
-        public IActionResult Delete()
-        {
-            return View();
-        }
-        [Authorize(Roles = "Admin")]
-        public IActionResult DeleteConfirmation(int id)
-        {
-            var product = _context.Products.FirstOrDefault(p => p.ProductId == id);
-            if (product == null)
-            {
-                return NotFound();
-            }
 
-            return View(product);
-        }
         [Authorize(Roles = "Admin")]
-        [HttpPost]
         public IActionResult DeleteProduct(int productId)
         {
             var product = _context.Products.Find(productId);
@@ -168,22 +125,12 @@ namespace IntexII_Project_4_2.Controllers
             {
                 _context.Products.Remove(product);
                 _context.SaveChanges();
+                return RedirectToAction("AllProducts");
             }
+            return NotFound();
+        }
 
-            return RedirectToAction("AllProducts");
-        }
         [Authorize(Roles = "Admin")]
-        public IActionResult DeleteUserConfirmation(string id)
-        {
-            var user = _context.Users.FirstOrDefault(u => u.Id == id);
-            if (user == null)
-            {
-                return NotFound();
-            }
-            return View(user);
-        }
-        [Authorize(Roles = "Admin")]
-        [HttpPost]
         public IActionResult DeleteUser(string id)
         {
             var user = _context.Users.Find(id);
@@ -227,7 +174,7 @@ namespace IntexII_Project_4_2.Controllers
                 TransactionId = order.TransactionId,
                 Date = order.Date,
                 Time = order.Time,
-                Amount = order.Amount,
+                // Amount = order?.Amount,
                 CountryOfTransaction = order.CountryOfTransaction,
                 ShippingAddress = order.ShippingAddress,
                 Bank = order.Bank,
@@ -330,8 +277,8 @@ namespace IntexII_Project_4_2.Controllers
 
             var viewModel = new AdminKPIViewModel
             {
-                TotalSales2023 = totalSales2023,
-                TotalSalesPast7Days = totalSalesPast7Days,
+                // TotalSales2023 = totalSales2023,
+                // TotalSalesPast7Days = totalSalesPast7Days,
                 UnfulfilledOrders = unfulfilledOrders,
                 OrdersFulfilledPast7Days = ordersFulfilledPast7Days
             };
@@ -352,9 +299,9 @@ namespace IntexII_Project_4_2.Controllers
 
                 // Manually update each property
                 existingCustomer.Email = updatedCustomer.Email;
-                existingCustomer.FirstName = updatedCustomer.FirstName;
-                existingCustomer.LastName = updatedCustomer.LastName;
-                existingCustomer.Country = updatedCustomer.Country;
+                //existingCustomer.FirstName = updatedCustomer.FirstName;
+                //existingCustomer.LastName = updatedCustomer.LastName;
+                //existingCustomer.Country = updatedCustomer.Country;
                 existingCustomer.TwoFactorEnabled = updatedCustomer.TwoFactorEnabled;
 
                 // Continue updating other fields as necessary
@@ -400,3 +347,5 @@ namespace IntexII_Project_4_2.Controllers
         }
     }
 }
+
+
