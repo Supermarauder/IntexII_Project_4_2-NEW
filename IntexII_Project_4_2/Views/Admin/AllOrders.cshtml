@@ -1,6 +1,21 @@
 ﻿@model OrderListViewModel
 
 <style>
+    header {
+        background-color: #4d96d1;
+    }
+
+    .header-container {
+        background: #4d96d1;
+        height: 7.2rem;
+        transition: all 0.2s ease-in-out;
+        z-index: 100;
+    }
+
+    footer {
+        background-color: #4d96d1;
+    }
+
     table {
         width: 100%;
         border-collapse: collapse;
@@ -13,15 +28,16 @@
     }
 
     th {
-        background-color: #f2f2f2;
+        background-color: #FFD700;
     }
 </style>
 
-<h2>Admin Order Summaries</h2>
+<h2>Order Log</h2>
+<br />
 <a href="@Url.Action("AllOrders", new { filter = "all" })">Show All Orders</a>
 <a href="@Url.Action("AllOrders", new { filter = "unfulfilled" })">Show Unfulfilled Orders</a>
 <a href="@Url.Action("AllOrders", new { filter = "fraud" })">Show Fraudulent Orders</a>
-
+<br />
 <table>
     <tr>
         <th>Transaction ID</th>
@@ -34,6 +50,7 @@
         <th>Type of Card</th>
         <th>Potential Fraud</th>
         <th>Fulfilled/Resolved</th>
+        <th><p> </p></th>
     </tr>
     @foreach (var order in Model.Orders)
     {
