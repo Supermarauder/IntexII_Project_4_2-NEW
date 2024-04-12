@@ -31,14 +31,10 @@ namespace IntexII_Project_4_2.Controllers
             _session = new InferenceSession(_onnxModelPath);
         }
 
+        [Authorize(Roles = "Member")]
         public IActionResult Checkout()
         {
-            return View();
-        }
-        [Authorize(Roles = "Member")]
-        public IActionResult Confirmation0()
-        {
-            return View();
+
             var customerId = HttpContext.Session.GetInt32("CustomerId");
 
             var viewModel = new OrderPrediction
@@ -52,7 +48,6 @@ namespace IntexII_Project_4_2.Controllers
         }
 
         [Authorize(Roles = "Member")]
-        public IActionResult Confirmation1()
 
         [HttpPost]
         public IActionResult Checkout(OrderPrediction viewModel)
