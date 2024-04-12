@@ -5,30 +5,67 @@
 @{
 }
 @model Product
-<div class="row">
-    <div class="col-md-6">
-        <div class="card m-1 p-1">
-            <h3>
-                <a href="@Url.Action("ProductDetail", "Home", new { id = Model.ProductId })" class="text-decoration-none text-dark">
-                    @Model.Name
-                    <span class="badge rounded-pill bg-primary text-white float-end"><small>Price: $@Model.Price</small></span>
-                </a>
-            </h3>
 
-            <ul>
-                <li>
-                    <a href="@Url.Action("ProductDetail", "Home", new { id = Model.ProductId })">
-                        <img src="@Model.ImgLink" alt="Image of @Model.Name" style="max-width: 100%; max-height: 200px; object-fit: contain;" />
-                    </a>
-                </li>
-                <li>Category: @Model.Category</li>
-                <li>Description: @(Model.Description.Length > 50 ? Model.Description.Substring(0, 50) + "..." : Model.Description)</li>
-            </ul>
-            <form id="@Model.ProductId" method="post" asp-page="/Cart">
-                <input type="hidden" asp-for="ProductId" />
-                <input type="hidden" name="returnUrl" value="@ViewContext.HttpContext.Request.PathAndQuery()" />
-                <button type="submit" class="btn-outline-success btn-sm float-end">Donate</button>
-            </form>
+<style>
+    body {
+        width: 100%;
+    }
+
+    div {
+        width: 100%;
+    }
+
+    .card {
+        padding-top: 15px;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+        max-width: 300px;
+        margin: auto;
+        text-align: center;
+        background-color: #DFDFDF;
+    }
+
+        .card button {
+            border: none;
+            outline: 0;
+            padding: 0px;
+            color: white;
+            background-color: #DA291C;
+            text-align: center;
+            cursor: pointer;
+            width: 90%;
+            font-size: 18px;
+        }
+
+            .card button:hover {
+                background-color: #DA291C;
+                opacity: 0.6;
+            }
+</style>
+
+<div class="row">
+    <div class="col-md-4" style="margin-bottom: 30px;">
+        <div class="card" style=" height:440px; padding-right:25px;">
+                <a href="@Url.Action("ProductDetail", "Home", new { id = Model.ProductId })">
+                    <img src="@Model.ImgLink" alt="Image of @Model.Name" style="max-width: 100%; max-height: 200px; object-fit: contain;" />
+                </a>
+                <a href="@Url.Action("ProductDetail", "Home", new { id = Model.ProductId })" class="text-decoration-none text-dark">
+                <h3 style="color: #DA291C; text-align:left; margin-left:25px;">@Model.Name</h3>
+                </a>
+                <br />
+            <p style="text-align:left; margin-left:25px;">Description: @(Model.Description.Length > 50 ? Model.Description.Substring(0, 50) + "..." : Model.Description)</p>
+                
+            <div class="row" style="display: flex; align-items: center; position: absolute; bottom: 10px;">
+                <div class="col-5">
+                    <h4>$@Model.Price</h4>
+                </div>
+                <div class="col-7">
+                    <form id="@Model.ProductId" method="post" asp-page="/Cart">
+                        <input type="hidden" asp-for="ProductId" />
+                        <input type="hidden" name="returnUrl" value="@ViewContext.HttpContext.Request.PathAndQuery()" />
+                        <button type="submit" class="btn-outline-success btn-sm float-end">Add to Cart</button>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 </div>
