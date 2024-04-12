@@ -3,6 +3,7 @@ using IntexII_Project_4_2.Infrastructure;
 using IntexII_Project_4_2.Models;
 using IntexII_Project_4_2.Models.ViewModels;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
@@ -16,13 +17,14 @@ namespace IntexII_Project_4_2.Controllers
     {
 
         private readonly IIntexProjectRepository _repo;
+        private readonly UserManager<ApplicationUser> _userManager;
         private readonly InferenceSession _session;
         public readonly string _onnxModelPath;
 
-        public AuthUserController(IIntexProjectRepository repo, IHostEnvironment hostEnvironment)
+        public AuthUserController(IIntexProjectRepository repo, IWebHostEnvironment hostEnvironment)
         {
             _repo = repo;
-            _onnxModelPath = System.IO.Path.Combine(hostEnvironment.ContentRootPath, "Final_Model.onnx");
+            _onnxModelPath = System.IO.Path.Combine(hostEnvironment.WebRootPath, "Final_Model.onnx");
             _session = new InferenceSession(_onnxModelPath);
         }
 

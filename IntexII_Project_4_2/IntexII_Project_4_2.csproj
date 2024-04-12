@@ -10,6 +10,7 @@
   <ItemGroup>
     <None Include="Views\Home\Index.cshtml" />
     <None Include="Views\Home\Privacy.cshtml" />
+    <None Include="wwwroot\Final_Model.onnx" />
     <None Include="wwwroot\model.onnx" />
   </ItemGroup>
 

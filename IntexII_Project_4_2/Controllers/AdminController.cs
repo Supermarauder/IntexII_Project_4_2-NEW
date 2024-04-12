@@ -7,6 +7,7 @@ using Microsoft.ML.OnnxRuntime.Tensors;
 using Microsoft.ML.OnnxRuntime;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
+using Microsoft.Extensions.Hosting;
 
 namespace IntexII_Project_4_2.Controllers
 {
@@ -18,10 +19,10 @@ namespace IntexII_Project_4_2.Controllers
         private readonly InferenceSession _session;
         public readonly string _onnxModelPath;
 
-        public AdminController(ApplicationDbContext context, IHostEnvironment hostEnvironment)
+        public AdminController(ApplicationDbContext context, IWebHostEnvironment hostEnvironment)
         {
             _context = context;
-            _onnxModelPath = System.IO.Path.Combine(hostEnvironment.ContentRootPath, "Final_Model.onnx");
+            _onnxModelPath = System.IO.Path.Combine(hostEnvironment.WebRootPath, "Final_Model.onnx");
             _session = new InferenceSession(_onnxModelPath);
 
         }
