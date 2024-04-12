@@ -11,19 +11,16 @@
                 <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Hello @User.Identity?.Name!</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">HOME</a>
+                <a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="Index">KPIs</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="ViewProducts">PRODUCTS</a>
+                <a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="AllCustomerInfo">CUSTOMERS</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="About">ABOUT US</a>
+                <a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="AllProducts">PRODUCTS</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="AllOrders">VIEW ALL ORDERS</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link text-dark" asp-page="/Cart">CART</a>
+                <a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="AllOrders">ORDERS</a>
             </li>
             <li class="nav-item">
                 <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">

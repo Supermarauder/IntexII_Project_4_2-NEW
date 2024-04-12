@@ -7,8 +7,12 @@
 <h1>Confirm Deletion</h1>
 <p>Are you sure you want to delete the user @Model.FirstName @Model.LastName?</p>
 
-<form method="post" action="/Admin/DeleteUser">
+@using (Html.BeginForm("DeleteUser", "Admin", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+
     <input type="hidden" name="Id" value="@Model.Id" />
+
     <button type="submit" class="btn btn-danger">Confirm Deletion</button>
-    <a class="btn btn-secondary" href="/Admin/AllCustomerInfo">Abort</a>
-</form>
+    <a class="btn btn-secondary" href="@Url.Action("AllCustomerInfo", "Admin")">Abort</a>
+}

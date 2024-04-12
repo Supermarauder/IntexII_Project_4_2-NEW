@@ -39,8 +39,6 @@
 
     <br />
     <br />
-    <h1 style="font-size:58px; text-align:left; margin-left:40px;">Welcome, [dynamic admin user name]!</h1>
-    <br />
     <br />
     <br />
     <br />
@@ -50,16 +48,16 @@
                 <table class="table table-bordered table-striped bg-white" style="border-color: black;margin-left: auto; margin-right: auto; width: 100%;">
                     <thead>
                         <tr>
-                            <th><h2>KPI - Total Sales -  This Year</h2></th>
-                            <th><h2>KPI - Total Sales -  Past 7 Days</h2></th>
-                            <th><h2>KPI - Orders Fulfilled -  Past 7 Days</h2></th>
-                            <th><h2>KPI - Unfulfilled Orders</h2></th>
+                            <th><h2>Total Sales -  This Year</h2></th>
+                            <th><h2>Total Sales -  Past 7 Days</h2></th>
+                            <th><h2>Orders Fulfilled -  Past 7 Days</h2></th>
+                            <th><h2>Unfulfilled Orders</h2></th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td><h3>@Model.TotalSales2023</h3></td>
-                            <td><h3>@Model.TotalSalesPast7Days</h3></td>
+                    <td><h3>@($"${Model.TotalSales2023:N0}")</h3></td>
+                    <td><h3>@($"${Model.TotalSalesPast7Days:N0}")</h3></td>
                             <td><h3>@Model.OrdersFulfilledPast7Days</h3></td>
                             <td><h3>@Model.UnfulfilledOrders</h3></td>
                         </tr>
