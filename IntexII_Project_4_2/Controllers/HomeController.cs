@@ -7,11 +7,15 @@ using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 using Microsoft.ML.OnnxRuntime;
 using Microsoft.ML.OnnxRuntime.Tensors;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 
 namespace IntexII_Project_4_2.Controllers
 {
     public class HomeController : Controller
     {
+        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly UserManager<ApplicationUser> _userManager;
         private IIntexProjectRepository _repo;
         private Cart GetCart()
         {
@@ -35,19 +39,31 @@ namespace IntexII_Project_4_2.Controllers
         //    }
 
         //    return Redirect(returnUrl);  // Assuming returnUrl is a valid path
-        //
+        //}
+        //public HomeController(IIntexProjectRepository temp);
+        private InferenceSession _session;
+        public string _onnxModelPath;
 
-        public HomeController(IIntexProjectRepository temp) 
+        public HomeController(IIntexProjectRepository temp, IWebHostEnvironment hostEnvironment, UserManager<ApplicationUser> userManager)
         {
             _repo = temp;
+
+            // Now using IWebHostEnvironment to access WebRootPath
+            _onnxModelPath = System.IO.Path.Combine(hostEnvironment.WebRootPath, "model.onnx");
+            _session = new InferenceSession(_onnxModelPath);
+            _userManager = userManager;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             var topRecommendationIds = _repo.TopRecommendations.Select(tr => tr.ProductID).ToList();
             var topRecommendations = _repo.Products
                 .Where(p => topRecommendationIds.Contains(p.ProductId))
-                .ToList();
+            .ToList();
+
+
+
+            var currentuser = await _userManager.GetUserAsync(User);
 
             var viewModel = new IndexViewModel
             {
