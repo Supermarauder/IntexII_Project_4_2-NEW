@@ -23,12 +23,12 @@ namespace IntexII_Project_4_2
             var services = builder.Services;
             var configuration = builder.Configuration;
 
-            // Initialize Key Vault Client
-            var keyVaultUrl = configuration["KeyVault:VaultUri"];
-            var secretClient = new SecretClient(new Uri(keyVaultUrl), new DefaultAzureCredential());
-            // Fetch secrets from Azure Key Vault
-            var googleClientId = secretClient.GetSecret("Google-Client-ID").Value.Value;
-            var googleClientSecret = secretClient.GetSecret("Google-Client-Secret").Value.Value;
+            //// Initialize Key Vault Client
+            //var keyVaultUrl = configuration["KeyVault:VaultUri"];
+            //var secretClient = new SecretClient(new Uri(keyVaultUrl), new DefaultAzureCredential());
+            //// Fetch secrets from Azure Key Vault
+            //var googleClientId = secretClient.GetSecret("Google-Client-ID").Value.Value;
+            //var googleClientSecret = secretClient.GetSecret("Google-Client-Secret").Value.Value;
 
 
             // Database connection
@@ -59,22 +59,22 @@ namespace IntexII_Project_4_2
             services.AddControllersWithViews();
 
             // Configure Google Authentication with Key Vault secrets
-            services.AddAuthentication().AddGoogle(googleOptions =>
-            {
-                googleOptions.ClientId = googleClientId;
-                googleOptions.ClientSecret = googleClientSecret;
-                googleOptions.CallbackPath = new PathString("/signin-google");
-                googleOptions.Events = new OAuthEvents
-                {
-                    OnRemoteFailure = context =>
-                    {
-                        // Handle remote login failures here
-                        context.Response.Redirect("/login-error");
-                        context.HandleResponse();
-                        return Task.CompletedTask;
-                    }
-                };
-            });
+            //services.AddAuthentication().AddGoogle(googleOptions =>
+            //{
+            //    googleOptions.ClientId = googleClientId;
+            //    googleOptions.ClientSecret = googleClientSecret;
+            //    googleOptions.CallbackPath = new PathString("/signin-google");
+            //    googleOptions.Events = new OAuthEvents
+            //    {
+            //        OnRemoteFailure = context =>
+            //        {
+            //            // Handle remote login failures here
+            //            context.Response.Redirect("/login-error");
+            //            context.HandleResponse();
+            //            return Task.CompletedTask;
+            //        }
+            //    };
+            //});
 
             // HSTS configuration
             services.AddHsts(options =>
