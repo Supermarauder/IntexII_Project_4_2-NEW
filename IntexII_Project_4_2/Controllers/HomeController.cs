@@ -14,10 +14,8 @@ namespace IntexII_Project_4_2.Controllers
 {
     public class HomeController : Controller
     {
-
-
-
-
+        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly UserManager<ApplicationUser> _userManager;
         private IIntexProjectRepository _repo;
         private Cart GetCart()
         {
@@ -46,13 +44,14 @@ namespace IntexII_Project_4_2.Controllers
         private InferenceSession _session;
         public string _onnxModelPath;
 
-        public HomeController(IIntexProjectRepository temp, IWebHostEnvironment hostEnvironment)
+        public HomeController(IIntexProjectRepository temp, IWebHostEnvironment hostEnvironment, UserManager<ApplicationUser> userManager)
         {
             _repo = temp;
 
             // Now using IWebHostEnvironment to access WebRootPath
             _onnxModelPath = System.IO.Path.Combine(hostEnvironment.WebRootPath, "model.onnx");
             _session = new InferenceSession(_onnxModelPath);
+            _userManager = userManager;
         }
 
         public async Task<IActionResult> Index()
