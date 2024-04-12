@@ -1,36 +1,33 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-}
-<h1>Confirmation 1: When a user purchases from their cart and the predictor says there is potential for fraud (ie fraud=True, or boolean 1), display this view.</h1>
-<br />
-<br />
-<table>
-    <!-- Other table rows -->
-    <tr>
-        <td class="prediction-cell">@ViewBag.Prediction</td>
-    </tr>
-    <!-- Other table rows -->
-</table>
-<form>
-    <div class="row">
-        <div class="col-12 text-center">
-            <h3>We are still procssing your order.</h3>
-            <br />
-            <h3>Order Summary</h3>
-            <br />
-            <br />
-            <p>Order Details</p>
-            <br />
-            <br />
-            <h3>Grand Total</h3>
-            <br />
-            <br />
-            <h3>BUTTON Return to Homepage</h3>
-        </div>
-    </div>
-</form>
+﻿<style>
+    .order-summary-box {
+        border: 2px solid #ccc;
+        padding: 20px;
+        margin: 20px auto;
+        width: 80%;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
 
-<br />
-<br />
+    .order-details {
+        border-top: 1px solid #eee;
+        margin-top: 20px;
+        padding-top: 20px;
+    }
+
+    .text-center {
+        text-align: center;
+    }
+
+    .transaction-id, .grand-total {
+        font-weight: bold;
+    }
+</style>
+
+
+<div class="order-summary-box">
+    <h3 class="text-center">Oops! We are still processing your order...</h3>
+    <div class="order-details">
+        <h2>Order Summary</h2>
+        <h4>Transaction ID: <span class="transaction-id">@ViewBag.TransactionID</span></h4>
+        <h4>Grand Total: <span class="grand-total">$@ViewBag.Amount.00</span></h4>
+    </div>
+</div>
