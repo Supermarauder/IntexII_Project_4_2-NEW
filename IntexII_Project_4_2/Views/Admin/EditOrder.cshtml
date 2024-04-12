@@ -4,6 +4,23 @@
     ViewData["Title"] = "Edit Order";
 }
 
+<style>
+    header {
+        background-color: #4d96d1;
+    }
+
+    .header-container {
+        background: #4d96d1;
+        height: 7.2rem;
+        transition: all 0.2s ease-in-out;
+        z-index: 100;
+    }
+
+    footer {
+        background-color: #4d96d1;
+    }
+</style>
+
 <h1>Edit Order</h1>
 
 <form asp-action="EditOrder" asp-controller="Admin" method="post">
