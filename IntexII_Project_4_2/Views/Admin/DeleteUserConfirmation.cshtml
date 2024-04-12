@@ -1,0 +1,14 @@
+﻿@model IntexII_Project_4_2.Data.ApplicationUser
+
+@{
+    ViewData["Title"] = "Delete User Confirmation";
+}
+
+<h1>Confirm Deletion</h1>
+<p>Are you sure you want to delete the user @Model.FirstName @Model.LastName?</p>
+
+<form method="post" action="/Admin/DeleteUser">
+    <input type="hidden" name="Id" value="@Model.Id" />
+    <button type="submit" class="btn btn-danger">Confirm Deletion</button>
+    <a class="btn btn-secondary" href="/Admin/AllCustomerInfo">Abort</a>
+</form>
