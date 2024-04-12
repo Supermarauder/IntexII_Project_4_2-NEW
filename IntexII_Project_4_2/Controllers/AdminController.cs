@@ -58,6 +58,27 @@ namespace IntexII_Project_4_2.Controllers
             // If model state is invalid, render the form again
             return View(product);
         }
+
+
+        public IActionResult AddUser()
+        {
+            return View(new ApplicationUser()); // Initialize a new user to be filled out
+        }
+
+        [HttpPost]
+        public IActionResult CreateUser(ApplicationUser newUser)
+        {
+            if (ModelState.IsValid)
+            {
+                _context.Users.Add(newUser);
+                _context.SaveChanges();
+                return RedirectToAction("AllCustomerInfo");
+            }
+
+            // If the model state is invalid, return the form with validation messages
+            return View("AddUser", newUser);
+        }
+
         public IActionResult AllProducts()
         {
             var products = _context.Products.ToList();
@@ -147,9 +168,41 @@ namespace IntexII_Project_4_2.Controllers
             return RedirectToAction("AllProducts");
         }
 
+        public IActionResult DeleteUserConfirmation(string id)
+        {
+            var user = _context.Users.FirstOrDefault(u => u.Id == id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+            return View(user);
+        }
+        [HttpPost]
+        public IActionResult DeleteUser(string id)
+        {
+            var user = _context.Users.Find(id);
+            if (user != null)
+            {
+                _context.Users.Remove(user);
+                _context.SaveChanges();
+                return RedirectToAction("AllCustomerInfo");
+            }
+            return NotFound();
+        }
+
         public IActionResult EditConfirmation(Product product)
         {
             return View(product);  // Display the confirmation view
+        }
+
+        public IActionResult EditCustomerInfo(string id)
+        {
+            var customer = _context.Users.FirstOrDefault(u => u.Id == id);
+            if (customer == null)
+            {
+                return NotFound();
+            }
+            return View(customer);
         }
         public IActionResult EditOrder(int id)
         {
@@ -275,6 +328,36 @@ namespace IntexII_Project_4_2.Controllers
 
             return View(viewModel);
         }
+
+        [HttpPost]
+        public IActionResult UpdateCustomerInfo(ApplicationUser updatedCustomer)
+        {
+            if (ModelState.IsValid)
+            {
+                var existingCustomer = _context.Users.FirstOrDefault(u => u.Id == updatedCustomer.Id);
+                if (existingCustomer == null)
+                {
+                    return NotFound();
+                }
+
+                // Manually update each property
+                existingCustomer.Email = updatedCustomer.Email;
+                existingCustomer.FirstName = updatedCustomer.FirstName;
+                existingCustomer.LastName = updatedCustomer.LastName;
+                existingCustomer.Country = updatedCustomer.Country;
+                existingCustomer.TwoFactorEnabled = updatedCustomer.TwoFactorEnabled;
+
+                // Continue updating other fields as necessary
+
+                _context.SaveChanges();
+
+                return RedirectToAction("AllCustomerInfo");
+            }
+
+            // If we got this far, something failed, redisplay form
+            return View(updatedCustomer);
+        }
+
         [HttpPost]
         public IActionResult UpdateProduct(Product product)
         {
@@ -298,6 +381,11 @@ namespace IntexII_Project_4_2.Controllers
             }
 
             return View("EditProduct", product);  // Only if something goes wrong
+        }
+        public IActionResult AllCustomerInfo()
+        {
+            var customers = _context.Users.ToList(); // Retrieve all users from the database
+            return View(customers);
         }
     }
 }
