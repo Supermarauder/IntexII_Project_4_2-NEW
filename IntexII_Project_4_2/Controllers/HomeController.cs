@@ -1,14 +1,14 @@
 using IntexII_Project_4_2.Data;
-using IntexII_Project_4_2.Infrastructure;
-using IntexII_Project_4_2.Models;
 using IntexII_Project_4_2.Models.ViewModels;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System.Diagnostics;
-using Microsoft.ML.OnnxRuntime;
-using Microsoft.ML.OnnxRuntime.Tensors;
-using Microsoft.AspNetCore.Hosting;
+using IntexII_Project_4_2.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.ML.OnnxRuntime;
+using IntexII_Project_4_2.Infrastructure;
+using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace IntexII_Project_4_2.Controllers
 {
@@ -17,38 +17,12 @@ namespace IntexII_Project_4_2.Controllers
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
         private IIntexProjectRepository _repo;
-        private Cart GetCart()
-        {
-            return HttpContext.Session.GetJson<Cart>("cart") ?? new Cart();
-        }
-
-        private void SaveCart(Cart cart)
-        {
-            HttpContext.Session.SetJson("cart", cart);
-        }
-
-        //public IActionResult RemoveFromCart(int productId, string returnUrl)
-        //{
-        //    Cart cart = GetCart();
-        //    Product product = _repo.Products.FirstOrDefault(p => p.ProductId == productId);
-
-        //    if (product != null)
-        //    {
-        //        cart.RemoveItem(productId);
-        //        SaveCart(cart);
-        //    }
-
-        //    return Redirect(returnUrl);  // Assuming returnUrl is a valid path
-        //}
-        //public HomeController(IIntexProjectRepository temp);
         private InferenceSession _session;
         public string _onnxModelPath;
 
         public HomeController(IIntexProjectRepository temp, IWebHostEnvironment hostEnvironment, UserManager<ApplicationUser> userManager)
         {
             _repo = temp;
-
-            // Now using IWebHostEnvironment to access WebRootPath
             _onnxModelPath = System.IO.Path.Combine(hostEnvironment.WebRootPath, "model.onnx");
             _session = new InferenceSession(_onnxModelPath);
             _userManager = userManager;
@@ -56,21 +30,48 @@ namespace IntexII_Project_4_2.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var topRecommendationIds = _repo.TopRecommendations.Select(tr => tr.ProductID).ToList();
-            var topRecommendations = _repo.Products
-                .Where(p => topRecommendationIds.Contains(p.ProductId))
-            .ToList();
+            ApplicationUser currentUser = await _userManager.GetUserAsync(User);
+            List<Product> recommendations;
 
+            if (currentUser != null)
+            {
+                var customerRecommendation = await _repo.CustomerRecommendations.FirstOrDefaultAsync(cr => cr.CustomerID == currentUser.CustomerId);
 
+                if (customerRecommendation != null)
+                {
+                    var recommendationIds = new List<int>
+                    {
+                        customerRecommendation.Recommendation1,
+                        customerRecommendation.Recommendation2,
+                        customerRecommendation.Recommendation3,
+                        customerRecommendation.Recommendation4,
+                        customerRecommendation.Recommendation5
+                    };
 
-            var currentuser = await _userManager.GetUserAsync(User);
+                    recommendations = await _repo.Products.Where(p => recommendationIds.Contains(p.ProductId)).ToListAsync();
+                }
+                else
+                {
+                    recommendations = GetTopRecommendations();
+                }
+            }
+            else
+            {
+                recommendations = GetTopRecommendations();
+            }
 
             var viewModel = new IndexViewModel
             {
-                Recommendations = topRecommendations
+                Recommendations = recommendations
             };
 
             return View(viewModel);
+        }
+
+        private List<Product> GetTopRecommendations()
+        {
+            var topRecommendationIds = _repo.TopRecommendations.Select(tr => tr.ProductID).ToList();
+            return _repo.Products.Where(p => topRecommendationIds.Contains(p.ProductId)).ToList();
         }
 
         public IActionResult About()
@@ -92,18 +93,22 @@ namespace IntexII_Project_4_2.Controllers
 
             return RedirectToPage("/Cart");
         }
+
         public IActionResult CartSummary()
         {
             return View();
         }
+
         public IActionResult Login()
         {
             return View();
         }
+
         public IActionResult Privacy()
         {
             return View();
         }
+
         public IActionResult ProductDetail(int id)
         {
             Product product = _repo.Products.FirstOrDefault(p => p.ProductId == id);
@@ -112,8 +117,7 @@ namespace IntexII_Project_4_2.Controllers
                 return NotFound(); // Or any other error handling
             }
 
-            ItemRecommendation recommendation = _repo.ItemRecommendations.FirstOrDefault(r => r.ProductID == id);
-
+            var recommendation = _repo.ItemRecommendations.FirstOrDefault(r => r.ProductID == id);
             List<Product> recommendedProducts = new List<Product>();
             if (recommendation != null)
             {
@@ -132,6 +136,7 @@ namespace IntexII_Project_4_2.Controllers
 
             return View(viewModel);
         }
+
         public IActionResult Register()
         {
             return View();
@@ -156,12 +161,7 @@ namespace IntexII_Project_4_2.Controllers
             }
 
             int totalItems = query.Count();
-
-            List<Product> filteredProducts = query
-                .OrderBy(p => p.Name)
-                .Skip((pageNum - 1) * pageSize)
-                .Take(pageSize)
-                .ToList();
+            List<Product> filteredProducts = query.OrderBy(p => p.Name).Skip((pageNum - 1) * pageSize).Take(pageSize).ToList();
 
             var productList = new ProductListViewModel
             {
@@ -176,7 +176,5 @@ namespace IntexII_Project_4_2.Controllers
 
             return View(productList);
         }
-
-
     }
 }
