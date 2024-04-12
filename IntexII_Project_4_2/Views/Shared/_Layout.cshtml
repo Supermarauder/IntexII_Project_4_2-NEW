@@ -20,21 +20,34 @@
         display: inline; /* Display list items inline */
         padding-left: 20px; /* Or any spacing you prefer */
     }
-</style>
-@if (!Context.Request.Cookies.ContainsKey("CookieConsent"))
-{
-    <div id="cookieConsentBanner" class="alert alert-info text-center" role="alert">
-        We use essential cookies to make our site work. With your consent, we may also use non-essential cookies to improve user experience and analyze website traffic. By clicking "I Understand," you agree to our website's cookie use as described in our Cookie Policy.
-        <button onclick="hideCookieBanner()" class="btn btn-primary btn-sm">I understand</button>
-    </div>
 
-    <script>
-        function hideCookieBanner() {
-            document.getElementById('cookieConsentBanner').style.display = 'none';
-            document.cookie = "CookieConsent=true; path=/";
+    #cookieConsentBanner {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 1050; /* Above most page elements but below modal overlays */
+        border-top: 1px solid #ccc;
+        background-color: white;
+        padding: 10px 20px;
+        box-shadow: 0 -5px 10px rgba(0,0,0,0.2);
+        text-align: center;
+    }
+
+        #cookieConsentBanner p {
+            margin-bottom: 10px; /* Reduce space below the paragraph */
+            font-size: 14px; /* Smaller font size */
+            line-height: 1.4; /* Tighter line height */
         }
-    </script>
-}
+
+        #cookieConsentBanner button {
+            padding: 5px 10px; /* Smaller button padding */
+            font-size: 14px; /* Button font size reduced to match the text */
+        }
+
+
+</style>
+
 <body>
     <div class="header-container">
         <header style="padding-top: 10px;">
@@ -75,6 +88,25 @@
     <br />
     <br />
     <footer class="border-top footer text-muted">
+        @if (!Context.Request.Cookies.ContainsKey("CookieConsent"))
+        {
+            <div id="cookieConsentBanner" class="alert alert-info text-center" role="alert">
+                <p>We use essential cookies to make our site work. <br /> 
+                    With your consent, we may also use non-essential cookies to improve user experience and analyze website traffic.
+                    <br />
+                    By clicking "I Understand," you agree to our website's cookie use as described in our Cookie Policy.
+                </p>
+                
+                <button onclick="hideCookieBanner()" class="btn btn-primary btn-sm">I understand</button>
+            </div>
+
+            <script>
+                function hideCookieBanner() {
+                    document.getElementById('cookieConsentBanner').style.display = 'none';
+                    document.cookie = "CookieConsent=true; path=/";
+                }
+            </script>
+        }
         <div class="" style="color:black; text-align:center; font-weight:bold;">
             &copy; 2024 - Aurora Bricks <br /><a style="text-decoration: none; color: black;" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy Notice | Cookie Preferences</a>
         </div>
