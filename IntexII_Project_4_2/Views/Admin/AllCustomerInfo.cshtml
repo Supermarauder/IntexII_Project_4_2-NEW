@@ -1,0 +1,47 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+@model List<IntexII_Project_4_2.Data.ApplicationUser>
+
+@{
+    ViewData["Title"] = "All Customer Information";
+}
+
+<h1>Customer Information</h1>
+<a class="btn btn-success" href="/Admin/AddUser">Add a User</a>
+<table class="table">
+    <thead>
+        <tr>
+            <th>User ID</th>
+            <th>Email</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Country</th>
+            <th>Date of Birth</th>
+            <th>Gender</th>
+            <th>Two Factor Enabled?</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var customer in Model)
+        {
+            <tr>
+                <td>@customer.Id</td>
+                <td>@customer.Email</td>
+                <td>@customer.FirstName</td>
+                <td>@customer.LastName</td>
+                <td>@customer.Country</td>
+                <td>@customer.DateOfBirth</td>
+                <td>@customer.Gender</td>
+                <td>@customer.TwoFactorEnabled</td>
+                <td>
+                    <a class="btn btn-primary" href="/Admin/EditCustomerInfo?id=@customer.Id">Edit</a>
+                    <a class="btn btn-danger" href="/Admin/DeleteUserConfirmation?id=@customer.Id">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

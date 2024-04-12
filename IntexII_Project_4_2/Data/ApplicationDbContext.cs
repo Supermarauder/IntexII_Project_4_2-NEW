@@ -1,9 +1,11 @@
 ﻿using IntexII_Project_4_2.Data;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace IntexII_Project_4_2.Data
 {
-    public class ApplicationDbContext : DbContext
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
@@ -17,6 +19,8 @@ namespace IntexII_Project_4_2.Data
         public DbSet<ItemRecommendation> ItemRecommendations { get; set; }
         public DbSet<TopRecommendation> TopRecommendations { get; set; } // Make sure this is correctly defined
         public virtual DbSet<CustomerRecommendation> CustomerRecommendations { get; set; }
+        
+        public DbSet<ApplicationUser> ApplicationUsers { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

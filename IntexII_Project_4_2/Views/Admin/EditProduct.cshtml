@@ -5,6 +5,38 @@
     ViewData["Title"] = formTitle;
 }
 
+<style>
+    header {
+        background-color: #4d96d1;
+    }
+
+    .header-container {
+        background: #4d96d1;
+        height: 7.2rem;
+        transition: all 0.2s ease-in-out;
+        z-index: 100;
+    }
+
+    footer {
+        background-color: #4d96d1;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th, td {
+        padding: 8px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+
+    th {
+        background-color: #FFD700;
+    }
+</style>
+
 <h1>@formTitle</h1>
 
 <form asp-action="EditConfirmation" asp-controller="Admin" method="post">

@@ -2,46 +2,50 @@
 @model IntexII_Project_4_2.Pages.CartModel
 @{
 }
-<h1>Your Cart</h1>
-<table class="table table-bordered table-striped">
-    <thead>
-        <tr>
-            <th>Product Name</th>
-            <th>Quantity</th>
-            <th class="text-right">Amount</th>
-            <th class="text-right">Subtotal</th>
-        </tr>
-    </thead>
-
-    <tbody>
-        @foreach (var line in Model.Cart?.Lines ?? Enumerable.Empty<Cart.CartLine>())
-        {
-            decimal subtotal = line.Quantity * (line.Product.Price ?? 0m);
-
+<div style="margin: 30px">
+    <h1>Your Cart</h1>
+    <br />
+    <br />
+    <table class="table table-bordered table-striped" style="border-color: black;">
+        <thead>
             <tr>
-                <td class="text-left">@line.Product.Name</td>
-                <td class="text-left">@line.Quantity</td>
-                <td class="text-left">$@line.Product.Price</td>
-                <td class="text-left">@subtotal.ToString("C")</td>
-                <td class="text-left">
-                    <form method="post" asp-page-handler="Remove" asp-route-productId="@line.Product.ProductId" asp-route-returnUrl="@Model.ReturnURL">
-                        <button type="submit" class="btn btn-danger">Remove</button>
-                    </form>
-                </td>
+                <th>Product Name</th>
+                <th>Quantity</th>
+                <th class="text-right">Amount</th>
+                <th class="text-right">Subtotal</th>
             </tr>
-        }
-    </tbody>
+        </thead>
 
-    <tfoot>
-        <tr>
-            <td colspan="3" class="text-right">Total:</td>
-            <td class="text-right">@Model.Cart?.CalculateTotal().ToString("C")</td>
-        </tr>
-    </tfoot>
-</table>
+        <tbody>
+            @foreach (var line in Model.Cart?.Lines ?? Enumerable.Empty<Cart.CartLine>())
+            {
+                decimal subtotal = line.Quantity * (line.Product.Price ?? 0m);
 
-<div class="text-center">
-    <a class="btn btn-primary" href="@Model.ReturnURL">Browse More Products</a>
-    <a class="btn btn-primary" href="/authuser/Checkout">Checkout</a>
+                <tr>
+                    <td class="text-left">@line.Product.Name</td>
+                    <td class="text-left">@line.Quantity</td>
+                    <td class="text-left">$@line.Product.Price</td>
+                    <td class="text-left">@subtotal.ToString("C")</td>
+                    <td class="text-left">
+                        <form method="post" asp-page-handler="Remove" asp-route-productId="@line.Product.ProductId" asp-route-returnUrl="@Model.ReturnURL">
+                            <button type="submit" class="btn btn-danger">Remove</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
 
+        <tfoot>
+            <tr>
+                <td colspan="3" class="text-right">Total:</td>
+                <td class="text-right">@Model.Cart?.CalculateTotal().ToString("C")</td>
+            </tr>
+        </tfoot>
+    </table>
+
+    <div class="text-center">
+        <a class="btn btn-primary" href="@Model.ReturnURL">Browse More Products</a>
+        <a class="btn btn-primary" href="/authuser/Checkout">Checkout</a>
+
+    </div>
 </div>
