@@ -6,6 +6,21 @@
 @* <h1>This view displays all the products available on the website. Only accessible to admins.</h1> *@
 
 <style>
+    header {
+        background-color: #4d96d1;
+    }
+
+    .header-container {
+        background: #4d96d1;
+        height: 7.2rem;
+        transition: all 0.2s ease-in-out;
+        z-index: 100;
+    }
+
+    footer {
+        background-color: #4d96d1;
+    }
+
     table {
         width: 100%;
         border-collapse: collapse;
@@ -18,54 +33,50 @@
     }
 
     th {
-        background-color: #f2f2f2;
+        background-color: #FFD700;
     }
 </style>
-
-<h2>Admin Product List</h2>
 <br />
 <br />
-<button>Add Product</button>
-
-<table>
-    <tr>
-        <th>Product ID</th>
-        <th>Product Name</th>
-        <th>Year</th>
-        <th>Price</th>
-        <th>Number of Parts</th>
-        <th>Image Link</th>
-        <th> </th>
-        <th> </th>
-    </tr>
-    @* <tr>
-    Psuedo code:
-    for each entry in transaction table
-    <th>Product ID</th>
-    <th>Product Name</th>
-    <th>Year</th>
-    <th>Price</th>
-    <th>Number of Parts</th>
-    <th>Image Link</th>
-    </tr> *@
-    <tr>
-        <td>4</td>
-        <td>Ahsoka's Starfighter and Vulture Droid</td>
-        <td>2009</td>
-        <td>$290.00</td>
-        <td>150</td>
-        <td>image link</td>
-        <td><button>Update Info</button></td>
-        <td><button>Delete Item</button></td>
-    </tr>
-    <tr>
-        <td>5</td>
-        <td>Exact Replica of PJ's momma</td>
-        <td>1973</td>
-        <td>$priceless.00</td>
-        <td>1 big heart</td>
-        <td>image link</td>
-        <td><button>Update Info</button></td>
-        <td><button>Delete Item</button></td>
-    </tr>
+<h1 style="margin-left: 25px;">All Products</h1>
+<br />
+<br />
+<a class="btn btn-success" href="@Url.Action("AddProduct", "Admin")" style="background-color: #FFD700; color:black; margin-left:25px;">Add New Product</a>
+<br />
+<br />
+<table class="table">
+    <thead>
+        <tr>
+            <th>Product ID</th>
+            <th>Image</th>
+            <th>Name</th>
+            <th>Year</th>
+            <th>Num Parts</th>
+            <th>Price</th>
+            <th>Primary Color</th>
+            <th>Secondary Color</th>
+            <th>Category</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var product in Model)
+        {
+            <tr>
+                <td>@product.ProductId</td>
+                <td><img src="@product.ImgLink" alt="Image of @product.Name" style="height: 100px;"></td>
+                <td>@product.Name</td>
+                <td>@product.Year</td>
+                <td>@product.NumParts</td>
+                <td>$@product.Price</td>
+                <td>@product.PrimaryColor</td>
+                <td>@product.SecondaryColor</td>
+                <td>@product.Category</td>
+                <td>
+                    <a class="btn btn-primary" href="@Url.Action("EditProduct", "Admin", new { id = product.ProductId })">Edit</a>
+                    <a class="btn btn-danger" href="@Url.Action("DeleteConfirmation", "Admin", new { id = product.ProductId })">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
 </table>

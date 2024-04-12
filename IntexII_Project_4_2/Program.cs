@@ -1,5 +1,6 @@
 using IntexII_Project_4_2.Data;
 using IntexII_Project_4_2.Models;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.ML.OnnxRuntime;
@@ -59,6 +60,13 @@ namespace IntexII_Project_4_2
                 options.Password.RequiredUniqueChars = 1;
             });
 
+            builder.Services.AddHsts(options =>
+            {
+                options.Preload = true;
+                options.IncludeSubDomains = true;
+                options.MaxAge = TimeSpan.FromDays(365); // Adjust the MaxAge as needed
+            });
+
             builder.Services.AddSingleton<InferenceSession>(serviceProvider =>
             {
                 var env = serviceProvider.GetService<IHostEnvironment>();
@@ -67,6 +75,8 @@ namespace IntexII_Project_4_2
             });
 
             var app = builder.Build();
+
+            
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
@@ -79,6 +89,7 @@ namespace IntexII_Project_4_2
                 app.UseHsts();
             }
 
+            app.UseHsts();
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
@@ -89,15 +100,22 @@ namespace IntexII_Project_4_2
             app.UseAuthentication(); // Use authentication middleware (if needed, adjust accordingly)
             app.UseAuthorization();
 
-            app.Use(async (context, next) => {
-
-                context.Response.Headers.Add("X-Context-Type-Options", "nosniff");
-                context.Response.Headers.Add("X-XSS-Protection", "1; mode=block");
-                context.Response.Headers.Add("Referrer-Policy", "no-referrer");
-                context.Response.Headers.Add("Content-Security-Policy", "default-src 'self'; img-src 'self' data: m.media-amazon.com images.brickset.com www.brickeconomy.com *.amazonaws.com *.lego.com; script-src 'self' www.google.com app.termly.io; style-src 'self' 'unsafe-inline'; object-src 'none'");
-                context.Response.Headers.Remove("X-Powered-By");
-                context.Response.Headers.Remove("Server");
-
+            app.Use(async (ctx, next) =>
+            {
+                ctx.Response.Headers.Add("X-Content-Type-Options", "nosniff");
+                ctx.Response.Headers.Add("X-XSS-Protection", "1; mode=block");
+                ctx.Response.Headers.Add("Referrer-Policy", "no-referrer");
+                ctx.Response.Headers.Add("Content-Security-Policy",
+                    "default-src 'self'; " +
+                    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://app.termly.io; " + // Add https://app.termly.io here
+                    "style-src 'self' 'unsafe-inline'; " +
+                    "img-src 'self' https://images.brickset.com https://www.lego.com https://*.amazonaws.com https://*.googleusercontent.com https://m.media-amazon.com https://www.brickeconomy.com data:; " +
+                    "font-src 'self'; " +
+                    "frame-src 'self'; " +
+                    "object-src 'none'; " +
+                    "base-uri 'self'; " +
+                    "form-action 'self'; " +
+                    "connect-src 'self';");
                 await next();
             });
 
