@@ -1,5 +1,6 @@
 using IntexII_Project_4_2.Data;
 using IntexII_Project_4_2.Models;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -57,7 +58,16 @@ namespace IntexII_Project_4_2
                 options.Password.RequiredUniqueChars = 1;
             });
 
+            builder.Services.AddHsts(options =>
+            {
+                options.Preload = true;
+                options.IncludeSubDomains = true;
+                options.MaxAge = TimeSpan.FromDays(365); // Adjust the MaxAge as needed
+            });
+
             var app = builder.Build();
+
+            
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
@@ -70,6 +80,7 @@ namespace IntexII_Project_4_2
                 app.UseHsts();
             }
 
+            app.UseHsts();
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
