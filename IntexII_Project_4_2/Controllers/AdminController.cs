@@ -23,6 +23,7 @@ namespace IntexII_Project_4_2.Controllers
         private readonly InferenceSession _session;
         public readonly string _onnxModelPath;
 
+        private static int idd = 40; // Initial value set to 40
         public AdminController(ApplicationDbContext context, IWebHostEnvironment hostEnvironment)
         {
             _context = context;
@@ -48,17 +49,29 @@ namespace IntexII_Project_4_2.Controllers
             {
                 if (product.ProductId == 0)
                 {
+                    // Find the maximum current ProductId or use the static idd
+                    idd = _context.Products.Any() ? _context.Products.Max(p => p.ProductId) + 1 : idd;
+                    while (_context.Products.Any(p => p.ProductId == idd))
+                    {
+                        idd++; // Ensure the idd is unique
+                    }
+
+                    product.ProductId = idd; // Set ProductId to idd
                     _context.Products.Add(product);
                     _context.SaveChanges();
+                    idd++; // Increment idd for the next use
+
                     return RedirectToAction("AllProducts");
                 }
                 else
                 {
-                    // Handle update logic or error as necessary
+                    // Update logic if needed
                 }
             }
+
             return View(product);
         }
+
 
         [Authorize(Roles = "Admin")]
         public IActionResult AddUser()
@@ -215,7 +228,8 @@ namespace IntexII_Project_4_2.Controllers
             return View();
         }
 
-        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        [HttpGet]
         public IActionResult DeleteConfirmation(int id)
         {
             var product = _context.Products.FirstOrDefault(p => p.ProductId == id);
@@ -223,11 +237,12 @@ namespace IntexII_Project_4_2.Controllers
             {
                 return NotFound();
             }
-
-            return View(product);
+            // Pass the complete product object instead of just the ProductId
+            return View(product);  // Ensure that you're passing the correct type
         }
 
         [Authorize(Roles = "Admin")]
+        [HttpPost]
         public IActionResult DeleteProduct(int productId)
         {
             var product = _context.Products.Find(productId);
@@ -235,7 +250,7 @@ namespace IntexII_Project_4_2.Controllers
             {
                 _context.Products.Remove(product);
                 _context.SaveChanges();
-                return RedirectToAction("AllProducts");
+                return RedirectToAction("AllProducts");  // Ensure this redirects to a valid view listing all products
             }
             return NotFound();
         }
@@ -342,6 +357,31 @@ namespace IntexII_Project_4_2.Controllers
 
             // If validation fails, redisplay the form with the current view model
             return View(viewModel);
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpGet]
+        public IActionResult EditProduct(int id)
+        {
+            var product = _context.Products.FirstOrDefault(p => p.ProductId == id);
+            if (product == null)
+            {
+                return NotFound();
+            }
+            return View(product);
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
+        public IActionResult EditProduct(Product product)
+        {
+            if (ModelState.IsValid)
+            {
+                _context.Update(product);
+                _context.SaveChanges();
+                return RedirectToAction("AllProducts");
+            }
+            return View(product);
         }
         public IActionResult Index()
         {

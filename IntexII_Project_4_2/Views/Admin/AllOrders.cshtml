@@ -31,12 +31,16 @@
         background-color: #FFD700;
     }
 </style>
-
-<h2>Order Log</h2>
 <br />
-<a href="@Url.Action("AllOrders", new { filter = "all" })">Show All Orders</a>
-<a href="@Url.Action("AllOrders", new { filter = "unfulfilled" })">Show Unfulfilled Orders</a>
-<a href="@Url.Action("AllOrders", new { filter = "fraud" })">Show Fraudulent Orders</a>
+<br />
+<h2>Order Log</h2>
+<br /><br />
+<a style="text-decoration: underline; color: black;" href="@Url.Action("AllOrders", new { filter = "all" })">Show All Orders</a>
+<br />
+<a style="text-decoration: underline; color: black;" href="@Url.Action("AllOrders", new { filter = "unfulfilled" })">Show Unfulfilled Orders</a>
+<br />
+<a style="text-decoration: underline; color: black;" href="@Url.Action("AllOrders", new { filter = "fraud" })">Show Fraudulent Orders</a>
+<br />
 <br />
 <table>
     <tr>
@@ -63,13 +67,13 @@
             <td>@order.ShippingAddress</td>
             <td>@order.Bank</td>
             <td>@order.TypeOfCard</td>
-            <td>@(order.Fullfilled ? "Yes" : "No")</td>
             <td>@(order.Fraud > 0 ? "Yes" : "No") @if (order.Fraud > 0)
                 {
                     <a class="btn btn-warning" href="@Url.Action("EditOrder", "Admin", new { id = order.TransactionId })">Review</a>
                 }
-                    
-    </td>
+
+            </td>
+            <td>@(order.Fullfilled ? "Yes" : "No")</td>
         </tr>
     }
 </table>
@@ -81,12 +85,12 @@
 
         @if (Model.PaginationInfo.CurrentPage > 1)
         {
-            <a href="@Url.Action("AllOrders", new { filter = Model.CurrentFilter, page = Model.PaginationInfo.CurrentPage - 1 })">Previous</a>
+            <a style="text-decoration: underline; color: black;" href="@Url.Action("AllOrders", new { filter = Model.CurrentFilter, page = Model.PaginationInfo.CurrentPage - 1 })">Previous</a>
         }
 
         @if (Model.PaginationInfo.CurrentPage < Model.PaginationInfo.TotalNumPages)
         {
-            <a href="@Url.Action("AllOrders", new { filter = Model.CurrentFilter, page = Model.PaginationInfo.CurrentPage + 1 })">Next</a>
+            <a style="text-decoration: underline; color: black;" href="@Url.Action("AllOrders", new { filter = Model.CurrentFilter, page = Model.PaginationInfo.CurrentPage + 1 })">Next</a>
         }
     </div>
 }

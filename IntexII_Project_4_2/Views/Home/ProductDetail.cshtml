@@ -1,17 +1,65 @@
 ﻿@model ProductDetailViewModel
 
+<style>
+    .col-5 {
+        display: flex;
+        align-items: center; /* This will vertically center the child elements */
+        justify-content: center; /* This will horizontally center the child elements */
+        height: 100%; /* Ensure the div has a defined height */
+        padding-top:60px;
+    }
 
-<h1>@Model.Product.Name</h1>
+/*     div {
+        width: 100%;
+    } */
 
+    .card {
+        padding-top: 15px;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+        max-width: 300px;
+        margin: auto;
+        text-align: center;
+        background-color: #DFDFDF;
+    }
+
+        .card button {
+            border: none;
+            outline: 0;
+            padding: 0px;
+            color: white;
+            background-color: #DA291C;
+            text-align: center;
+            cursor: pointer;
+            width: 100%;
+            font-size: 18px;
+        }
+
+            .card button:hover {
+                opacity: 0.6;
+            }
+
+</style>
+<br />
+<br />
 <div class="row">
     <div class="col-5">
-        <img src="@Model.Product.ImgLink" alt="Image of @Model.Product.Name" style="max-width: 100%; max-height: 300px; object-fit: contain;">
+        <br />
+        <br />
+        <img src="@Model.Product.ImgLink" alt="Image of @Model.Product.Name" style="max-width: 100%; max-height: 600px; object-fit: contain;">
     </div>
     <div class="col-7">
+        <br />
+        <br />
+        <h1>@Model.Product.Name</h1>
+        <br />
+        <br />
         <h2>Price: $@Model.Product.Price</h2>
+        <br />
         <p>Description: @(Model.Product.Description)</p>
+        <br />
         <h4>Year: @Model.Product.Year</h4> <!-- Assuming you have Year and Pieces properties -->
         <h4>Number of Pieces: @Model.Product.NumParts</h4>
+        <br />
         <form method="post" asp-controller="Home" asp-action="AddToCart">
             <div class="quantity">
                 <label for="quantity">Quantity:</label>                <select id="quantity" name="quantity">
@@ -20,32 +68,43 @@
                         <option value="@i">@i</option>
                     }
                 </select>
-
             </div>
+            <br />
+            <br />
             <input type="hidden" name="productId" value="@Model.Product.ProductId" />
-            <button type="submit" class="btn-outline-success btn-sm">Add to Cart</button>
+            <button type="submit" class="btn-outline-success btn-sm" style="border: none; outline: 0; padding: 0px; color: white; background-color: #DA291C; text-align: center; cursor: pointer; width: 33%; font-size: 18px;">Add to Cart</button>
         </form>
     </div>
 </div>
-
 <br />
 <br />
-<div class="row">
-    <h3>You may also like...</h3>
-    @foreach (var rec in Model.Recommendations)
+<p style="font-size:30px; padding-left: 35px;">You may also like...</p>
+<br />
+<div class="row" style="margin-left:25px;">
+    @foreach (var product in Model.Recommendations)
     {
-        <div class="col-4">
-            <a href="@Url.Action("ProductDetail", "Home", new { id = rec.ProductId })">
-                <img src="@rec.ImgLink" alt="Image of @rec.Name" style="max-width: 100%; max-height: 200px; object-fit: contain;">
-                <h4>@rec.Name</h4>
-            </a>
-            <p>@(rec.Description.Length > 100 ? rec.Description.Substring(0, 100) + "..." : rec.Description)</p>
-            <h4>Price: $@rec.Price</h4>
-            <form method="post" asp-controller="Home" asp-action="AddToCart">
-                <input type="hidden" name="productId" value="@rec.ProductId" />
-                <input type="hidden" name="quantity" value="1" />
-                <button type="submit" class="btn-outline-success btn-sm">Add to Cart</button>
-            </form>
+        <div class="col-md-4" style="margin-bottom: 30px;">
+            <div class="card" style=" height:440px;">
+                <div style="text-align: left; padding-left: 25px; padding-right: 25px;">
+                    <a style="text-decoration: none; color: black;" href="@Url.Action("ProductDetail", "Home", new { id = product.ProductId })">
+                        <img src="@product.ImgLink" alt="Image of @product.Name" style="max-width: 100%; max-height: 200px; object-fit: contain;">
+                        <p style="font-size:25px; color:#DA291C; padding-top:15px;">@product.Name</p>
+                    </a>
+                    <p style="font-size:15px;">@(product.Description.Length > 100 ? product.Description.Substring(0, 100) + "..." : product.Description)</p>
+                </div>
+                <div class="row" style="display: flex; align-items: center; position: absolute; bottom: 10px;">
+                    <div class="col-5">
+                        <p style="font-size:17px; text-align: left; padding-left: 25px;">Price: $@product.Price</p>
+                    </div>
+                    <div class="col-7" style="padding-right: 25px;">
+                        <form method="post" asp-controller="Home" asp-action="AddToCart">
+                            <input type="hidden" name="productId" value="@product.ProductId" />
+                            <input type="hidden" name="quantity" value="1" />
+                            <p><button style="align-items:center;" type="submit" class="card button">Add to Cart</button></p>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
     }
 </div>
