@@ -9,6 +9,12 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using IntexII_Project_4_2.Infrastructure;
+using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Hosting;
 
 namespace IntexII_Project_4_2.Controllers
 {
@@ -19,7 +25,6 @@ namespace IntexII_Project_4_2.Controllers
         private IIntexProjectRepository _repo;
         private InferenceSession _session;
         public string _onnxModelPath;
-
         public HomeController(IIntexProjectRepository temp, IWebHostEnvironment hostEnvironment, UserManager<ApplicationUser> userManager)
         {
             _repo = temp;
@@ -27,7 +32,6 @@ namespace IntexII_Project_4_2.Controllers
             _session = new InferenceSession(_onnxModelPath);
             _userManager = userManager;
         }
-
         public async Task<IActionResult> Index()
         {
             ApplicationUser currentUser = await _userManager.GetUserAsync(User);
@@ -64,7 +68,6 @@ namespace IntexII_Project_4_2.Controllers
             {
                 Recommendations = recommendations
             };
-
             return View(viewModel);
         }
 
@@ -78,7 +81,6 @@ namespace IntexII_Project_4_2.Controllers
         {
             return View();
         }
-
         public IActionResult AddToCart(int productId, int quantity)
         {
             Product product = _repo.Products.FirstOrDefault(p => p.ProductId == productId);
@@ -86,11 +88,9 @@ namespace IntexII_Project_4_2.Controllers
             {
                 return NotFound();
             }
-
             Cart cart = HttpContext.Session.GetJson<Cart>("cart") ?? new Cart();
             cart.AddItem(product, quantity);
             HttpContext.Session.SetJson("cart", cart);
-
             return RedirectToPage("/Cart");
         }
 
@@ -127,13 +127,11 @@ namespace IntexII_Project_4_2.Controllers
                 recommendedProducts.Add(_repo.Products.FirstOrDefault(p => p.ProductId == recommendation.Recommendation4));
                 recommendedProducts.Add(_repo.Products.FirstOrDefault(p => p.ProductId == recommendation.Recommendation5));
             }
-
             var viewModel = new ProductDetailViewModel
             {
                 Product = product,
                 Recommendations = recommendedProducts
             };
-
             return View(viewModel);
         }
 
@@ -141,25 +139,20 @@ namespace IntexII_Project_4_2.Controllers
         {
             return View();
         }
-
         public IActionResult ViewProducts(int pageNum, string[] categories, string[] colors, int pageSize = 5)
         {
             pageNum = Math.Max(1, pageNum); // Ensure pageNum is at least 1
-
             IQueryable<Product> query = _repo.Products.AsQueryable();
-
             // Apply category filters if provided
             if (categories != null && categories.Length > 0)
             {
                 query = query.Where(p => categories.Any(cat => p.Category.Contains(cat)));
             }
-
             // Apply color filters if provided
             if (colors != null && colors.Length > 0)
             {
                 query = query.Where(p => colors.Contains(p.PrimaryColor));
             }
-
             int totalItems = query.Count();
             List<Product> filteredProducts = query.OrderBy(p => p.Name).Skip((pageNum - 1) * pageSize).Take(pageSize).ToList();
 
@@ -173,7 +166,6 @@ namespace IntexII_Project_4_2.Controllers
                     TotalItems = totalItems
                 }
             };
-
             return View(productList);
         }
     }

@@ -6,6 +6,7 @@ namespace IntexII_Project_4_2.Models.ViewModels
     {
         public Order Order { get; set; }
         public string Prediction { get; set; }
+
         public Customer Customer { get; set; }
         public Cart Cart { get; set; } // Add this
         public int CustomerId { get; set; }

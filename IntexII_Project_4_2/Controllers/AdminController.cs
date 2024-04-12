@@ -6,11 +6,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.ML.OnnxRuntime.Tensors;
 using Microsoft.ML.OnnxRuntime;
+using Microsoft.ML.OnnxRuntime.Tensors;
+using Microsoft.ML.OnnxRuntime;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Hosting;
 
 namespace IntexII_Project_4_2.Controllers
 {
@@ -26,6 +29,7 @@ namespace IntexII_Project_4_2.Controllers
             _onnxModelPath = System.IO.Path.Combine(hostEnvironment.WebRootPath, "Final_Model.onnx");
             _session = new InferenceSession(_onnxModelPath);
             _onnxModelPath = System.IO.Path.Combine(hostEnvironment.ContentRootPath, "model_final.onnx");
+            _onnxModelPath = System.IO.Path.Combine(hostEnvironment.WebRootPath, "Final_Model.onnx");
             _session = new InferenceSession(_onnxModelPath);
 
         }
@@ -122,80 +126,96 @@ namespace IntexII_Project_4_2.Controllers
 
         public IActionResult AllOrdersCopy()
         {
-            var records = _context.Orders.ToList();  // Fetch all records
+
+            var records = (from order in _context.Orders
+                          join customer in _context.Customers
+                          on order.CustomerId equals customer.CustomerId
+                          select new
+                          {
+                              Order = order,
+                              Customer = customer
+                          }).Take(5000);
             var predictions = new List<OrderPrediction>();  // Your ViewModel for the view
 
             // Dictionary mapping the numeric prediction to an animal type
             var class_type_dict = new Dictionary<int, string>
-            {
-                { 0, "not fraud" },
-                { 1, "fraud" }
-            };
+    {
+        { 0, "not fraud" },
+        { 1, "fraud" }
+    };
 
             foreach (var record in records)
             {
+                DateTime orderDate;
+                bool isDateValid = DateTime.TryParseExact(record.Order.Date, "MM/dd/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out orderDate);
+
+                if (!isDateValid)
+                {
+                    continue; // Skip this record or handle it as needed
+                }
+
+                int dayOfMonth = orderDate.Day;
+                int monthOfYear = orderDate.Month;
+
+                // Prepare input values according to the expected model features
                 var input = new List<float>
                 {
-                    (float)record.CustomerId,
-                    (float)record.Time,
-                    (float)(record.Amount ?? 0),
-
-                    record.DayOfWeek == "Mon" ? 1 : 0,
-                    record.DayOfWeek == "Sat" ? 1 : 0,
-                    record.DayOfWeek == "Sun" ? 1 : 0,
-                    record.DayOfWeek == "Thu" ? 1 : 0,
-                    record.DayOfWeek == "Tue" ? 1 : 0,
-                    
-                    record.EntryMode == "PIN" ? 1 : 0,
-                    record.EntryMode == "Tap" ? 1 : 0,
-
-                    record.TypeOfTransaction == "Online" ? 1 : 0,
-                    record.TypeOfTransaction == "POS" ? 1 : 0,
-
-                    record.CountryOfTransaction == "India" ? 1 : 0,
-                    record.CountryOfTransaction == "Russia" ? 1 : 0,
-                    record.CountryOfTransaction == "USA" ? 1 : 0,
-                    record.CountryOfTransaction == "UnitedKingdom" ? 1 : 0,
-
-                    (record.ShippingAddress ?? record.CountryOfTransaction) == "India" ? 1 : 0,
-                    (record.ShippingAddress ?? record.CountryOfTransaction) == "Russia" ? 1 : 0,
-                    (record.ShippingAddress ?? record.CountryOfTransaction) == "USA" ? 1 : 0,
-                    (record.ShippingAddress ?? record.CountryOfTransaction) == "UnitedKingdom" ? 1 : 0,
-
-                    record.Bank == "HSBC" ? 1 : 0,
-                    record.Bank == "Halifax" ? 1 : 0,
-                    record.Bank == "Lloyds" ? 1 : 0,
-                    record.Bank == "Metro" ? 1 : 0,
-                    record.Bank == "RBS" ? 1 : 0,
-
-                    record.Bank == "Visa" ? 1 : 0,
-
+                    (float)record.Customer.Age,
+                    (float)record.Customer.CustomerId,
+                    (float)record.Order.TransactionId,
+                    (float)record.Order.Time, // Assuming Time is a single float value representing the transaction time
+                    (float)(record.Order.Amount ?? 0), // Assuming Amount can be nullable and setting default to 0 if null
+                    (float)dayOfMonth,
+                    (float)monthOfYear,
+                    record.Order.CountryOfTransaction == "United Kingdom" ? 1f : 0f, // Assuming binary encoding for country
+                    (record.Order.ShippingAddress ?? record.Order.CountryOfTransaction) == "United Kingdom" ? 1f : 0f // Similarly for shipping address
                 };
-                var inputTensor = new DenseTensor<float>(input.ToArray(), new[] { 1, input.Count });
+
+                var inputTensor = new DenseTensor<float>(input.ToArray(), new[] { 1, 9 }); // Adjust dimensions to match model expectation
+
+                // Log the input tensor shape and data for verification
+                Console.WriteLine($"Input Tensor Shape: [{inputTensor.Dimensions[0]}, {inputTensor.Dimensions[1]}]");
+                Console.WriteLine($"Input Data: {string.Join(", ", input)}");
+
 
                 var inputs = new List<NamedOnnxValue>
                 {
-                    NamedOnnxValue.CreateFromTensor("float_input", inputTensor)
+                    NamedOnnxValue.CreateFromTensor("float_type", inputTensor) // Correcting the input name to match your model
                 };
 
+
                 string predictionResult;
+
+
                 using (var results = _session.Run(inputs))
                 {
                     var prediction = results.FirstOrDefault(item => item.Name == "output_label")?.AsTensor<long>().ToArray();
                     predictionResult = prediction != null && prediction.Length > 0 ? class_type_dict.GetValueOrDefault((int)prediction[0], "Unknown") : "Error in prediction";
                 }
 
-                predictions.Add(new OrderPrediction { Order = record, Prediction = predictionResult }); // Adds the animal information and prediction for that animal to AnimalPrediction viewmodel
+                predictions.Add(new OrderPrediction
+                {
+                    Order = record.Order,
+                    Customer = record.Customer,
+                    Prediction = predictionResult
+                });
             }
 
             return View(predictions);
+
         }
 
-        public IActionResult AllProducts()
+
+        //public IActionResult AllProducts()
+        //{
+        //    return View();
+        //}
+        public IActionResult Delete()
         {
             return View();
         }
 
+        [HttpPost]
         public IActionResult DeleteConfirmation(int id)
         {
             var product = _context.Products.FirstOrDefault(p => p.ProductId == id);
@@ -281,7 +301,7 @@ namespace IntexII_Project_4_2.Controllers
                 TransactionId = order.TransactionId,
                 Date = order.Date,
                 Time = order.Time,
-                // Amount = order.Amount,
+                // Amount = order?.Amount,
                 CountryOfTransaction = order.CountryOfTransaction,
                 ShippingAddress = order.ShippingAddress,
                 Bank = order.Bank,
@@ -323,43 +343,6 @@ namespace IntexII_Project_4_2.Controllers
             // If validation fails, redisplay the form with the current view model
             return View(viewModel);
         }
-        [Authorize(Roles = "Admin")]
-        public IActionResult EditProduct(int id)
-        {
-            Product product;
-            if (id == 0)  // Assuming 0 or a negative number indicates a new product
-            {
-                product = new Product();
-            }
-            else
-            {
-                product = _context.Products.FirstOrDefault(p => p.ProductId == id);
-                if (product == null)
-                {
-                    return NotFound();
-                }
-            }
-            return View(product);
-        }
-
-        // POST: Update the product in the database
-        [Authorize(Roles = "Admin")]
-        [HttpPost]
-        public IActionResult EditProduct(Product product)
-        {
-            if (ModelState.IsValid)
-            {
-                // Update logic here
-                _context.Update(product);
-                _context.SaveChanges();
-
-                return RedirectToAction("AllProducts"); // Redirect to the AllProducts view
-            }
-
-            // Return back to the edit form if there are any validation errors
-            return View(product);
-        }
-        [Authorize(Roles = "Admin")]
         public IActionResult Index()
         {
             var endDate = DateTime.Today;

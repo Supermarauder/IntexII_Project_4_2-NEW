@@ -1,43 +1,44 @@
 ﻿using IntexII_Project_4_2.Data;
+using IntexII_Project_4_2.Infrastructure;
 using IntexII_Project_4_2.Models;
 using IntexII_Project_4_2.Models.ViewModels;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Identity.Client;
+using Microsoft.Extensions.Hosting;
 using Microsoft.ML.OnnxRuntime;
 using Microsoft.ML.OnnxRuntime.Tensors;
+using System.Globalization;
 
 namespace IntexII_Project_4_2.Controllers
 {
-    public class AuthUserController : Controller
-
+    public class AuthUserController : BaseController
     {
-        private IIntexProjectRepository _repo;
 
-        private readonly ApplicationDbContext _context;
-
+        private readonly IIntexProjectRepository _repo;
+        private readonly UserManager<ApplicationUser> _userManager;
         private readonly InferenceSession _session;
         public readonly string _onnxModelPath;
 
-        public AuthUserController(IIntexProjectRepository repo, IWebHostEnvironment hostEnvironment, UserManager<ApplicationUser> userManager)
+        public AuthUserController(IIntexProjectRepository repo, IWebHostEnvironment hostEnvironment)
         {
-            _context = context;
-            _onnxModelPath = System.IO.Path.Combine(hostEnvironment.ContentRootPath, "model_final.onnx");
+            _repo = repo;
+            _onnxModelPath = System.IO.Path.Combine(hostEnvironment.WebRootPath, "Final_Model.onnx");
             _session = new InferenceSession(_onnxModelPath);
-            _userManager = userManager;
         }
-
-        //public IActionResult Checkout()
-        //{
-        //    return View();
-        //}
-        [Authorize(Roles = "Member")]
 
         public IActionResult Checkout()
         {
-
+            return View();
+        }
+        [Authorize(Roles = "Member")]
+        public IActionResult Confirmation0()
+        {
+            return View();
             var customerId = HttpContext.Session.GetInt32("CustomerId");
 
             var viewModel = new OrderPrediction
@@ -48,17 +49,14 @@ namespace IntexII_Project_4_2.Controllers
             };
 
             return View(viewModel);
-
         }
 
         [Authorize(Roles = "Member")]
-        // public IActionResult Confirmation1();
+        public IActionResult Confirmation1()
 
         [HttpPost]
-        public async Task<IActionResult> Checkout(OrderPrediction viewModel)
+        public IActionResult Checkout(OrderPrediction viewModel)
         {
-            ApplicationUser currentUser = await _userManager.GetUserAsync(User);
-            
             var cart = HttpContext.Session.GetJson<Cart>("cart");
             var total = cart.CalculateTotal();
 
@@ -82,9 +80,8 @@ namespace IntexII_Project_4_2.Controllers
     };
 
             // Prepare variables for model pipeline inputs
-            float customerId = (float)currentUser.CustomerId;
             float age = (float)viewModel.Customer.Age;
-            //float customerId = (float)viewModel.Order.CustomerId;
+            float customerId = (float)viewModel.Order.CustomerId;
             float transactionId = (float)viewModel.Order.TransactionId;
             float time = (float)viewModel.Order.Time;
             float amount = (float)viewModel.Order.Amount;
@@ -109,31 +106,43 @@ namespace IntexII_Project_4_2.Controllers
                 {
                     var fraudStatus = class_type_dict.GetValueOrDefault((int)prediction[0], "Unknown");
                     ViewBag.Prediction = fraudStatus;
-                    // viewModel.Order. = fraudStatus; // 
 
                     // Clear the cart after a successful checkout and before redirecting
                     cart.Clear();
                     SaveCart(cart);
 
-                // Assuming 'Date' is stored as a string. You might need to adjust the format.
-                viewModel.Order.Date = currentDateTime.ToString("MM/dd/yyyy");
-
-                // If 'Time' is intended to store hours and minutes, adjust accordingly.
-                // This example simply stores the hour for illustration.
-                viewModel.Order.Time = currentDateTime.Hour;
-
-                // Set the day of the week
-                viewModel.Order.DayOfWeek = currentDateTime.ToString("ddd");
-
-                // Add Order entity to DbSet<Order>
-                _context.Orders.Add(viewModel.Order);
-                // Add Customer entity to DbSet<Customer>
-                _context.Customers.Add(viewModel.Customer);
-
-                // Save changes asynchronously to the database
-                _context.SaveChangesAsync();
+                    // Determine the redirect action based on the prediction
+                    var redirectAction = prediction[0] == 0 ? "Confirmation0" : "Confirmation1";
+                    return RedirectToAction(redirectAction);
+                }
+                else
+                {
+                    ViewBag.Prediction = "Error: Unable to make a prediction.";
+                }
             }
-            return View(viewModel);
+
+            // Handling cases where prediction was not made
+            // Clear the cart and save it
+            cart.Clear();
+            SaveCart(cart);
+
+            // Redirect to a default confirmation page or an error handling page as appropriate
+            return RedirectToAction("Confirmation0");
         }
-    }
-}
+
+
+        public IActionResult Confirmation0()
+            {
+                return View();
+            }
+            public IActionResult Confirmation1()
+            {
+                return View();
+            }
+            public IActionResult RegistrationSuccessful()
+            {
+                return View();
+            }
+        }
+    } 
+
