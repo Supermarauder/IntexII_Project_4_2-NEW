@@ -18,7 +18,7 @@
     <tr>
         <th>Transaction ID</th>
         <th>Customer ID</th>
-        <!--Add Time?-->
+        <!-- Consider adding Time column here if necessary -->
         <th>Amount</th>
         <th>Country of Transaction</th>
         <th>Shipping Address</th>
@@ -27,30 +27,29 @@
         <th>Order Fulfilled?</th>
         <th>Fraudulent Order</th>
         <th>Predicted Fraud</th>
+        <!-- Additional column for actions, if necessary -->
+        <th>Actions</th>
     </tr>
     @foreach (var item in Model)
     {
         <tr>
             <td>@item.Order.TransactionId</td>
             <td>@item.Order.CustomerId</td>
-            <!-- Add Time?-->
+            <!-- Consider adding Time cell here -->
             <td>@item.Order.Amount</td>
             <td>@item.Order.CountryOfTransaction</td>
             <td>@item.Order.ShippingAddress</td>
             <td>@item.Order.Bank</td>
             <td>@item.Order.TypeOfCard</td>
             <td>@(item.Order.Fullfilled ? "Yes" : "No")</td>
-@*             <td>
-                @(item.Order.Fraud > 0 ? "Yes" : "No") @if (item.Order.Fraud > 0)
-               
- *@
-@* <td>
-    @(item.Prediction == "fraud" ? 
-       "" : 
-       (item.Prediction == "not fraud" ? 
-           "<a class=\"btn btn-warning\" href=\"" + Url.Action("EditOrder", "Admin", new { id = item.Order.TransactionId }) + "\">Review</a>" : 
-           ""))
-</td> *@
+            <td>@(item.Order.Fraud > 0 ? "Yes" : "No")</td>
+            <td>@item.Prediction</td>
+            <td>
+                @if (item.Order.Fraud > 0 || item.Prediction == "fraud")
+                {
+                    @Html.ActionLink("Review", "EditOrder", "Admin", new { id = item.Order.TransactionId }, new { @class = "btn btn-warning" })
+                }
+            </td>
         </tr>
     }
 </table>
