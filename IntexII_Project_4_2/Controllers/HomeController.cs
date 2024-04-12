@@ -8,11 +8,16 @@ using System.Diagnostics;
 using Microsoft.ML.OnnxRuntime;
 using Microsoft.ML.OnnxRuntime.Tensors;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 
 namespace IntexII_Project_4_2.Controllers
 {
     public class HomeController : Controller
     {
+
+
+
+
         private IIntexProjectRepository _repo;
         private Cart GetCart()
         {
@@ -50,12 +55,16 @@ namespace IntexII_Project_4_2.Controllers
             _session = new InferenceSession(_onnxModelPath);
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             var topRecommendationIds = _repo.TopRecommendations.Select(tr => tr.ProductID).ToList();
             var topRecommendations = _repo.Products
                 .Where(p => topRecommendationIds.Contains(p.ProductId))
-                .ToList();
+            .ToList();
+
+
+
+            var currentuser = await _userManager.GetUserAsync(User);
 
             var viewModel = new IndexViewModel
             {
