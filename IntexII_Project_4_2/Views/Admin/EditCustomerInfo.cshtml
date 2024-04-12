@@ -1,0 +1,60 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+@model IntexII_Project_4_2.Data.ApplicationUser
+
+@{
+    ViewData["Title"] = "Edit Customer Information";
+}
+
+<h1>Edit Customer Information</h1>
+
+<form method="post" asp-action="UpdateCustomerInfo">
+ <input type="hidden" name="Id" value="@Model.Id" />
+
+    <div>
+        <label for="Email">Email:</label>
+        <input type="email" id="Email" name="Email" value="@Model.Email" required />
+    </div>
+
+    <div>
+        <label for="FirstName">First Name:</label>
+        <input type="text" id="FirstName" name="FirstName" value="@Model.FirstName" required />
+    </div>
+
+    <div>
+        <label for="LastName">Last Name:</label>
+        <input type="text" id="LastName" name="LastName" value="@Model.LastName" required />
+    </div>
+
+    <div>
+        <label for="Country">Country:</label>
+        <input type="text" id="Country" name="Country" value="@Model.Country" required />
+    </div>
+
+@* <div>
+    <label for="DateOfBirth">Date of Birth:</label>
+    <!-- Keep the format as is per your request but usually, the date input should be in yyyy-MM-dd format -->
+    <input type="date" id="DateOfBirth" name="DateOfBirth" value="@Model.DateOfBirth.ToString("yyyy-MM-dd")" required />
+</div>
+
+<div>
+    <label for="Gender">Gender:</label>
+    <select id="Gender" name="Gender">
+        <option value="M" select="@(Model.Gender == "M" ? "selected" : "")">Male</option>
+        <option value="F" @(Model.Gender == "F" ? "selected" : "")>Female</option>
+    </select>
+</div> *@
+
+<div>
+    <label for="TwoFactorEnabled">Two Factor Enabled:</label>
+    <select id="TwoFactorEnabled" name="TwoFactorEnabled">
+        <option value="True" select="@(Model.TwoFactorEnabled ? "selected" : "")">Yes</option>
+        <option value="False" select="@(!Model.TwoFactorEnabled ? "selected" : "")">No</option>
+    </select>
+</div>
+
+    <button type="submit" class="btn btn-primary">Save Changes</button>
+</form>
