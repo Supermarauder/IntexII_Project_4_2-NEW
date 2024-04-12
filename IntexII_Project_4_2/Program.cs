@@ -1,3 +1,5 @@
+using Azure.Identity;
+using Azure.Security.KeyVault.Secrets;
 using IntexII_Project_4_2.Data;
 using IntexII_Project_4_2.Models;
 using Microsoft.AspNetCore.Builder;
@@ -17,17 +19,18 @@ namespace IntexII_Project_4_2
             var configuration = builder.Configuration;
 
             //Initialize Key Vault Client
-            //var keyVaultUrl = builder.Configuration["KeyVault:VaultUri"]; // Ensure you have this in your appsettings or as an environment variable
-            //var secretClient = new SecretClient(new Uri(keyVaultUrl), new DefaultAzureCredential());
+            var keyVaultUrl = builder.Configuration["KeyVault:VaultUri"]; // Ensure you have this in your appsettings or as an environment variable
+            var secretClient = new SecretClient(new Uri(keyVaultUrl), new DefaultAzureCredential());
             //Fetch secrets from Azure Key Vault
-            //var googleClientId = secretClient.GetSecret("Google-Client-ID").Value.Value;
-            //var googleClientSecret = secretClient.GetSecret("Google-Client-Secret").Value.Value;
+            var googleClientId = secretClient.GetSecret("Google-Client-ID").Value.Value;
+            var googleClientSecret = secretClient.GetSecret("Google-Client-Secret").Value.Value;
 
-            services.AddAuthentication().AddGoogle(googleOptions =>
-            {
-                googleOptions.ClientId = configuration["Authentication:Google:ClientId"];
-                googleOptions.ClientSecret = configuration["Authentication:Google:ClientSecret"];
-            });
+            //Deprecated connection of doing authentication
+            //services.AddAuthentication().AddGoogle(googleOptions =>
+            //{
+            //    googleOptions.ClientId = configuration["Authentication:Google:ClientId"];
+            //    googleOptions.ClientSecret = configuration["Authentication:Google:ClientSecret"];
+            //});
 
             // Add services to the container.
             builder.WebHost.ConfigureKestrel(opt => opt.AddServerHeader = false);
@@ -57,11 +60,11 @@ namespace IntexII_Project_4_2
             builder.Services.AddControllersWithViews();
 
             ////Configure Google Authentication with Key Vault secrets
-            //builder.Services.AddAuthentication().AddGoogle(googleOptions =>
-            //{
-            //  googleOptions.ClientId = googleClientId;
-            //  googleOptions.ClientSecret = googleClientSecret;
-            //});
+            builder.Services.AddAuthentication().AddGoogle(googleOptions =>
+            {
+              googleOptions.ClientId = googleClientId;
+              googleOptions.ClientSecret = googleClientSecret;
+            });
 
 
             builder.Services.Configure<IdentityOptions>(options =>
