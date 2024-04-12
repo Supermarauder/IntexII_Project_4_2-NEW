@@ -83,12 +83,18 @@
 
     /* Style the checkboxes */
     .dropdown-content form {
-        padding: 12px 16px;
+        display: flex;
+        flex-direction:column;
     }
 
     .dropdown-content label {
-        display: block;
+        display: flex;
+        align-items: center;
         margin-bottom: 10px;
+    }
+
+    .dropdown-content input[type="checkbox"] {
+        margin-right: 10px;
     }
 
 </style>
@@ -108,96 +114,161 @@
                     <button class="dropbtn" style="width: 50%; display: inline-block;">Category</button>
                     <div class="dropdown-content">
                         <div>
-                            <input type="checkbox" name="categories" value="Animal">
-                            <label>Animal</label>
+                            <label>
+                                <input type="checkbox" name="categories" value="Animal">
+                                Animal
+                            </label>
                         </div>
                         <div>
-                            <input type="checkbox" name="categories" value="Building">
-                            <label>Building</label>
+                            <label>
+                                <input type="checkbox" name="categories" value="Building">
+                                Building
+                            </label>
                         </div>
                         <div>
-                            <input type="checkbox" name="categories" value="Car">
-                            <label>Car</label>
+                            <label>
+                                <input type="checkbox" name="categories" value="Car">
+                                Car
+                            </label>
                         </div>
                         <div>
+                            <label>
                             <input type="checkbox" name="categories" value="Character">
-                            <label>Character</label>
+                            Character
+                        </label>
                         </div>
                         <div>
+                            <label>
                             <input type="checkbox" name="categories" value="Colorful">
-                            <label>Colorful</label>
+                            Colorful
+
+                            </label>
                         </div>
                         <div>
+                            <label>
                             <input type="checkbox" name="categories" value="DC">
-                            <label>DC</label>
+                            DC
+
+                            </label>
                         </div>
                         <div>
+                            <label>
                             <input type="checkbox" name="categories" value="Disney">
-                            <label>Disney</label>
+                            Disney
+
+                            </label>
                         </div>
                         <div>
+                            <label>
                             <input type="checkbox" name="categories" value="Energy">
-                            <label>Energy</label>
+                            Energy
+
+                            </label>
                         </div>
                         <div>
+                            <label>
                             <input type="checkbox" name="categories" value="Farm">
-                            <label>Farm</label>
+                            Farm
+
+                            </label>
                         </div>
                         <div>
+                            <label>
                             <input type="checkbox" name="categories" value="Flight">
-                            <label>Flight</label>
+                            Flight
+
+                            </label>
                         </div>
                         <div>
+                            <label>
                             <input type="checkbox" name="categories" value="Floral">
-                            <label>Floral</label>
+                            Floral
+
+                            </label>
                         </div>
                         <div>
+                            <label>
                             <input type="checkbox" name="categories" value="Food">
-                            <label>Food</label>
+                            Food
+
+                            </label>
                         </div>
                         <div>
+                            <label>
                             <input type="checkbox" name="categories" value="Game">
-                            <label>Game</label>
+                            Game
+
+                            </label>
                         </div>
                         <div>
+                            <label>
                             <input type="checkbox" name="categories" value="Harry Potter">
-                            <label>Harry Potter</label>
+                            Harry Potter
+
+                            </label>
                         </div>
                         <div>
+                            <label>
                             <input type="checkbox" name="categories" value="Minifig">
-                            <label>Minifig</label>
+                            Minifig
+
+                            </label>
                         </div>
                         <div>
+                            <label>
                             <input type="checkbox" name="categories" value="Motorbike">
-                            <label>Motorbike</label>
+                            Motorbike
+
+                            </label>
                         </div>
                         <div>
+                            <label>
                             <input type="checkbox" name="categories" value="Part">
-                            <label>Part</label>
+                            Part
+
+                            </label>
                         </div>
                         <div>
+                            <label>
                             <input type="checkbox" name="categories" value="Person">
-                            <label>Person</label>
+                            Person
+
+                            </label>
                         </div>
                         <div>
+                            <label>
                             <input type="checkbox" name="categories" value="Personal">
-                            <label>Personal</label>
+                            Personal
+
+                            </label>
                         </div>
                         <div>
+                            <label>
                             <input type="checkbox" name="categories" value="Promotional">
-                            <label>Promotional</label>
+                            Promotional
+
+                            </label>
                         </div>
                         <div>
+                            <label>
                             <input type="checkbox" name="categories" value="Star Wars">
-                            <label>Star Wars</label>
+                            Star Wars
+
+                            </label>
                         </div>
                         <div>
+                            <label>
                             <input type="checkbox" name="categories" value="Train">
-                            <label>Train</label>
+                            Train
+
+                            </label>
                         </div>
                         <div>
+                            <label>
                             <input type="checkbox" name="categories" value="Vehicle">
-                            <label>Vehicle</label>
+                            Vehicle
+
+                            </label>
                         </div>
                     </div>
                 </div>
@@ -207,42 +278,71 @@
                     <button class="dropbtn" style="width: 50%; display: inline-block;">Color</button>
                     <div class="dropdown-content">
                         <div>
+                            <label>
                             <input type="checkbox" name="colors" value="Black">
-                            <label>Black</label>
-                        </div>
+                            Black
+
+                            </label>
+                        </div><label>
                         <input type="checkbox" name="colors" value="Blue">
-                        <label>Blue</label>
+                        Blue
+
+                        </label>
                         <div>
+                            <label>
                             <input type="checkbox" name="colors" value="Brown">
-                            <label>Brown</label>
+                            Brown
+
+                            </label>
                         </div>
                         <div>
+                            <label>
                             <input type="checkbox" name="colors" value="Green">
-                            <label>Green</label>
+                            Green
+
+                            </label>
                         </div>
                         <div>
+                            <label>
                             <input type="checkbox" name="colors" value="Grey">
-                            <label>Grey</label>
+                            Grey
+
+                            </label>
                         </div>
                         <div>
+                            <label>
                             <input type="checkbox" name="colors" value="Pink">
-                            <label>Pink</label>
+                            Pink
+
+                            </label>
                         </div>
                         <div>
+                            <label>
                             <input type="checkbox" name="colors" value="Red">
-                            <label>Red</label>
+                            Red
+
+                            </label>
                         </div>
                         <div>
+                            <label>
                             <input type="checkbox" name="colors" value="Tan">
-                            <label>Tan</label>
+                            Tan
+
+                            </label>
                         </div>
                         <div>
+                            <label>
                             <input type="checkbox" name="colors" value="White">
-                            <label>White</label>
+                            White
+
+                            </label>
                         </div>
                         <div>
+                            <label>
                             <input type="checkbox" name="colors" value="Yellow">
-                            <label>Yellow</label>
+                            Yellow
+
+                            </label>
                         </div>
                     </div>
                 </div>

@@ -48,7 +48,7 @@
     @foreach (var product in Model.Recommendations)
     {
         <div class="col-md-4" style="margin-bottom: 30px;">
-            <div class="card">
+            <div class="card" style=" height:440px;">
                 <div style="text-align: left; padding-left: 25px; padding-right: 25px;">
                     <a style="text-decoration: none; color: black;" href="@Url.Action("ProductDetail", "Home", new { id = product.ProductId })">
                         <img src="@product.ImgLink" alt="Image of @product.Name" style="max-width: 100%; max-height: 200px; object-fit: contain;">
@@ -56,15 +56,15 @@
                     </a>
                     <p style="font-size:15px;">@(product.Description.Length > 100 ? product.Description.Substring(0, 100) + "..." : product.Description)</p>
                 </div>
-                <div class="row" style="display: flex; align-items: center;">
+                <div class="row" style="display: flex; align-items: center; position: absolute; bottom: 10px;">
                     <div class="col-5">
                         <p style="font-size:17px; text-align: left; padding-left: 25px;">Price: $@product.Price</p>
                     </div>
-                    <div class="col-7">
+                    <div class="col-7" style="padding-right: 25px;">
                         <form method="post" asp-controller="Home" asp-action="AddToCart">
                             <input type="hidden" name="productId" value="@product.ProductId" />
                             <input type="hidden" name="quantity" value="1" />
-                            <p style="padding-right: 25px;"><button style="align-items:center;" type="submit" class="card button">Add to Cart</button></p>
+                            <p ><button style="align-items:center;" type="submit" class="card button">Add to Cart</button></p>
                         </form>
                     </div>
                 </div>
