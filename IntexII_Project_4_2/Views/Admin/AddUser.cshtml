@@ -23,6 +23,20 @@
         <label for="Country">Country:</label>
         <input type="text" id="Country" name="Country" required />
     </div>
+    <div>
+        <label for="Gender">Gender:</label>
+        <select id="Gender" name="Gender" required>
+            <option value="">Please select</option>
+            <option value="M">Male</option>
+            <option value="F">Female</option>
+            <option value="O">Other</option>
+        </select>
+    </div>
+
+    <div>
+        <label for="DateOfBirth">Date of Birth:</label>
+        <input type="date" id="DateOfBirth" name="DateOfBirth" required />
+    </div>
     <!-- Add other necessary fields as per your ApplicationUser model -->
 
     <button type="submit" class="btn btn-primary">Create User</button>

@@ -74,6 +74,7 @@ namespace IntexII_Project_4_2.Controllers
 
 
         [Authorize(Roles = "Admin")]
+        [HttpGet]
         public IActionResult AddUser()
         {
             return View(new ApplicationUser());
