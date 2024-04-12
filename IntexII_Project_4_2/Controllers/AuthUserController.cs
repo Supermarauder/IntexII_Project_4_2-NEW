@@ -2,6 +2,7 @@
 using IntexII_Project_4_2.Infrastructure;
 using IntexII_Project_4_2.Models;
 using IntexII_Project_4_2.Models.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -30,6 +31,12 @@ namespace IntexII_Project_4_2.Controllers
 
         public IActionResult Checkout()
         {
+            return View();
+        }
+        [Authorize(Roles = "Member")]
+        public IActionResult Confirmation0()
+        {
+            return View();
             var customerId = HttpContext.Session.GetInt32("CustomerId");
 
             var viewModel = new OrderPrediction
@@ -41,6 +48,8 @@ namespace IntexII_Project_4_2.Controllers
 
             return View(viewModel);
         }
+        [Authorize(Roles = "Member")]
+        public IActionResult Confirmation1()
 
         [HttpPost]
         public IActionResult Checkout(OrderPrediction viewModel)

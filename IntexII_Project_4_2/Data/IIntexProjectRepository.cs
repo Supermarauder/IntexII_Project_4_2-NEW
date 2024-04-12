@@ -12,5 +12,6 @@ namespace IntexII_Project_4_2.Models
         IQueryable<CustomerRecommendation> CustomerRecommendations { get; } // Added line for TopRecommendations
 
         void AddOrder(Order order);
+        IQueryable<CustomerRecommendation> CustomerRecommendations { get; }
     }
 }

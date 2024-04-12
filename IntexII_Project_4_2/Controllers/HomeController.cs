@@ -9,6 +9,11 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using IntexII_Project_4_2.Infrastructure;
+using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 
 namespace IntexII_Project_4_2.Controllers
@@ -23,7 +28,7 @@ namespace IntexII_Project_4_2.Controllers
         public HomeController(IIntexProjectRepository temp, IWebHostEnvironment hostEnvironment, UserManager<ApplicationUser> userManager)
         {
             _repo = temp;
-            _onnxModelPath = System.IO.Path.Combine(hostEnvironment.WebRootPath, "Final_Model.onnx");
+            _onnxModelPath = System.IO.Path.Combine(hostEnvironment.WebRootPath, "Final_model.onnx");
             _session = new InferenceSession(_onnxModelPath);
             _userManager = userManager;
         }
@@ -31,9 +36,11 @@ namespace IntexII_Project_4_2.Controllers
         {
             ApplicationUser currentUser = await _userManager.GetUserAsync(User);
             List<Product> recommendations;
+
             if (currentUser != null)
             {
                 var customerRecommendation = await _repo.CustomerRecommendations.FirstOrDefaultAsync(cr => cr.CustomerID == currentUser.CustomerId);
+
                 if (customerRecommendation != null)
                 {
                     var recommendationIds = new List<int>
@@ -44,6 +51,7 @@ namespace IntexII_Project_4_2.Controllers
                         customerRecommendation.Recommendation4,
                         customerRecommendation.Recommendation5
                     };
+
                     recommendations = await _repo.Products.Where(p => recommendationIds.Contains(p.ProductId)).ToListAsync();
                 }
                 else
@@ -55,17 +63,20 @@ namespace IntexII_Project_4_2.Controllers
             {
                 recommendations = GetTopRecommendations();
             }
+
             var viewModel = new IndexViewModel
             {
                 Recommendations = recommendations
             };
             return View(viewModel);
         }
+
         private List<Product> GetTopRecommendations()
         {
             var topRecommendationIds = _repo.TopRecommendations.Select(tr => tr.ProductID).ToList();
             return _repo.Products.Where(p => topRecommendationIds.Contains(p.ProductId)).ToList();
         }
+
         public IActionResult About()
         {
             return View();
@@ -82,18 +93,22 @@ namespace IntexII_Project_4_2.Controllers
             HttpContext.Session.SetJson("cart", cart);
             return RedirectToPage("/Cart");
         }
+
         public IActionResult CartSummary()
         {
             return View();
         }
+
         public IActionResult Login()
         {
             return View();
         }
+
         public IActionResult Privacy()
         {
             return View();
         }
+
         public IActionResult ProductDetail(int id)
         {
             Product product = _repo.Products.FirstOrDefault(p => p.ProductId == id);
@@ -101,6 +116,7 @@ namespace IntexII_Project_4_2.Controllers
             {
                 return NotFound(); // Or any other error handling
             }
+
             var recommendation = _repo.ItemRecommendations.FirstOrDefault(r => r.ProductID == id);
             List<Product> recommendedProducts = new List<Product>();
             if (recommendation != null)
@@ -118,6 +134,7 @@ namespace IntexII_Project_4_2.Controllers
             };
             return View(viewModel);
         }
+
         public IActionResult Register()
         {
             return View();
@@ -138,6 +155,7 @@ namespace IntexII_Project_4_2.Controllers
             }
             int totalItems = query.Count();
             List<Product> filteredProducts = query.OrderBy(p => p.Name).Skip((pageNum - 1) * pageSize).Take(pageSize).ToList();
+
             var productList = new ProductListViewModel
             {
                 Products = filteredProducts,

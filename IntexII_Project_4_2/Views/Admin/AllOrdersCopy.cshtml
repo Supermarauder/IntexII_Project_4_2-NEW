@@ -1,22 +1,18 @@
 ﻿@model IEnumerable<IntexII_Project_4_2.Models.ViewModels.OrderPrediction>
-
 <style>
     table {
         width: 100%;
         border-collapse: collapse;
     }
-
     th, td {
         padding: 8px;
         text-align: left;
         border-bottom: 1px solid #ddd;
     }
-
     th {
         background-color: #f2f2f2;
     }
 </style>
-
 <h2>Admin Order Fraud Prediction</h2>
 <table>
     <tr>
@@ -28,8 +24,9 @@
         <th>Shipping Address</th>
         <th>Bank</th>
         <th>Type of Card</th>
-        <th>Potential Fraud</th>
-        <th>Fulfilled/Resolved</th>
+        <th>Order Fulfilled?</th>
+        <th>Fraudulent Order</th>
+        <th>Predicted Fraud</th>
     </tr>
     @foreach (var item in Model)
     {
@@ -42,8 +39,18 @@
             <td>@item.Order.ShippingAddress</td>
             <td>@item.Order.Bank</td>
             <td>@item.Order.TypeOfCard</td>
-            <td>@item.Order.Fraud</td>
-            <td class="prediction-cell">@item.Prediction</td>
+            <td>@(item.Order.Fullfilled ? "Yes" : "No")</td>
+@*             <td>
+                @(item.Order.Fraud > 0 ? "Yes" : "No") @if (item.Order.Fraud > 0)
+               
+ *@
+@* <td>
+    @(item.Prediction == "fraud" ? 
+       "" : 
+       (item.Prediction == "not fraud" ? 
+           "<a class=\"btn btn-warning\" href=\"" + Url.Action("EditOrder", "Admin", new { id = item.Order.TransactionId }) + "\">Review</a>" : 
+           ""))
+</td> *@
         </tr>
     }
 </table>
