@@ -1,72 +1,86 @@
 using IntexII_Project_4_2.Data;
-using IntexII_Project_4_2.Infrastructure;
-using IntexII_Project_4_2.Models;
 using IntexII_Project_4_2.Models.ViewModels;
+using IntexII_Project_4_2.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System.Diagnostics;
 using Microsoft.ML.OnnxRuntime;
-using Microsoft.ML.OnnxRuntime.Tensors;
+using IntexII_Project_4_2.Infrastructure;
+using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using IntexII_Project_4_2.Infrastructure;
+using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Hosting;
 
 namespace IntexII_Project_4_2.Controllers
 {
     public class HomeController : Controller
     {
+        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly UserManager<ApplicationUser> _userManager;
         private IIntexProjectRepository _repo;
-        private Cart GetCart()
-        {
-            return HttpContext.Session.GetJson<Cart>("cart") ?? new Cart();
-        }
-
-        private void SaveCart(Cart cart)
-        {
-            HttpContext.Session.SetJson("cart", cart);
-        }
-
-        //public IActionResult RemoveFromCart(int productId, string returnUrl)
-        //{
-        //    Cart cart = GetCart();
-        //    Product product = _repo.Products.FirstOrDefault(p => p.ProductId == productId);
-
-        //    if (product != null)
-        //    {
-        //        cart.RemoveItem(productId);
-        //        SaveCart(cart);
-        //    }
-
-        //    return Redirect(returnUrl);  // Assuming returnUrl is a valid path
-        //}
-        //public HomeController(IIntexProjectRepository temp);
         private InferenceSession _session;
         public string _onnxModelPath;
-        public HomeController(IIntexProjectRepository temp, IHostEnvironment hostEnvironment) 
+        public HomeController(IIntexProjectRepository temp, IWebHostEnvironment hostEnvironment, UserManager<ApplicationUser> userManager)
         {
             _repo = temp;
-
-            _onnxModelPath = System.IO.Path.Combine(hostEnvironment.ContentRootPath, "model.onnx");
+            _onnxModelPath = System.IO.Path.Combine(hostEnvironment.WebRootPath, "Final_model.onnx");
             _session = new InferenceSession(_onnxModelPath);
+            _userManager = userManager;
         }
-
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var topRecommendationIds = _repo.TopRecommendations.Select(tr => tr.ProductID).ToList();
-            var topRecommendations = _repo.Products
-                .Where(p => topRecommendationIds.Contains(p.ProductId))
-                .ToList();
+            ApplicationUser currentUser = await _userManager.GetUserAsync(User);
+            List<Product> recommendations;
+
+            if (currentUser != null)
+            {
+                var customerRecommendation = await _repo.CustomerRecommendations.FirstOrDefaultAsync(cr => cr.CustomerID == currentUser.CustomerId);
+
+                if (customerRecommendation != null)
+                {
+                    var recommendationIds = new List<int>
+                    {
+                        customerRecommendation.Recommendation1,
+                        customerRecommendation.Recommendation2,
+                        customerRecommendation.Recommendation3,
+                        customerRecommendation.Recommendation4,
+                        customerRecommendation.Recommendation5
+                    };
+
+                    recommendations = await _repo.Products.Where(p => recommendationIds.Contains(p.ProductId)).ToListAsync();
+                }
+                else
+                {
+                    recommendations = GetTopRecommendations();
+                }
+            }
+            else
+            {
+                recommendations = GetTopRecommendations();
+            }
 
             var viewModel = new IndexViewModel
             {
-                Recommendations = topRecommendations
+                Recommendations = recommendations
             };
-
             return View(viewModel);
+        }
+
+        private List<Product> GetTopRecommendations()
+        {
+            var topRecommendationIds = _repo.TopRecommendations.Select(tr => tr.ProductID).ToList();
+            return _repo.Products.Where(p => topRecommendationIds.Contains(p.ProductId)).ToList();
         }
 
         public IActionResult About()
         {
             return View();
         }
-
         public IActionResult AddToCart(int productId, int quantity)
         {
             Product product = _repo.Products.FirstOrDefault(p => p.ProductId == productId);
@@ -74,25 +88,27 @@ namespace IntexII_Project_4_2.Controllers
             {
                 return NotFound();
             }
-
             Cart cart = HttpContext.Session.GetJson<Cart>("cart") ?? new Cart();
             cart.AddItem(product, quantity);
             HttpContext.Session.SetJson("cart", cart);
-
             return RedirectToPage("/Cart");
         }
+
         public IActionResult CartSummary()
         {
             return View();
         }
+
         public IActionResult Login()
         {
             return View();
         }
+
         public IActionResult Privacy()
         {
             return View();
         }
+
         public IActionResult ProductDetail(int id)
         {
             Product product = _repo.Products.FirstOrDefault(p => p.ProductId == id);
@@ -101,8 +117,7 @@ namespace IntexII_Project_4_2.Controllers
                 return NotFound(); // Or any other error handling
             }
 
-            ItemRecommendation recommendation = _repo.ItemRecommendations.FirstOrDefault(r => r.ProductID == id);
-
+            var recommendation = _repo.ItemRecommendations.FirstOrDefault(r => r.ProductID == id);
             List<Product> recommendedProducts = new List<Product>();
             if (recommendation != null)
             {
@@ -112,45 +127,34 @@ namespace IntexII_Project_4_2.Controllers
                 recommendedProducts.Add(_repo.Products.FirstOrDefault(p => p.ProductId == recommendation.Recommendation4));
                 recommendedProducts.Add(_repo.Products.FirstOrDefault(p => p.ProductId == recommendation.Recommendation5));
             }
-
             var viewModel = new ProductDetailViewModel
             {
                 Product = product,
                 Recommendations = recommendedProducts
             };
-
             return View(viewModel);
         }
+
         public IActionResult Register()
         {
             return View();
         }
-
         public IActionResult ViewProducts(int pageNum, string[] categories, string[] colors, int pageSize = 5)
         {
             pageNum = Math.Max(1, pageNum); // Ensure pageNum is at least 1
-
             IQueryable<Product> query = _repo.Products.AsQueryable();
-
             // Apply category filters if provided
             if (categories != null && categories.Length > 0)
             {
                 query = query.Where(p => categories.Any(cat => p.Category.Contains(cat)));
             }
-
             // Apply color filters if provided
             if (colors != null && colors.Length > 0)
             {
                 query = query.Where(p => colors.Contains(p.PrimaryColor));
             }
-
             int totalItems = query.Count();
-
-            List<Product> filteredProducts = query
-                .OrderBy(p => p.Name)
-                .Skip((pageNum - 1) * pageSize)
-                .Take(pageSize)
-                .ToList();
+            List<Product> filteredProducts = query.OrderBy(p => p.Name).Skip((pageNum - 1) * pageSize).Take(pageSize).ToList();
 
             var productList = new ProductListViewModel
             {
@@ -162,10 +166,7 @@ namespace IntexII_Project_4_2.Controllers
                     TotalItems = totalItems
                 }
             };
-
             return View(productList);
         }
-
-
     }
 }

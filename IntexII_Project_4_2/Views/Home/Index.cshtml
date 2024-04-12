@@ -12,39 +12,39 @@
     } */
 
     .card {
-        padding-top: 15px;
         box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
         max-width: 300px;
         margin: auto;
         text-align: center;
-        background-color: #DFDFDF;
+        font-family: Arial, sans-serif;
     }
 
     .card button {
         border: none;
         outline: 0;
-        padding: 0px;
+        padding: 12px;
         color: white;
-        background-color: #DA291C;
+        background-color: #000;
         text-align: center;
         cursor: pointer;
         width: 100%;
         font-size: 18px;
     }
 
-    .card button:hover {
-        opacity: 0.6;
-    }
+        .card button:hover {
+            opacity: 0.7;
+        }
 </style>
 
-<div class="row" style="background-image: url('img/LegoBackUse.png'); padding: 0; background-attachment: fixed; width:100%; height:auto; text-align: center; justify-content: center;">
-    <img src="~/img/aurorabricks.png" style="align-self: center; height:auto; width:80%;" />
+<div class="row" style="background-image: url('img/LegoBackUse.png'); background-attachment: fixed; height:575px; text-align: center; display: flex; justify-content: center;">
+    <img src="~/img/aurorabricks.png" style="align-self: center; height:444px; width:auto;" />
 </div>
 <br />
 <br />
-<p style="font-size:30px; padding-left: 35px;">What others are buying</p>
+<h3>What others are buying</h3>
 <br />
 <div class="row">
+    <h3>Top Recommendations</h3>
     @foreach (var product in Model.Recommendations)
     {
         <div class="col-md-4" style="margin-bottom: 30px;">

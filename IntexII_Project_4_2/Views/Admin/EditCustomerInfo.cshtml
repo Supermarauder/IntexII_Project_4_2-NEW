@@ -3,6 +3,8 @@
 *@
 @{
 }
+
+
 @model IntexII_Project_4_2.Data.ApplicationUser
 
 @{
@@ -34,19 +36,25 @@
         <input type="text" id="Country" name="Country" value="@Model.Country" required />
     </div>
 
-@* <div>
-    <label for="DateOfBirth">Date of Birth:</label>
-    <!-- Keep the format as is per your request but usually, the date input should be in yyyy-MM-dd format -->
-    <input type="date" id="DateOfBirth" name="DateOfBirth" value="@Model.DateOfBirth.ToString("yyyy-MM-dd")" required />
-</div>
-
 <div>
     <label for="Gender">Gender:</label>
     <select id="Gender" name="Gender">
-        <option value="M" select="@(Model.Gender == "M" ? "selected" : "")">Male</option>
-        <option value="F" @(Model.Gender == "F" ? "selected" : "")>Female</option>
+        <option value="">Select Gender</option>
+        <option value="M" select=@(Model.Gender == 'M' ? "selected='selected'" : "")>Male</option>
+        <option value="F" select=@(Model.Gender == 'F' ? "selected='selected'" : "")>Female</option>
+        <option value="O" select=@(Model.Gender == 'O' ? "selected='selected'" : "")>Other</option>
     </select>
-</div> *@
+</div>
+
+
+
+
+
+    <div>
+        <label for="DateOfBirth">Date of Birth:</label>
+        <input type="date" id="DateOfBirth" name="DateOfBirth" class="form-control" value="@Model.DateOfBirth" required />
+    </div>
+
 
 <div>
     <label for="TwoFactorEnabled">Two Factor Enabled:</label>

@@ -33,9 +33,6 @@ namespace IntexII_Project_4_2.Data
             modelBuilder.Entity<TopRecommendation>().ToTable("TopRecommendations"); // Use your actual table name as in your database
 
             // Add configuration for other entities if needed
-            //modelBuilder.Entity<Product>()
-            //    .Property(p => p.ProductId)
-            //    .ValueGeneratedOnAdd();
         }
     }
 }
