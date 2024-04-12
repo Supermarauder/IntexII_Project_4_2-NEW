@@ -100,45 +100,45 @@ namespace IntexII_Project_4_2.Controllers
             return View(products);
         }
 
+        //[Authorize(Roles = "Admin")]
+        //public IActionResult AllOrders(string filter = "all", int page = 1)
+        //{
+        //    int pageSize = 50;
+        //    IQueryable<Order> query = _context.Orders;
+
+        //    switch (filter.ToLower())
+        //    {
+        //        case "unfulfilled":
+        //            query = query.Where(order => !order.Fullfilled);
+        //            break;
+        //        case "fraud":
+        //            query = query.Where(order => order.Fraud > 0);
+        //            break;
+        //        default:
+        //            break;
+        //    }
+
+        //    var filteredOrders = query.OrderBy(order => order.Date).Skip((page - 1) * pageSize).Take(pageSize).ToList();
+        //    var totalOrders = query.Count();
+
+        //    var pageInfo = new PaginationInfo
+        //    {
+        //        CurrentPage = page,
+        //        ItemsPerPage = pageSize,
+        //        TotalItems = totalOrders
+        //    };
+
+        //    var viewModel = new OrderListViewModel
+        //    {
+        //        Orders = filteredOrders,
+        //        PaginationInfo = pageInfo,
+        //        CurrentFilter = filter
+        //    };
+
+        //    return View(viewModel);
+        //}
         [Authorize(Roles = "Admin")]
-        public IActionResult AllOrders(string filter = "all", int page = 1)
-        {
-            int pageSize = 50;
-            IQueryable<Order> query = _context.Orders;
-
-            switch (filter.ToLower())
-            {
-                case "unfulfilled":
-                    query = query.Where(order => !order.Fullfilled);
-                    break;
-                case "fraud":
-                    query = query.Where(order => order.Fraud > 0);
-                    break;
-                default:
-                    break;
-            }
-
-            var filteredOrders = query.OrderBy(order => order.Date).Skip((page - 1) * pageSize).Take(pageSize).ToList();
-            var totalOrders = query.Count();
-
-            var pageInfo = new PaginationInfo
-            {
-                CurrentPage = page,
-                ItemsPerPage = pageSize,
-                TotalItems = totalOrders
-            };
-
-            var viewModel = new OrderListViewModel
-            {
-                Orders = filteredOrders,
-                PaginationInfo = pageInfo,
-                CurrentFilter = filter
-            };
-
-            return View(viewModel);
-        }
-
-        public IActionResult AllOrdersCopy()
+        public IActionResult AllOrders()
         {
 
             var records = (from order in _context.Orders
@@ -154,8 +154,8 @@ namespace IntexII_Project_4_2.Controllers
             // Dictionary mapping the numeric prediction to an animal type
             var class_type_dict = new Dictionary<int, string>
     {
-        { 0, "not fraud" },
-        { 1, "fraud" }
+        { 0, "No" },
+        { 1, "Yes" }
     };
 
             foreach (var record in records)
