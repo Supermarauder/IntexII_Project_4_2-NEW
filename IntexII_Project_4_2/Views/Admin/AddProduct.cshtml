@@ -1,64 +1,50 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model Product
+
 @{
+    ViewData["Title"] = "Add New Product";
 }
-@* <h1>This view is to add a product for sale. Only for admins.</h1> *@
 
-<h1>Add a New Product</h1>
-<br />
-<form>
-    <div class="row">
-        <div class="col-3">
-            <h2>Product Name</h2>
-            <input style="width: 100%;" />
-        </div>
-        <div class="col-1">
-            <h4>Year</h4>
-            <input style="width: 100%;" />
-        </div>
-        <div class="col-1">
-            <h4>Price</h4>
-            <input style="width: 100%;" />
-        </div>
-        <div class="col-1">
-            <h4>NumParts</h4>
-            <input style="width: 100%;" />
-        </div>
-        <div class="col-1">
-            <h4>Pri Color</h4>
-            <input style="width: 100%;" />
-        </div>
-        <div class="col-1">
-            <h4>Sec Color</h4>
-            <input style="width: 100%;" />
-        </div>
-        <div class="col-2">
-            <h4>Category</h4>
-            <input style="width: 100%;" />
-        </div>
-    </div>
-    <br />
-    <div class="row">
-        <div class="col-3">
-            <h3>Description</h3>
-            <input style="width: 100%;" />
-        </div>
-    </div>
-    <br />
-    <br />
-    <br />
-    <br />
-    <br />
-    <div class="row">
-        <div class="col-3">
-            <h4>Image Link</h4>
-            <input style="width: 100%;" />
-        </div>
-        <div class="col-1">
-            <br />
-            <button >Add</button>
-        </div>
+<h1>Add New Product</h1>
 
+<form method="post" action="@Url.Action("AddProduct", "Admin")">
+    <div>
+        <label>Name:</label>
+        <input type="text" name="Name" required>
     </div>
+    <div>
+        <label>Year:</label>
+        <input type="number" name="Year" required>
+    </div>
+    <div>
+        <label>Number of Parts:</label>
+        <input type="number" name="NumParts" required>
+    </div>
+    <div>
+        <label>Price:</label>
+        <input type="number" name="Price" required>
+    </div>
+    <div>
+        <label>Image Link:</label>
+        <input type="text" name="ImgLink">
+    </div>
+    <div>
+        <label>Primary Color:</label>
+        <input type="text" name="PrimaryColor">
+    </div>
+    <div>
+        <label>Secondary Color:</label>
+        <input type="text" name="SecondaryColor">
+    </div>
+    <div>
+        <label>Description:</label>
+        <textarea name="Description" required></textarea>
+    </div>
+    <div>
+        <label>Category:</label>
+        <input type="text" name="Category" required>
+    </div>
+
+    <button type="submit">Add Product</button>
 </form>
+
+<a href="@Url.Action("AllProducts", "Admin")">Back to All Products</a>

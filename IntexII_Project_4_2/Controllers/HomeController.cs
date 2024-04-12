@@ -3,24 +3,64 @@ using IntexII_Project_4_2.Infrastructure;
 using IntexII_Project_4_2.Models;
 using IntexII_Project_4_2.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
+using Microsoft.ML.OnnxRuntime;
+using Microsoft.ML.OnnxRuntime.Tensors;
 
 namespace IntexII_Project_4_2.Controllers
 {
     public class HomeController : Controller
     {
         private IIntexProjectRepository _repo;
-        public HomeController(IIntexProjectRepository temp) 
+        private Cart GetCart()
+        {
+            return HttpContext.Session.GetJson<Cart>("cart") ?? new Cart();
+        }
+
+        private void SaveCart(Cart cart)
+        {
+            HttpContext.Session.SetJson("cart", cart);
+        }
+
+        //public IActionResult RemoveFromCart(int productId, string returnUrl)
+        //{
+        //    Cart cart = GetCart();
+        //    Product product = _repo.Products.FirstOrDefault(p => p.ProductId == productId);
+
+        //    if (product != null)
+        //    {
+        //        cart.RemoveItem(productId);
+        //        SaveCart(cart);
+        //    }
+
+        //    return Redirect(returnUrl);  // Assuming returnUrl is a valid path
+        //}
+        //public HomeController(IIntexProjectRepository temp);
+        private InferenceSession _session;
+        public string _onnxModelPath;
+        public HomeController(IIntexProjectRepository temp, IHostEnvironment hostEnvironment) 
         {
             _repo = temp;
+
+            _onnxModelPath = System.IO.Path.Combine(hostEnvironment.ContentRootPath, "model.onnx");
+            _session = new InferenceSession(_onnxModelPath);
         }
 
         public IActionResult Index()
         {
+            var topRecommendationIds = _repo.TopRecommendations.Select(tr => tr.ProductID).ToList();
+            var topRecommendations = _repo.Products
+                .Where(p => topRecommendationIds.Contains(p.ProductId))
+                .ToList();
 
-            return View();
+            var viewModel = new IndexViewModel
+            {
+                Recommendations = topRecommendations
+            };
+
+            return View(viewModel);
         }
-
 
         public IActionResult About()
         {
@@ -58,18 +98,37 @@ namespace IntexII_Project_4_2.Controllers
             Product product = _repo.Products.FirstOrDefault(p => p.ProductId == id);
             if (product == null)
             {
-                return NotFound();  // Or any other error handling
+                return NotFound(); // Or any other error handling
             }
-            return View(product);
+
+            ItemRecommendation recommendation = _repo.ItemRecommendations.FirstOrDefault(r => r.ProductID == id);
+
+            List<Product> recommendedProducts = new List<Product>();
+            if (recommendation != null)
+            {
+                recommendedProducts.Add(_repo.Products.FirstOrDefault(p => p.ProductId == recommendation.Recommendation1));
+                recommendedProducts.Add(_repo.Products.FirstOrDefault(p => p.ProductId == recommendation.Recommendation2));
+                recommendedProducts.Add(_repo.Products.FirstOrDefault(p => p.ProductId == recommendation.Recommendation3));
+                recommendedProducts.Add(_repo.Products.FirstOrDefault(p => p.ProductId == recommendation.Recommendation4));
+                recommendedProducts.Add(_repo.Products.FirstOrDefault(p => p.ProductId == recommendation.Recommendation5));
+            }
+
+            var viewModel = new ProductDetailViewModel
+            {
+                Product = product,
+                Recommendations = recommendedProducts
+            };
+
+            return View(viewModel);
         }
         public IActionResult Register()
         {
             return View();
         }
-        public IActionResult ViewProducts(int pageNum, string[] categories, string[] colors)
+
+        public IActionResult ViewProducts(int pageNum, string[] categories, string[] colors, int pageSize = 5)
         {
-            int pageSize = 5;
-            pageNum = Math.Max(1, pageNum);
+            pageNum = Math.Max(1, pageNum); // Ensure pageNum is at least 1
 
             IQueryable<Product> query = _repo.Products.AsQueryable();
 
@@ -99,7 +158,7 @@ namespace IntexII_Project_4_2.Controllers
                 PaginationInfo = new PaginationInfo
                 {
                     CurrentPage = pageNum,
-                    ItemsPerPage = pageSize,
+                    ItemsPerPage = pageSize, // Use the pageSize parameter
                     TotalItems = totalItems
                 }
             };

@@ -1,10 +1,12 @@
 ﻿using IntexII_Project_4_2.Data;
+using System.Linq;
 
 namespace IntexII_Project_4_2.Models
 {
     public interface IIntexProjectRepository
     {
-        public IQueryable<Product> Products { get; }
-
+        IQueryable<Product> Products { get; }
+        IQueryable<ItemRecommendation> ItemRecommendations { get; }
+        IQueryable<TopRecommendation> TopRecommendations { get; } // Added line for TopRecommendations
     }
 }

@@ -1,12 +1,21 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-}
-
-@* <h1>This is the All Orders page. Only accessible to admins. Displays all orders</h1> *@
+﻿@model OrderListViewModel
 
 <style>
+    header {
+        background-color: #4d96d1;
+    }
+
+    .header-container {
+        background: #4d96d1;
+        height: 7.2rem;
+        transition: all 0.2s ease-in-out;
+        z-index: 100;
+    }
+
+    footer {
+        background-color: #4d96d1;
+    }
+
     table {
         width: 100%;
         border-collapse: collapse;
@@ -19,64 +28,65 @@
     }
 
     th {
-        background-color: #f2f2f2;
+        background-color: #FFD700;
     }
 </style>
 
-    <h2>Admin Order Summaries</h2>
-    <br />
-    <br />
-    <p>here is a little head top space where the filter is on the figma</p>
+<h2>Order Log</h2>
+<br />
+<a href="@Url.Action("AllOrders", new { filter = "all" })">Show All Orders</a>
+<a href="@Url.Action("AllOrders", new { filter = "unfulfilled" })">Show Unfulfilled Orders</a>
+<a href="@Url.Action("AllOrders", new { filter = "fraud" })">Show Fraudulent Orders</a>
+<br />
+<table>
+    <tr>
+        <th>Transaction ID</th>
+        <th>Customer ID</th>
+        <th>Date/Hour of Day</th>
+        <th>Amount</th>
+        <th>Country of Transaction</th>
+        <th>Shipping Address</th>
+        <th>Bank</th>
+        <th>Type of Card</th>
+        <th>Potential Fraud</th>
+        <th>Fulfilled/Resolved</th>
+        <th><p> </p></th>
+    </tr>
+    @foreach (var order in Model.Orders)
+    {
+        <tr>
+            <td>@order.TransactionId</td>
+            <td>@order.CustomerId</td>
+            <td>@order.Date - @order.Time</td>
+            <td>$@order.Amount</td>
+            <td>@order.CountryOfTransaction</td>
+            <td>@order.ShippingAddress</td>
+            <td>@order.Bank</td>
+            <td>@order.TypeOfCard</td>
+            <td>@(order.Fullfilled ? "Yes" : "No")</td>
+            <td>@(order.Fraud > 0 ? "Yes" : "No") @if (order.Fraud > 0)
+                {
+                    <a class="btn btn-warning" href="@Url.Action("EditOrder", "Admin", new { id = order.TransactionId })">Review</a>
+                }
+                    
+    </td>
+        </tr>
+    }
+</table>
 
-    <table>
-        <tr>
-            <th>Transaction ID</th>
-            <th>Customer ID</th>
-            <th>Date/Hour of Day</th>
-            <th>Amount</th>
-            <th>Country of Transaction</th>
-            <th>Shipping Address</th>
-            <th>Bank</th>
-            <th>Type of Card</th>
-            <th>Potential Fraud</th>
-            <th>Fulfilled/Resolved</th>
-        </tr>
-        @* <tr>
-            Psuedo code:
-            for each entry in transaction table
-            <th>Transaction ID</th>
-            <th>Customer ID</th>
-            <th>Date/Hour of Day</th>
-            <th>Amount</th>
-            <th>Country of Transaction</th>
-            <th>Shipping Address</th>
-            <th>Bank</th>
-            <th>Type of Card</th>
-            <th>Potential Fraud</th>
-            <th>Fulfilled/Resolved</th>
-        </tr> *@
-        <tr>
-            <td>701664</td>
-            <td>2</td>
-            <td>7/11/23 - 22</td>
-            <td>$68.00</td>
-            <td>United Kingdom</td>
-            <td>United Kingdom</td>
-            <td>RBS</td>
-            <td>Visa</td>
-            <td>No</td>
-            <td>Yes</td>
-        </tr>
-        <tr>
-            <td>701697</td>
-            <td>5</td>
-            <td>7/13/23 - 18</td>
-            <td>$190.00</td>
-            <td>United States</td>
-            <td>Guam</td>
-            <td>Bank of Guam</td>
-            <td>Visa</td>
-            <td>No</td>
-            <td>Yes</td>
-        </tr>
-    </table>
+@if (Model.PaginationInfo != null)
+{
+    <div>
+        Page @(Model.PaginationInfo.CurrentPage) of @(Model.PaginationInfo.TotalNumPages)
+
+        @if (Model.PaginationInfo.CurrentPage > 1)
+        {
+            <a href="@Url.Action("AllOrders", new { filter = Model.CurrentFilter, page = Model.PaginationInfo.CurrentPage - 1 })">Previous</a>
+        }
+
+        @if (Model.PaginationInfo.CurrentPage < Model.PaginationInfo.TotalNumPages)
+        {
+            <a href="@Url.Action("AllOrders", new { filter = Model.CurrentFilter, page = Model.PaginationInfo.CurrentPage + 1 })">Next</a>
+        }
+    </div>
+}

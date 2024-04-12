@@ -1,3 +1,35 @@
+button {
+    text-align: center;
+}
+
+header {
+    background-color: #FFD700;
+}
+
+footer {
+    background-color: #FFD700;
+}
+
+#header {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.header-container {
+    background: #FFD700;
+    height: 7.2rem;
+    transition: all 0.2s ease-in-out;
+    z-index: 100;
+}
+
+.header-container.fixedToTop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+}
+
 html {
   font-size: 14px;
 }
@@ -13,10 +45,13 @@ html {
 }
 
 html {
-  position: relative;
-  min-height: 100%;
+    position: relative;
+    min-height: 100%;
+    max-width: 100%;
+    height: auto;
 }
 
 body {
   margin-bottom: 60px;
+  width: 100%;
 }
