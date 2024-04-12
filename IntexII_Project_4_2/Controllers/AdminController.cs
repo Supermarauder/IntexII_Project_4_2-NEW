@@ -277,8 +277,8 @@ namespace IntexII_Project_4_2.Controllers
 
             var viewModel = new AdminKPIViewModel
             {
-                // TotalSales2023 = totalSales2023,
-                // TotalSalesPast7Days = totalSalesPast7Days,
+                TotalSales2023 = (int)totalSales2023,
+                TotalSalesPast7Days = (int)totalSalesPast7Days,
                 UnfulfilledOrders = unfulfilledOrders,
                 OrdersFulfilledPast7Days = ordersFulfilledPast7Days
             };

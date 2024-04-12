@@ -39,8 +39,6 @@
 
     <br />
     <br />
-    <h1 style="font-size:58px; text-align:left; margin-left:40px;">Welcome, [dynamic admin user name]!</h1>
-    <br />
     <br />
     <br />
     <br />
@@ -58,8 +56,8 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td><h3>@Model.TotalSales2023</h3></td>
-                            <td><h3>@Model.TotalSalesPast7Days</h3></td>
+                    <td><h3>@($"${Model.TotalSales2023:N0}")</h3></td>
+                    <td><h3>@($"${Model.TotalSalesPast7Days:N0}")</h3></td>
                             <td><h3>@Model.OrdersFulfilledPast7Days</h3></td>
                             <td><h3>@Model.UnfulfilledOrders</h3></td>
                         </tr>
